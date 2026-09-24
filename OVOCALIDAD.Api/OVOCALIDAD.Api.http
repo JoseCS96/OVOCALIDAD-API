@@ -1,0 +1,6 @@
+@OVOCALIDAD.Api_HostAddress = http://localhost:5252
+
+GET {{OVOCALIDAD.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
