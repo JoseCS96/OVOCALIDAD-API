@@ -1,7 +1,7 @@
 using Microsoft.Data.SqlClient;
 using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Infrastructure.Mappers;
-using OVOCALIDAD.Shared.Constants;
+using SPNames = OVOCALIDAD.Shared.Constants.StoredProcedures;
 using OVOCALIDAD.Shared.DTOs.GenerarLote;
 
 namespace OVOCALIDAD.Infrastructure.StoredProcedures;
@@ -29,7 +29,7 @@ public class LoteStoredProcedure
         };
 
         using var reader = await _executor.ExecuteReaderAsync(
-            StoredProcedures.SP_GENERAR_LOTE,
+            SPNames.SP_GENERAR_LOTE,
             parametros);
 
         var response = new GenerarLoteResponse();
@@ -64,7 +64,7 @@ public class LoteStoredProcedure
         };
 
         using var reader = await _executor.ExecuteReaderAsync(
-            StoredProcedures.SP_LISTAR_LOTES,
+            SPNames.SP_LISTAR_LOTES,
             parametros);
 
         var lotes = new List<LoteListadoDto>();
