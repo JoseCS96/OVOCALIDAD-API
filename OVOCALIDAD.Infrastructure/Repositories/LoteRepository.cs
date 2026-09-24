@@ -1,4 +1,4 @@
-﻿using OVOCALIDAD.Application.DTOs.Lotes;
+using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Application.Interfaces;
 using OVOCALIDAD.Infrastructure.StoredProcedures;
 
@@ -17,5 +17,11 @@ public class LoteRepository : ILoteRepository
         GenerarLoteRequest request)
     {
         return await _storedProcedure.GenerarLoteAsync(request);
+    }
+
+    public async Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(
+        ListarLotesFiltro filtro)
+    {
+        return await _storedProcedure.ListarLotesAsync(filtro);
     }
 }
