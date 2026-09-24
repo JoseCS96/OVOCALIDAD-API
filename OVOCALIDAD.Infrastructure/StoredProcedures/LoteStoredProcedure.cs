@@ -76,4 +76,38 @@ public class LoteStoredProcedure
 
         return lotes;
     }
+
+    public async Task<CatalogosLoteDto> ObtenerCatalogosAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_OBTENER_CATALOGOS_LOTE);
+
+        var productos = new List<ProductoCatalogoDto>();
+        while (await reader.ReadAsync())
+            productos.Add(reader.MapTo<ProductoCatalogoDto>());
+
+        var naturalezas = new List<CatalogoLoteDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                naturalezas.Add(reader.MapTo<CatalogoLoteDto>());
+
+        var fases = new List<CatalogoLoteDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                fases.Add(reader.MapTo<CatalogoLoteDto>());
+
+        var lineasOrigen = new List<CatalogoLoteDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                lineasOrigen.Add(reader.MapTo<CatalogoLoteDto>());
+
+        return new CatalogosLoteDto
+        {
+            Productos = productos,
+            Naturalezas = naturalezas,
+            Fases = fases,
+            LineasOrigen = lineasOrigen
+        };
+    }
+
 }
