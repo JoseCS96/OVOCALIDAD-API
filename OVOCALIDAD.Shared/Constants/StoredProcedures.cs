@@ -1,4 +1,4 @@
-﻿namespace OVOCALIDAD.Shared.Constants;
+namespace OVOCALIDAD.Shared.Constants;
 
 public static class StoredProcedures
 {
@@ -11,6 +11,8 @@ public static class StoredProcedures
     public const string SP_OBTENER_SIGUIENTE_CORRELATIVO = "SP_OBTENER_SIGUIENTE_CORRELATIVO";
 
     public const string SP_GENERAR_LOTE = "SP_GENERAR_LOTE";
+
+    public const string SP_LISTAR_LOTES = "SP_LISTAR_LOTES";
 
     //==========================
     // EVALUACIONES
