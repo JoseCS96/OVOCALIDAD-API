@@ -1,6 +1,7 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Infrastructure.Mappers;
+using SPNames = OVOCALIDAD.Shared.Constants.StoredProcedures;
 using OVOCALIDAD.Shared.DTOs.GenerarLote;
 
 namespace OVOCALIDAD.Infrastructure.StoredProcedures;
@@ -28,23 +29,15 @@ public class LoteStoredProcedure
         };
 
         using var reader = await _executor.ExecuteReaderAsync(
-            "SP_GENERAR_LOTE",
+            SPNames.SP_GENERAR_LOTE,
             parametros);
 
         var response = new GenerarLoteResponse();
-
-        // ===========================
-        // ResultSet 1
-        // ===========================
 
         if (await reader.ReadAsync())
         {
             response.Resultado = reader.MapTo<ResultadoOperacionDto>();
         }
-
-        // ===========================
-        // ResultSet 2
-        // ===========================
 
         if (await reader.NextResultAsync())
         {
@@ -55,5 +48,32 @@ public class LoteStoredProcedure
         }
 
         return response;
+    }
+
+    public async Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(
+        ListarLotesFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CodigoLote", (object?)filtro.CodigoLote ?? DBNull.Value),
+            new("@ProductoCodigo", (object?)filtro.ProductoCodigo ?? DBNull.Value),
+            new("@EstadoLoteId", (object?)filtro.EstadoLoteId ?? DBNull.Value),
+            new("@EstadoEvaluacionId", (object?)filtro.EstadoEvaluacionId ?? DBNull.Value),
+            new("@FechaDesde", (object?)filtro.FechaDesde?.Date ?? DBNull.Value),
+            new("@FechaHasta", (object?)filtro.FechaHasta?.Date ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_LOTES,
+            parametros);
+
+        var lotes = new List<LoteListadoDto>();
+
+        while (await reader.ReadAsync())
+        {
+            lotes.Add(reader.MapTo<LoteListadoDto>());
+        }
+
+        return lotes;
     }
 }

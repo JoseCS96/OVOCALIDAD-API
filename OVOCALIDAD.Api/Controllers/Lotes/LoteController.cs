@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Application.Interfaces;
 
@@ -13,6 +13,16 @@ public class LoteController : ControllerBase
     public LoteController(ILoteService loteService)
     {
         _loteService = loteService;
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<LoteListadoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<LoteListadoDto>>> Listar(
+        [FromQuery] ListarLotesFiltro filtro)
+    {
+        var lotes = await _loteService.ListarLotesAsync(filtro);
+
+        return Ok(lotes);
     }
 
     [HttpPost("generar")]
