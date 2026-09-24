@@ -4,9 +4,7 @@ namespace OVOCALIDAD.Application.Interfaces;
 
 public interface ILoteService
 {
-    Task<GenerarLoteResponse> GenerarLoteAsync(
-        GenerarLoteRequest request);
-
-    Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(
-        ListarLotesFiltro filtro);
+    Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request);
+    Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro);
+    Task<CatalogosLoteDto> ObtenerCatalogosAsync();
 }
