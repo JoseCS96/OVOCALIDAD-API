@@ -56,4 +56,12 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.EliminarCaracteristicaAsync(versionId, versCaractId, request));
     }
 
+
+    [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<EspecificacionTecnicaListadoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<EspecificacionTecnicaListadoDto>>> Listar(
+        [FromQuery] ListarEspecificacionesTecnicasFiltro filtro)
+    {
+        return Ok(await _service.ListarAsync(filtro));
+    }
 }
