@@ -15,4 +15,7 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
 
     public Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
+
+    public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
+        _storedProcedure.ObtenerDetalleAsync(versionId);
 }
