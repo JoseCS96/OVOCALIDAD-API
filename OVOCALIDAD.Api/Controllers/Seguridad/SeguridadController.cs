@@ -47,4 +47,27 @@ public class SeguridadController : ControllerBase
             ? NotFound(new { mensaje = "No se encontraron accesos para el usuario autenticado." })
             : Ok(accesos);
     }
+    [HttpGet("notificaciones")]
+    public async Task<ActionResult<IReadOnlyList<NotificacionDto>>> ObtenerNotificaciones()
+    {
+        var nombreUsuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(nombreUsuario)) return Unauthorized();
+        return Ok(await _service.ObtenerNotificacionesAsync(nombreUsuario));
+    }
+
+    [HttpPut("notificaciones/{notificacionId:long}/leida")]
+    public async Task<ActionResult<OperacionNotificacionDto>> MarcarNotificacionLeida(long notificacionId)
+    {
+        var nombreUsuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(nombreUsuario)) return Unauthorized();
+        return Ok(await _service.MarcarNotificacionLeidaAsync(notificacionId, nombreUsuario));
+    }
+
+    [HttpPut("notificaciones/modal-mostradas")]
+    public async Task<ActionResult<OperacionNotificacionDto>> MarcarModalMostrado()
+    {
+        var nombreUsuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(nombreUsuario)) return Unauthorized();
+        return Ok(await _service.MarcarNotificacionesModalMostradasAsync(nombreUsuario));
+    }
 }
