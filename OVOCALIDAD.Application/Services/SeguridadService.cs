@@ -14,4 +14,13 @@ public class SeguridadService : ISeguridadService
 
     public Task<AccesosUsuarioDto?> ObtenerAccesosUsuarioAsync(string nombreUsuario) =>
         _repository.ObtenerAccesosUsuarioAsync(nombreUsuario);
+
+    public Task<IReadOnlyList<NotificacionDto>> ObtenerNotificacionesAsync(string nombreUsuario) =>
+        _repository.ObtenerNotificacionesAsync(nombreUsuario);
+
+    public Task<OperacionNotificacionDto> MarcarNotificacionLeidaAsync(long notificacionId, string nombreUsuario) =>
+        _repository.MarcarNotificacionLeidaAsync(notificacionId, nombreUsuario);
+
+    public Task<OperacionNotificacionDto> MarcarNotificacionesModalMostradasAsync(string nombreUsuario) =>
+        _repository.MarcarNotificacionesModalMostradasAsync(nombreUsuario);
 }
