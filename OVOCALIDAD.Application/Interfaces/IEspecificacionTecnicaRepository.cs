@@ -6,6 +6,8 @@ public interface IEspecificacionTecnicaRepository
 {
     Task<CrearEspecificacionTecnicaResponse> CrearAsync(CrearEspecificacionTecnicaRequest request);
     Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync();
+    Task<SeccionesEtCatalogoDto> ObtenerSeccionesAsync();
+    Task<CrearSeccionEtResponse> CrearSeccionAsync(CrearSeccionEtRequest request);
     Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId);
     Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request);
     Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request);
