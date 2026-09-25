@@ -77,6 +77,12 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarContenidoSeccionAsync(versionId, versSeccId, request));
     }
 
+    [HttpGet("{versionId:int}/secciones/contenido")]
+    public async Task<ActionResult<IReadOnlyList<ContenidoSeccionEtDto>>> ObtenerContenidoSecciones(int versionId)
+    {
+        return Ok(await _service.ObtenerContenidoSeccionesAsync(versionId));
+    }
+
     [HttpGet("{versionId:int}")]
     [ProducesResponseType(typeof(DetalleEspecificacionTecnicaDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
