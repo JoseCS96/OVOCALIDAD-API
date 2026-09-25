@@ -27,4 +27,5 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
     public Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request) =>
         _storedProcedure.EliminarCaracteristicaAsync(versionId, versCaractId, request);
 
+    public Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro) => _storedProcedure.ListarAsync(filtro);
 }
