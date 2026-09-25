@@ -24,6 +24,18 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
     public Task<CrearSeccionEtResponse> CrearSeccionAsync(CrearSeccionEtRequest request) =>
         _repository.CrearSeccionAsync(request);
 
+    public Task<AgregarSeccionVersionEtResponse> AgregarSeccionVersionAsync(int versionId, AgregarSeccionVersionEtRequest request) =>
+        _repository.AgregarSeccionVersionAsync(versionId, request);
+
+    public Task<QuitarSeccionVersionEtResponse> QuitarSeccionVersionAsync(int versionId, int versSeccId, QuitarSeccionVersionEtRequest request) =>
+        _repository.QuitarSeccionVersionAsync(versionId, versSeccId, request);
+
+    public Task<OperacionEstructuraEtResponse> ReordenarSeccionesVersionAsync(int versionId, ReordenarSeccionesVersionEtRequest request) =>
+        _repository.ReordenarSeccionesVersionAsync(versionId, request);
+
+    public Task<GuardarContenidoSeccionEtResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionEtRequest request) =>
+        _repository.GuardarContenidoSeccionAsync(versionId, versSeccId, request);
+
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _repository.ObtenerDetalleAsync(versionId);
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
