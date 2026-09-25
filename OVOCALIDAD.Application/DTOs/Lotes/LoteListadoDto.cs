@@ -46,6 +46,15 @@ public class LoteListadoDto
     public DateTime? FechaFinEvaluacion { get; set; }
     public string? UsuarioEvaluador { get; set; }
 
+    // Avance consolidado de todas las evaluaciones activas/no anuladas del lote.
+    public int TotalEvaluaciones { get; set; }
+    public int EvaluacionesTerminadas { get; set; }
+    public int TotalParametrosEvaluacion { get; set; }
+    public int ResultadosRegistrados { get; set; }
+    public int ParametrosPendientes { get; set; }
+    public decimal PorcentajeAvance { get; set; }
+    public decimal PorcentajeFaltante { get; set; }
+
     public string? Observacion { get; set; }
     public string Estado { get; set; } = string.Empty;
     public DateTime AudFechaCreacion { get; set; }
