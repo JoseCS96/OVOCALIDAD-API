@@ -83,6 +83,39 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<SeccionesEtCatalogoDto> ObtenerSeccionesAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_SECCIONES_ET);
+
+        var secciones = new List<SeccionDisponibleEtDto>();
+        while (await reader.ReadAsync())
+            secciones.Add(reader.MapTo<SeccionDisponibleEtDto>());
+
+        var tipos = new List<TipoSeccionEtDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                tipos.Add(reader.MapTo<TipoSeccionEtDto>());
+
+        return new SeccionesEtCatalogoDto { Secciones = secciones, TiposSeccion = tipos };
+    }
+
+    public async Task<CrearSeccionEtResponse> CrearSeccionAsync(CrearSeccionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@SeccionDescripcion", request.SeccionDescripcion),
+            new("@IdTipoSeccion", request.IdTipoSeccion),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CREAR_SECCION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CrearSeccionEtResponse>() : new CrearSeccionEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId)
     {
         var parametros = new List<SqlParameter>
