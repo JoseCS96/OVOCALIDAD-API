@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Data.SqlClient;
 using OVOCALIDAD.Application.DTOs.EspecificacionesTecnicas;
 using OVOCALIDAD.Infrastructure.Mappers;
@@ -25,6 +26,7 @@ public class EspecificacionTecnicaStoredProcedure
             new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia?.Date ?? DBNull.Value),
             new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
             new("@VersionNroPaginas", (object?)request.VersionNroPaginas ?? DBNull.Value),
+            new("@SeccionesJson", JsonSerializer.Serialize(request.Secciones, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })),
             new("@Usuario", request.Usuario)
         };
 
