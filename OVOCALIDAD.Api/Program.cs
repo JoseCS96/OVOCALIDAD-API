@@ -35,6 +35,8 @@ builder.Services.AddScoped<LoteStoredProcedure>();
 
 builder.Services.AddScoped<EvaluacionStoredProcedure>();
 
+builder.Services.AddScoped<EspecificacionTecnicaStoredProcedure>();
+
 
 //---------------------------------------------------------
 // Repository
@@ -44,6 +46,8 @@ builder.Services.AddScoped<ILoteRepository, LoteRepository>();
 
 builder.Services.AddScoped<IEvaluacionRepository, EvaluacionRepository>();
 
+builder.Services.AddScoped<IEspecificacionTecnicaRepository, EspecificacionTecnicaRepository>();
+
 
 //---------------------------------------------------------
 // Services
@@ -52,6 +56,8 @@ builder.Services.AddScoped<IEvaluacionRepository, EvaluacionRepository>();
 builder.Services.AddScoped<ILoteService, LoteService>();
 
 builder.Services.AddScoped<IEvaluacionService, EvaluacionService>();
+
+builder.Services.AddScoped<IEspecificacionTecnicaService, EspecificacionTecnicaService>();
 
 
 var app = builder.Build();
