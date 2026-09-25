@@ -29,6 +29,20 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.ObtenerCatalogosAsync());
     }
 
+    [HttpGet("secciones")]
+    [ProducesResponseType(typeof(SeccionesEtCatalogoDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<SeccionesEtCatalogoDto>> Secciones()
+    {
+        return Ok(await _service.ObtenerSeccionesAsync());
+    }
+
+    [HttpPost("secciones")]
+    [ProducesResponseType(typeof(CrearSeccionEtResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CrearSeccionEtResponse>> CrearSeccion([FromBody] CrearSeccionEtRequest request)
+    {
+        return Ok(await _service.CrearSeccionAsync(request));
+    }
+
     [HttpGet("{versionId:int}")]
     [ProducesResponseType(typeof(DetalleEspecificacionTecnicaDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
