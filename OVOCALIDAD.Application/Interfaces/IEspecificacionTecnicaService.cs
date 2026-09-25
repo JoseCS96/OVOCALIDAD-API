@@ -4,6 +4,7 @@ namespace OVOCALIDAD.Application.Interfaces;
 
 public interface IEspecificacionTecnicaService
 {
+    Task<CrearEspecificacionTecnicaResponse> CrearAsync(CrearEspecificacionTecnicaRequest request);
     Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync();
     Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId);
     Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request);
