@@ -149,3 +149,66 @@ public class CrearSeccionEtResponse
     public bool? PuedeEliminarse { get; set; }
     public bool? PermiteReordenar { get; set; }
 }
+
+
+public class AgregarSeccionVersionEtRequest
+{
+    public int SeccionId { get; set; }
+    public int? Orden { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class AgregarSeccionVersionEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersSeccId { get; set; }
+    public int? VersionId { get; set; }
+    public int? SeccionId { get; set; }
+    public int? Orden { get; set; }
+}
+
+public class QuitarSeccionVersionEtRequest
+{
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class QuitarSeccionVersionEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersSeccId { get; set; }
+}
+
+public class ReordenarSeccionesVersionEtRequest
+{
+    public List<ReordenarSeccionVersionEtItemRequest> Secciones { get; set; } = new();
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class ReordenarSeccionVersionEtItemRequest
+{
+    public int VersSeccId { get; set; }
+    public int Orden { get; set; }
+}
+
+public class OperacionEstructuraEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+}
+
+public class GuardarContenidoSeccionEtRequest
+{
+    public string? Contenido { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarContenidoSeccionEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionSeccionContenidoId { get; set; }
+    public int? VersSeccId { get; set; }
+    public int? SeccionId { get; set; }
+}
