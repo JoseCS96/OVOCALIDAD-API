@@ -43,6 +43,40 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.CrearSeccionAsync(request));
     }
 
+    [HttpPost("{versionId:int}/secciones")]
+    public async Task<ActionResult<AgregarSeccionVersionEtResponse>> AgregarSeccionVersion(
+        int versionId,
+        [FromBody] AgregarSeccionVersionEtRequest request)
+    {
+        return Ok(await _service.AgregarSeccionVersionAsync(versionId, request));
+    }
+
+    [HttpDelete("{versionId:int}/secciones/{versSeccId:int}")]
+    public async Task<ActionResult<QuitarSeccionVersionEtResponse>> QuitarSeccionVersion(
+        int versionId,
+        int versSeccId,
+        [FromBody] QuitarSeccionVersionEtRequest request)
+    {
+        return Ok(await _service.QuitarSeccionVersionAsync(versionId, versSeccId, request));
+    }
+
+    [HttpPut("{versionId:int}/secciones/orden")]
+    public async Task<ActionResult<OperacionEstructuraEtResponse>> ReordenarSeccionesVersion(
+        int versionId,
+        [FromBody] ReordenarSeccionesVersionEtRequest request)
+    {
+        return Ok(await _service.ReordenarSeccionesVersionAsync(versionId, request));
+    }
+
+    [HttpPut("{versionId:int}/secciones/{versSeccId:int}/contenido")]
+    public async Task<ActionResult<GuardarContenidoSeccionEtResponse>> GuardarContenidoSeccion(
+        int versionId,
+        int versSeccId,
+        [FromBody] GuardarContenidoSeccionEtRequest request)
+    {
+        return Ok(await _service.GuardarContenidoSeccionAsync(versionId, versSeccId, request));
+    }
+
     [HttpGet("{versionId:int}")]
     [ProducesResponseType(typeof(DetalleEspecificacionTecnicaDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
