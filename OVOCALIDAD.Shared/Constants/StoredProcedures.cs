@@ -30,4 +30,6 @@ public static class StoredProcedures
     public const string SP_OBTENER_EVALUACION = "SP_OBTENER_EVALUACION";
     public const string SP_GUARDAR_RESULTADO = "SP_GUARDAR_RESULTADO";
     public const string SP_CERRAR_EVALUACION = "SP_CERRAR_EVALUACION";
+
+    public const string SP_OBTENER_ACCESOS_USUARIO = "SP_OBTENER_ACCESOS_USUARIO";
 }
