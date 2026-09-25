@@ -14,6 +14,28 @@ public class EspecificacionTecnicaStoredProcedure
         _executor = executor;
     }
 
+    public async Task<CrearEspecificacionTecnicaResponse> CrearAsync(CrearEspecificacionTecnicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@DocumentoCodigo", request.DocumentoCodigo),
+            new("@DocumentoDescripcionDocumento", request.DocumentoDescripcionDocumento),
+            new("@ProductoCodigo", request.ProductoCodigo),
+            new("@VersionNumero", request.VersionNumero),
+            new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia?.Date ?? DBNull.Value),
+            new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
+            new("@VersionNroPaginas", (object?)request.VersionNroPaginas ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CREAR_ESPECIFICACION_TECNICA, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CrearEspecificacionTecnicaResponse>() : new CrearEspecificacionTecnicaResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync()
     {
         using var reader = await _executor.ExecuteReaderAsync(
