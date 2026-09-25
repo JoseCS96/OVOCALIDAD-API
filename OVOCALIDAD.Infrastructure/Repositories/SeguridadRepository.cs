@@ -15,4 +15,12 @@ public class SeguridadRepository : ISeguridadRepository
 
     public Task<AccesosUsuarioDto?> ObtenerAccesosUsuarioAsync(string nombreUsuario) =>
         _storedProcedure.ObtenerAccesosUsuarioAsync(nombreUsuario);
+    public Task<IReadOnlyList<NotificacionDto>> ObtenerNotificacionesAsync(string nombreUsuario) =>
+        _storedProcedure.ObtenerNotificacionesAsync(nombreUsuario);
+
+    public Task<OperacionNotificacionDto> MarcarNotificacionLeidaAsync(long notificacionId, string nombreUsuario) =>
+        _storedProcedure.MarcarNotificacionLeidaAsync(notificacionId, nombreUsuario);
+
+    public Task<OperacionNotificacionDto> MarcarNotificacionesModalMostradasAsync(string nombreUsuario) =>
+        _storedProcedure.MarcarNotificacionesModalMostradasAsync(nombreUsuario);
 }
