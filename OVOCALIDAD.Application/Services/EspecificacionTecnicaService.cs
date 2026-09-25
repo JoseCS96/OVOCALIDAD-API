@@ -18,6 +18,12 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
     public Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync() =>
         _repository.ObtenerCatalogosAsync();
 
+    public Task<SeccionesEtCatalogoDto> ObtenerSeccionesAsync() =>
+        _repository.ObtenerSeccionesAsync();
+
+    public Task<CrearSeccionEtResponse> CrearSeccionAsync(CrearSeccionEtRequest request) =>
+        _repository.CrearSeccionAsync(request);
+
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _repository.ObtenerDetalleAsync(versionId);
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
