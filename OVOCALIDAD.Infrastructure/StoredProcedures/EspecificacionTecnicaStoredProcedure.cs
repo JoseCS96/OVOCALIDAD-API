@@ -116,6 +116,76 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<AgregarSeccionVersionEtResponse> AgregarSeccionVersionAsync(int versionId, AgregarSeccionVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@SeccionId", request.SeccionId),
+            new("@Orden", (object?)request.Orden ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_AGREGAR_SECCION_VERSION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<AgregarSeccionVersionEtResponse>() : new AgregarSeccionVersionEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<QuitarSeccionVersionEtResponse> QuitarSeccionVersionAsync(int versionId, int versSeccId, QuitarSeccionVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersSeccId", versSeccId),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_QUITAR_SECCION_VERSION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<QuitarSeccionVersionEtResponse>() : new QuitarSeccionVersionEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<OperacionEstructuraEtResponse> ReordenarSeccionesVersionAsync(int versionId, ReordenarSeccionesVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@SeccionesJson", JsonSerializer.Serialize(request.Secciones, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_REORDENAR_SECCIONES_VERSION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<OperacionEstructuraEtResponse>() : new OperacionEstructuraEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<GuardarContenidoSeccionEtResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersSeccId", versSeccId),
+            new("@Contenido", (object?)request.Contenido ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CONTENIDO_SECCION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarContenidoSeccionEtResponse>() : new GuardarContenidoSeccionEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId)
     {
         var parametros = new List<SqlParameter>
