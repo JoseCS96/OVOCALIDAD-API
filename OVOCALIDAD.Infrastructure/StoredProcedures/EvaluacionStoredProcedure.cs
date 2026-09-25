@@ -80,4 +80,20 @@ public class EvaluacionStoredProcedure
             Mensaje = "El procedimiento no devolvió resultado."
         };
     }
+
+    public async Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@EvaluacionId", evaluacionId),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CERRAR_EVALUACION, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CerrarEvaluacionResponse>() : new CerrarEvaluacionResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
 }
