@@ -222,3 +222,23 @@ public class ContenidoSeccionEtDto
     public int? IdTipoSeccion { get; set; }
     public string? Contenido { get; set; }
 }
+
+public class CambiarEstadoVersionEtRequest
+{
+    public string Accion { get; set; } = string.Empty;
+    public string? Comentario { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class CambiarEstadoVersionEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? EstVerOrigenId { get; set; }
+    public string? EstadoOrigen { get; set; }
+    public int? EstVerDestinoId { get; set; }
+    public string? EstadoDestino { get; set; }
+    public string? Accion { get; set; }
+    public string? Comentario { get; set; }
+}
