@@ -7,4 +7,5 @@ public interface IEvaluacionRepository
     Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, IniciarEvaluacionRequest request);
     Task<EvaluacionDto?> ObtenerAsync(int evaluacionId);
     Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request);
+    Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request);
 }
