@@ -17,4 +17,7 @@ public class EvaluacionService : IEvaluacionService
 
     public Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request) =>
         _repository.GuardarResultadoAsync(evaluacionId, request);
+
+    public Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request) =>
+        _repository.CerrarAsync(evaluacionId, request);
 }
