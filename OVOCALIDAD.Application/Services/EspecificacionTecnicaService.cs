@@ -36,6 +36,9 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
     public Task<GuardarContenidoSeccionEtResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionEtRequest request) =>
         _repository.GuardarContenidoSeccionAsync(versionId, versSeccId, request);
 
+    public Task<IReadOnlyList<ContenidoSeccionEtDto>> ObtenerContenidoSeccionesAsync(int versionId) =>
+        _repository.ObtenerContenidoSeccionesAsync(versionId);
+
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _repository.ObtenerDetalleAsync(versionId);
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
