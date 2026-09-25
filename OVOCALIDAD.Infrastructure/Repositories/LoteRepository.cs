@@ -16,6 +16,9 @@ public class LoteRepository : ILoteRepository
     public Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro) =>
         _storedProcedure.ListarLotesAsync(filtro);
 
+    public Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId) =>
+        _storedProcedure.ObtenerDetalleAsync(loteId);
+
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
 }

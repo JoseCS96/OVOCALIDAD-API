@@ -25,6 +25,15 @@ public class LoteController : ControllerBase
         return Ok(lotes);
     }
 
+    [HttpGet("{loteId:int}")]
+    [ProducesResponseType(typeof(DetalleLoteDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DetalleLoteDto>> ObtenerDetalle(int loteId)
+    {
+        var detalle = await _loteService.ObtenerDetalleAsync(loteId);
+        return detalle is null ? NotFound() : Ok(detalle);
+    }
+
     [HttpGet("catalogos")]
     [ProducesResponseType(typeof(CatalogosLoteDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<CatalogosLoteDto>> Catalogos()
