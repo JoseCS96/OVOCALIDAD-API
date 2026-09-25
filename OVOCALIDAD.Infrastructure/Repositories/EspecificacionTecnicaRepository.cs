@@ -13,6 +13,9 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
         _storedProcedure = storedProcedure;
     }
 
+    public Task<CrearEspecificacionTecnicaResponse> CrearAsync(CrearEspecificacionTecnicaRequest request) =>
+        _storedProcedure.CrearAsync(request);
+
     public Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
 
