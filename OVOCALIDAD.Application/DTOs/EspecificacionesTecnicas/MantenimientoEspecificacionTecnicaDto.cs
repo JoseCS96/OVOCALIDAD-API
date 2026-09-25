@@ -82,7 +82,14 @@ public class CrearEspecificacionTecnicaRequest
     public DateTime? VersionInicioVigencia { get; set; }
     public int? VersionReemplazaAId { get; set; }
     public int? VersionNroPaginas { get; set; }
+    public List<CrearEspecificacionTecnicaSeccionRequest> Secciones { get; set; } = new();
     public string Usuario { get; set; } = string.Empty;
+}
+
+public class CrearEspecificacionTecnicaSeccionRequest
+{
+    public int SeccionId { get; set; }
+    public int Orden { get; set; }
 }
 
 public class CrearEspecificacionTecnicaResponse
