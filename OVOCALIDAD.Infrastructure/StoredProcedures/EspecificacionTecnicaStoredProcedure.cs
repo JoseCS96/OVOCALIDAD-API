@@ -162,4 +162,71 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+
+    public async Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@DocumentoDescripcionDocumento", request.DocumentoDescripcionDocumento),
+            new("@ProductoCodigo", request.ProductoCodigo),
+            new("@VersionNumero", (object?)request.VersionNumero ?? DBNull.Value),
+            new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia?.Date ?? DBNull.Value),
+            new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
+            new("@VersionNroPaginas", (object?)request.VersionNroPaginas ?? DBNull.Value),
+            new("@VersionDescripcion", (object?)request.VersionDescripcion ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_INFORMACION_GENERAL_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarInformacionGeneralEtResponse>() : new GuardarInformacionGeneralEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersCaractId", (object?)request.VersCaractId ?? DBNull.Value),
+            new("@CaracteristicaId", request.CaracteristicaId),
+            new("@TipoCriterioId", request.TipoCriterioId),
+            new("@ValorCuantitativoInicial", (object?)request.ValorCuantitativoInicial ?? DBNull.Value),
+            new("@ValorCuantitativoFinal", (object?)request.ValorCuantitativoFinal ?? DBNull.Value),
+            new("@ValorCuantitativoIgual", (object?)request.ValorCuantitativoIgual ?? DBNull.Value),
+            new("@ValorCualitativo", (object?)request.ValorCualitativo ?? DBNull.Value),
+            new("@FaseId", (object?)request.FaseId ?? DBNull.Value),
+            new("@EsObligatorio", request.EsObligatorio),
+            new("@Orden", request.Orden),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CARACTERISTICA_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarCaracteristicaEtResponse>() : new GuardarCaracteristicaEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersCaractId", versCaractId),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_CARACTERISTICA_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<EliminarCaracteristicaEtResponse>() : new EliminarCaracteristicaEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
 }
