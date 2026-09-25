@@ -17,4 +17,13 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
 
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _repository.ObtenerDetalleAsync(versionId);
+    public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
+        _repository.GuardarInformacionGeneralAsync(versionId, request);
+
+    public Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request) =>
+        _repository.GuardarCaracteristicaAsync(versionId, request);
+
+    public Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request) =>
+        _repository.EliminarCaracteristicaAsync(versionId, versCaractId, request);
+
 }
