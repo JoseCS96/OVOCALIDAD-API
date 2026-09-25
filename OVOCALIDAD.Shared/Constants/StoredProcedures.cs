@@ -10,6 +10,7 @@ public static class StoredProcedures
     public const string SP_OBTENER_DETALLE_LOTE = "SP_OBTENER_DETALLE_LOTE";
 
     public const string SP_OBTENER_CATALOGOS_ET = "SP_OBTENER_CATALOGOS_ET";
+    public const string SP_OBTENER_ESPECIFICACION_TECNICA = "SP_OBTENER_ESPECIFICACION_TECNICA";
 
     public const string SP_CREAR_EVALUACION = "SP_CREAR_EVALUACION";
     public const string SP_INICIAR_EVALUACION = "SP_INICIAR_EVALUACION";
