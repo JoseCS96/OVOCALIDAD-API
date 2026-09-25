@@ -15,6 +15,13 @@ public class EspecificacionTecnicaController : ControllerBase
         _service = service;
     }
 
+    [HttpPost]
+    [ProducesResponseType(typeof(CrearEspecificacionTecnicaResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CrearEspecificacionTecnicaResponse>> Crear([FromBody] CrearEspecificacionTecnicaRequest request)
+    {
+        return Ok(await _service.CrearAsync(request));
+    }
+
     [HttpGet("catalogos")]
     [ProducesResponseType(typeof(CatalogosEspecificacionTecnicaDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<CatalogosEspecificacionTecnicaDto>> Catalogos()
