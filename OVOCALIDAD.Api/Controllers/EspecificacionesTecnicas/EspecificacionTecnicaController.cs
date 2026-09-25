@@ -117,6 +117,15 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.EliminarCaracteristicaAsync(versionId, versCaractId, request));
     }
 
+    [HttpPost("{versionId:int}/cambiar-estado")]
+    [ProducesResponseType(typeof(CambiarEstadoVersionEtResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CambiarEstadoVersionEtResponse>> CambiarEstado(
+        int versionId,
+        [FromBody] CambiarEstadoVersionEtRequest request)
+    {
+        return Ok(await _service.CambiarEstadoAsync(versionId, request));
+    }
+
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<EspecificacionTecnicaListadoDto>), StatusCodes.Status200OK)]
