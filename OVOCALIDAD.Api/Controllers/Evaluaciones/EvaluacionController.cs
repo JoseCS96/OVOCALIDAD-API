@@ -36,4 +36,13 @@ public class EvaluacionController : ControllerBase
         var response = await _service.GuardarResultadoAsync(evaluacionId, request);
         return Ok(response);
     }
+
+    [HttpPost("{evaluacionId:int}/cerrar")]
+    public async Task<ActionResult<CerrarEvaluacionResponse>> Cerrar(
+        int evaluacionId,
+        [FromBody] CerrarEvaluacionRequest request)
+    {
+        var response = await _service.CerrarAsync(evaluacionId, request);
+        return Ok(response);
+    }
 }
