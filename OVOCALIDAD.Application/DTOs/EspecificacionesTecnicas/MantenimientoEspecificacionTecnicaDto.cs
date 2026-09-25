@@ -212,3 +212,13 @@ public class GuardarContenidoSeccionEtResponse
     public int? VersSeccId { get; set; }
     public int? SeccionId { get; set; }
 }
+
+public class ContenidoSeccionEtDto
+{
+    public int VersionSeccionContenidoId { get; set; }
+    public int VersSeccId { get; set; }
+    public int SeccionId { get; set; }
+    public string SeccionDescripcion { get; set; } = string.Empty;
+    public int? IdTipoSeccion { get; set; }
+    public string? Contenido { get; set; }
+}
