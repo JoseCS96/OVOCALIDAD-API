@@ -186,6 +186,16 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<IReadOnlyList<ContenidoSeccionEtDto>> ObtenerContenidoSeccionesAsync(int versionId)
+    {
+        var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CONTENIDO_SECCIONES_ET, parametros);
+        var items = new List<ContenidoSeccionEtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<ContenidoSeccionEtDto>());
+        return items;
+    }
+
     public async Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId)
     {
         var parametros = new List<SqlParameter>
