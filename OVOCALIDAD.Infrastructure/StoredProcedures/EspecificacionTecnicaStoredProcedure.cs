@@ -366,6 +366,24 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<CambiarEstadoVersionEtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@Accion", request.Accion),
+            new("@Comentario", (object?)request.Comentario ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_VERSION_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoVersionEtResponse>() : new CambiarEstadoVersionEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
 
     public async Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro)
     {
