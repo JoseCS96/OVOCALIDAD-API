@@ -12,6 +12,9 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
         _repository = repository;
     }
 
+    public Task<CrearEspecificacionTecnicaResponse> CrearAsync(CrearEspecificacionTecnicaRequest request) =>
+        _repository.CrearAsync(request);
+
     public Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync() =>
         _repository.ObtenerCatalogosAsync();
 
