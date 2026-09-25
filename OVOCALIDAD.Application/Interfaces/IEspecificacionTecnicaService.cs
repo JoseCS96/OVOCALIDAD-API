@@ -6,4 +6,7 @@ public interface IEspecificacionTecnicaService
 {
     Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync();
     Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId);
+    Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request);
+    Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request);
+    Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request);
 }
