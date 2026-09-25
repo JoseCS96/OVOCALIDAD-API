@@ -14,4 +14,7 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
 
     public Task<CatalogosEspecificacionTecnicaDto> ObtenerCatalogosAsync() =>
         _repository.ObtenerCatalogosAsync();
+
+    public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
+        _repository.ObtenerDetalleAsync(versionId);
 }
