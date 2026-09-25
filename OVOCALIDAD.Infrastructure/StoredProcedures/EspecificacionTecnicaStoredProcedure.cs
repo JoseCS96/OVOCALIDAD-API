@@ -229,4 +229,18 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+
+    public async Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@ProductoCodigo", (object?)filtro.ProductoCodigo ?? DBNull.Value),
+            new("@EstVerId", (object?)filtro.EstVerId ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_ESPECIFICACIONES_TECNICAS, parametros);
+        var items = new List<EspecificacionTecnicaListadoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<EspecificacionTecnicaListadoDto>());
+        return items;
+    }
 }
