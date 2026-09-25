@@ -30,4 +30,30 @@ public class EspecificacionTecnicaController : ControllerBase
         var detalle = await _service.ObtenerDetalleAsync(versionId);
         return detalle is null ? NotFound() : Ok(detalle);
     }
+
+    [HttpPut("{versionId:int}/informacion-general")]
+    public async Task<ActionResult<GuardarInformacionGeneralEtResponse>> GuardarInformacionGeneral(
+        int versionId,
+        [FromBody] GuardarInformacionGeneralEtRequest request)
+    {
+        return Ok(await _service.GuardarInformacionGeneralAsync(versionId, request));
+    }
+
+    [HttpPut("{versionId:int}/caracteristicas")]
+    public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
+        int versionId,
+        [FromBody] GuardarCaracteristicaEtRequest request)
+    {
+        return Ok(await _service.GuardarCaracteristicaAsync(versionId, request));
+    }
+
+    [HttpDelete("{versionId:int}/caracteristicas/{versCaractId:int}")]
+    public async Task<ActionResult<EliminarCaracteristicaEtResponse>> EliminarCaracteristica(
+        int versionId,
+        int versCaractId,
+        [FromBody] EliminarCaracteristicaEtRequest request)
+    {
+        return Ok(await _service.EliminarCaracteristicaAsync(versionId, versCaractId, request));
+    }
+
 }
