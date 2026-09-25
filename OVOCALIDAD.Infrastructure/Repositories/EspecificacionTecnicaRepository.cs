@@ -52,4 +52,7 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
         _storedProcedure.EliminarCaracteristicaAsync(versionId, versCaractId, request);
 
     public Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro) => _storedProcedure.ListarAsync(filtro);
+
+    public Task<CambiarEstadoVersionEtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoVersionEtRequest request) =>
+        _storedProcedure.CambiarEstadoAsync(versionId, request);
 }
