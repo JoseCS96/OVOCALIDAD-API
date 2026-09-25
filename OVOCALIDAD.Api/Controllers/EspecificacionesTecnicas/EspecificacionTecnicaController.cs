@@ -21,4 +21,13 @@ public class EspecificacionTecnicaController : ControllerBase
     {
         return Ok(await _service.ObtenerCatalogosAsync());
     }
+
+    [HttpGet("{versionId:int}")]
+    [ProducesResponseType(typeof(DetalleEspecificacionTecnicaDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DetalleEspecificacionTecnicaDto>> ObtenerDetalle(int versionId)
+    {
+        var detalle = await _service.ObtenerDetalleAsync(versionId);
+        return detalle is null ? NotFound() : Ok(detalle);
+    }
 }
