@@ -103,3 +103,49 @@ public class CrearEspecificacionTecnicaResponse
     public decimal? VersionNumero { get; set; }
     public string? EstadoVersion { get; set; }
 }
+
+
+public class SeccionesEtCatalogoDto
+{
+    public IReadOnlyList<SeccionDisponibleEtDto> Secciones { get; set; } = [];
+    public IReadOnlyList<TipoSeccionEtDto> TiposSeccion { get; set; } = [];
+}
+
+public class SeccionDisponibleEtDto
+{
+    public int SeccionId { get; set; }
+    public string SeccionDescripcion { get; set; } = string.Empty;
+    public int? IdTipoSeccion { get; set; }
+    public string? TipoSeccion { get; set; }
+    public int OrdenDefault { get; set; }
+    public bool EsBase { get; set; }
+    public bool PuedeEliminarse { get; set; }
+    public bool PermiteReordenar { get; set; }
+    public string? Icono { get; set; }
+}
+
+public class TipoSeccionEtDto
+{
+    public int IdTipoSeccion { get; set; }
+    public string Descripcion { get; set; } = string.Empty;
+}
+
+public class CrearSeccionEtRequest
+{
+    public string SeccionDescripcion { get; set; } = string.Empty;
+    public int IdTipoSeccion { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class CrearSeccionEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? SeccionId { get; set; }
+    public string? SeccionDescripcion { get; set; }
+    public int? IdTipoSeccion { get; set; }
+    public int? OrdenDefault { get; set; }
+    public bool? EsBase { get; set; }
+    public bool? PuedeEliminarse { get; set; }
+    public bool? PermiteReordenar { get; set; }
+}
