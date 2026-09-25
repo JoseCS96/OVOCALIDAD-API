@@ -18,4 +18,13 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
 
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _storedProcedure.ObtenerDetalleAsync(versionId);
+    public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
+        _storedProcedure.GuardarInformacionGeneralAsync(versionId, request);
+
+    public Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request) =>
+        _storedProcedure.GuardarCaracteristicaAsync(versionId, request);
+
+    public Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request) =>
+        _storedProcedure.EliminarCaracteristicaAsync(versionId, versCaractId, request);
+
 }
