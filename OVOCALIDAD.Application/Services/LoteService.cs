@@ -15,6 +15,9 @@ public class LoteService : ILoteService
     public Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro) =>
         _loteRepository.ListarLotesAsync(filtro);
 
+    public Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId) =>
+        _loteRepository.ObtenerDetalleAsync(loteId);
+
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _loteRepository.ObtenerCatalogosAsync();
 }
