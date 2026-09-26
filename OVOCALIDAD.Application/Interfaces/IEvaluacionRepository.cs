@@ -4,7 +4,8 @@ namespace OVOCALIDAD.Application.Interfaces;
 
 public interface IEvaluacionRepository
 {
-    Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, IniciarEvaluacionRequest request);
+    Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario);
+    Task<PanelEvaluadorDto> ObtenerPanelAsync(string usuario);
     Task<EvaluacionDto?> ObtenerAsync(int evaluacionId);
     Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request);
     Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request);
