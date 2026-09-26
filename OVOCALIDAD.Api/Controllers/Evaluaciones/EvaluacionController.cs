@@ -50,16 +50,20 @@ public class EvaluacionController : ControllerBase
         int evaluacionId,
         [FromBody] GuardarResultadoRequest request)
     {
-        var response = await _service.GuardarResultadoAsync(evaluacionId, request);
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        var response = await _service.GuardarResultadoAsync(evaluacionId, request, usuario);
         return Ok(response);
     }
 
     [HttpPost("{evaluacionId:int}/cerrar")]
-    public async Task<ActionResult<CerrarEvaluacionResponse>> Cerrar(
-        int evaluacionId,
-        [FromBody] CerrarEvaluacionRequest request)
+    public async Task<ActionResult<CerrarEvaluacionResponse>> Cerrar(int evaluacionId)
     {
-        var response = await _service.CerrarAsync(evaluacionId, request);
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        var response = await _service.CerrarAsync(evaluacionId, usuario);
         return Ok(response);
     }
 }
