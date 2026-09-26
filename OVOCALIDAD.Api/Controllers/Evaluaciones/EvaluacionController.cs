@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Evaluaciones;
 using OVOCALIDAD.Application.Interfaces;
@@ -5,6 +6,7 @@ using OVOCALIDAD.Application.Interfaces;
 namespace OVOCALIDAD.Api.Controllers.Evaluaciones;
 
 [ApiController]
+[Authorize]
 [Route("api/evaluaciones")]
 public class EvaluacionController : ControllerBase
 {
@@ -12,12 +14,27 @@ public class EvaluacionController : ControllerBase
 
     public EvaluacionController(IEvaluacionService service) => _service = service;
 
-    [HttpPost("{evaluacionId:int}/iniciar")]
-    public async Task<ActionResult<IniciarEvaluacionResponse>> Iniciar(
-        int evaluacionId,
-        [FromBody] IniciarEvaluacionRequest request)
+    [HttpGet("mi-panel")]
+    public async Task<ActionResult<PanelEvaluadorDto>> ObtenerMiPanel()
     {
-        var response = await _service.IniciarAsync(evaluacionId, request);
+        var usuario = User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(usuario))
+            return Unauthorized();
+
+        var response = await _service.ObtenerPanelAsync(usuario);
+        return Ok(response);
+    }
+
+    [HttpPost("{evaluacionId:int}/iniciar")]
+    public async Task<ActionResult<IniciarEvaluacionResponse>> Iniciar(int evaluacionId)
+    {
+        var usuario = User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(usuario))
+            return Unauthorized();
+
+        var response = await _service.IniciarAsync(evaluacionId, usuario);
         return Ok(response);
     }
 
