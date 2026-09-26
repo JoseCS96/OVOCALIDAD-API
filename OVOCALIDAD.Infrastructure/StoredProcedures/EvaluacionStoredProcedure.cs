@@ -93,7 +93,7 @@ public class EvaluacionStoredProcedure
         return new EvaluacionDto { Cabecera = cabecera, Detalle = detalle, Avance = avance };
     }
 
-    public async Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request)
+    public async Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request, string usuario)
     {
         var parametros = new List<SqlParameter>
         {
@@ -103,7 +103,7 @@ public class EvaluacionStoredProcedure
             new("@ResultadoNumerico", (object?)request.ResultadoNumerico ?? DBNull.Value),
             new("@Cumple", (object?)request.Cumple ?? DBNull.Value),
             new("@Observacion", (object?)request.Observacion ?? DBNull.Value),
-            new("@Usuario", request.Usuario)
+            new("@Usuario", usuario)
         };
 
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_RESULTADO, parametros);
@@ -114,12 +114,12 @@ public class EvaluacionStoredProcedure
         };
     }
 
-    public async Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request)
+    public async Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario)
     {
         var parametros = new List<SqlParameter>
         {
             new("@EvaluacionId", evaluacionId),
-            new("@Usuario", request.Usuario)
+            new("@Usuario", usuario)
         };
 
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CERRAR_EVALUACION, parametros);
