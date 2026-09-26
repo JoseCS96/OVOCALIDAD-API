@@ -10,8 +10,11 @@ public class EvaluacionRepository : IEvaluacionRepository
 
     public EvaluacionRepository(EvaluacionStoredProcedure storedProcedure) => _storedProcedure = storedProcedure;
 
-    public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, IniciarEvaluacionRequest request) =>
-        _storedProcedure.IniciarAsync(evaluacionId, request);
+    public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario) =>
+        _storedProcedure.IniciarAsync(evaluacionId, usuario);
+
+    public Task<PanelEvaluadorDto> ObtenerPanelAsync(string usuario) =>
+        _storedProcedure.ObtenerPanelAsync(usuario);
 
     public Task<EvaluacionDto?> ObtenerAsync(int evaluacionId) =>
         _storedProcedure.ObtenerAsync(evaluacionId);
