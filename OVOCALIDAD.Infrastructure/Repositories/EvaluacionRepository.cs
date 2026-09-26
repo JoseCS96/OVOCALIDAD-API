@@ -19,9 +19,9 @@ public class EvaluacionRepository : IEvaluacionRepository
     public Task<EvaluacionDto?> ObtenerAsync(int evaluacionId) =>
         _storedProcedure.ObtenerAsync(evaluacionId);
 
-    public Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request) =>
-        _storedProcedure.GuardarResultadoAsync(evaluacionId, request);
+    public Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request, string usuario) =>
+        _storedProcedure.GuardarResultadoAsync(evaluacionId, request, usuario);
 
-    public Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, CerrarEvaluacionRequest request) =>
-        _storedProcedure.CerrarAsync(evaluacionId, request);
+    public Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario) =>
+        _storedProcedure.CerrarAsync(evaluacionId, usuario);
 }
