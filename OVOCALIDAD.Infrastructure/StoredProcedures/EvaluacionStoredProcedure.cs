@@ -11,12 +11,12 @@ public class EvaluacionStoredProcedure
 
     public EvaluacionStoredProcedure(StoredProcedureExecutor executor) => _executor = executor;
 
-    public async Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, IniciarEvaluacionRequest request)
+    public async Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario)
     {
         var parametros = new List<SqlParameter>
         {
             new("@EvaluacionId", evaluacionId),
-            new("@Usuario", request.Usuario)
+            new("@Usuario", usuario)
         };
 
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_INICIAR_EVALUACION, parametros);
@@ -25,6 +25,39 @@ public class EvaluacionStoredProcedure
             CodigoResultado = -1,
             Mensaje = "El procedimiento no devolvió resultado."
         };
+    }
+
+    public async Task<PanelEvaluadorDto> ObtenerPanelAsync(string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioEvaluador", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_PANEL_EVALUADOR, parametros);
+
+        var panel = new PanelEvaluadorDto();
+
+        if (await reader.ReadAsync())
+            panel.Indicadores = reader.MapTo<PanelEvaluadorIndicadoresDto>();
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                panel.PendientesDisponibles.Add(reader.MapTo<PanelEvaluacionItemDto>());
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                panel.MisEvaluaciones.Add(reader.MapTo<PanelEvaluacionItemDto>());
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                panel.AtendidasHoy.Add(reader.MapTo<PanelEvaluacionItemDto>());
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                panel.ResumenEstados.Add(reader.MapTo<PanelEvaluadorResumenEstadoDto>());
+
+        return panel;
     }
 
     public async Task<EvaluacionDto?> ObtenerAsync(int evaluacionId)
