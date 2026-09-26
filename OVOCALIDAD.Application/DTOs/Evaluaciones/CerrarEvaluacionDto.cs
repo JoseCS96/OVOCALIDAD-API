@@ -1,10 +1,5 @@
 namespace OVOCALIDAD.Application.DTOs.Evaluaciones;
 
-public class CerrarEvaluacionRequest
-{
-    public string Usuario { get; set; } = string.Empty;
-}
-
 public class CerrarEvaluacionResponse
 {
     public int CodigoResultado { get; set; }
