@@ -114,6 +114,58 @@ public class EvaluacionStoredProcedure
         };
     }
 
+
+    public async Task<TerminarEvaluacionResponse> TerminarAsync(int evaluacionId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@EvaluacionId", evaluacionId),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_TERMINAR_EVALUACION, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<TerminarEvaluacionResponse>() : new TerminarEvaluacionResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<SolicitarReaperturaResponse> SolicitarReaperturaAsync(int evaluacionId, string motivo, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@EvaluacionId", evaluacionId),
+            new("@Motivo", motivo),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_SOLICITAR_REAPERTURA_EVALUACION, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<SolicitarReaperturaResponse>() : new SolicitarReaperturaResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
+    public async Task<ResolverReaperturaResponse> ResolverReaperturaAsync(int solicitudReaperturaId, ResolverReaperturaRequest request, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@SolicitudReaperturaId", solicitudReaperturaId),
+            new("@Aprobar", request.Aprobar),
+            new("@Observacion", (object?)request.Observacion ?? DBNull.Value),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_RESOLVER_REAPERTURA_EVALUACION, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<ResolverReaperturaResponse>() : new ResolverReaperturaResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario)
     {
         var parametros = new List<SqlParameter>
