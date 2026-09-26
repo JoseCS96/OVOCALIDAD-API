@@ -23,4 +23,13 @@ public class EvaluacionService : IEvaluacionService
 
     public Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario) =>
         _repository.CerrarAsync(evaluacionId, usuario);
+
+    public Task<TerminarEvaluacionResponse> TerminarAsync(int evaluacionId, string usuario) =>
+        _repository.TerminarAsync(evaluacionId, usuario);
+
+    public Task<SolicitarReaperturaResponse> SolicitarReaperturaAsync(int evaluacionId, string motivo, string usuario) =>
+        _repository.SolicitarReaperturaAsync(evaluacionId, motivo, usuario);
+
+    public Task<ResolverReaperturaResponse> ResolverReaperturaAsync(int solicitudReaperturaId, ResolverReaperturaRequest request, string usuario) =>
+        _repository.ResolverReaperturaAsync(solicitudReaperturaId, request, usuario);
 }
