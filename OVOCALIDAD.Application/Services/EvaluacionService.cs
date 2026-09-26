@@ -9,8 +9,11 @@ public class EvaluacionService : IEvaluacionService
 
     public EvaluacionService(IEvaluacionRepository repository) => _repository = repository;
 
-    public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, IniciarEvaluacionRequest request) =>
-        _repository.IniciarAsync(evaluacionId, request);
+    public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario) =>
+        _repository.IniciarAsync(evaluacionId, usuario);
+
+    public Task<PanelEvaluadorDto> ObtenerPanelAsync(string usuario) =>
+        _repository.ObtenerPanelAsync(usuario);
 
     public Task<EvaluacionDto?> ObtenerAsync(int evaluacionId) =>
         _repository.ObtenerAsync(evaluacionId);
