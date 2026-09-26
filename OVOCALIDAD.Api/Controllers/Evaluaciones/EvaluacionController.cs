@@ -26,6 +26,7 @@ public class EvaluacionController : ControllerBase
     {
         var usuario = User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.VER")) return Forbid();
 
         var response = await _service.ObtenerPanelAsync(usuario);
         return Ok(response);
@@ -36,6 +37,7 @@ public class EvaluacionController : ControllerBase
     {
         var usuario = User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.INICIAR")) return Forbid();
 
         var response = await _service.IniciarAsync(evaluacionId, usuario);
         return Ok(response);
@@ -44,6 +46,10 @@ public class EvaluacionController : ControllerBase
     [HttpGet("{evaluacionId:int}")]
     public async Task<ActionResult<EvaluacionDto>> Obtener(int evaluacionId)
     {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.VER")) return Forbid();
+
         var response = await _service.ObtenerAsync(evaluacionId);
         return response is null ? NotFound() : Ok(response);
     }
@@ -55,6 +61,7 @@ public class EvaluacionController : ControllerBase
     {
         var usuario = User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "RESULTADO.REGISTRAR")) return Forbid();
 
         var response = await _service.GuardarResultadoAsync(evaluacionId, request, usuario);
         return Ok(response);
@@ -108,6 +115,7 @@ public class EvaluacionController : ControllerBase
     {
         var usuario = User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.CERRAR")) return Forbid();
 
         var response = await _service.CerrarAsync(evaluacionId, usuario);
         return Ok(response);
