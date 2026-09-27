@@ -54,3 +54,64 @@ public class ResolverReaperturaResponse
     public int? ErrorLinea { get; set; }
     public string? ErrorProcedimiento { get; set; }
 }
+
+
+public class SolicitudReaperturaItemDto
+{
+    public int SolicitudReaperturaId { get; set; }
+    public int EvaluacionId { get; set; }
+    public int LoteId { get; set; }
+    public string CodigoLote { get; set; } = string.Empty;
+    public string ProductoCodigo { get; set; } = string.Empty;
+    public string? ProductoDescripcion { get; set; }
+    public int TipoEvaluacionId { get; set; }
+    public short Intento { get; set; }
+    public string? UsuarioEvaluador { get; set; }
+    public string MotivoSolicitud { get; set; } = string.Empty;
+    public string EstadoSolicitud { get; set; } = string.Empty;
+    public string UsuarioSolicitante { get; set; } = string.Empty;
+    public DateTime FechaSolicitud { get; set; }
+    public string? UsuarioRespuesta { get; set; }
+    public DateTime? FechaRespuesta { get; set; }
+    public string? ObservacionRespuesta { get; set; }
+    public bool LeidaPorMi { get; set; }
+    public int TotalLecturas { get; set; }
+    public string? EstadoLote { get; set; }
+    public string? EstadoEvaluacion { get; set; }
+}
+
+public class SolicitudReaperturaDetalleDto
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int SolicitudReaperturaId { get; set; }
+    public int EvaluacionId { get; set; }
+    public int LoteId { get; set; }
+    public string CodigoLote { get; set; } = string.Empty;
+    public string ProductoCodigo { get; set; } = string.Empty;
+    public string? ProductoDescripcion { get; set; }
+    public int TipoEvaluacionId { get; set; }
+    public short Intento { get; set; }
+    public string? UsuarioEvaluador { get; set; }
+    public string? EstadoEvaluacion { get; set; }
+    public string? EstadoLote { get; set; }
+    public DateTime? FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
+    public bool? ResultadoGeneral { get; set; }
+    public string MotivoSolicitud { get; set; } = string.Empty;
+    public string EstadoSolicitud { get; set; } = string.Empty;
+    public string UsuarioSolicitante { get; set; } = string.Empty;
+    public DateTime FechaSolicitud { get; set; }
+    public string? UsuarioRespuesta { get; set; }
+    public DateTime? FechaRespuesta { get; set; }
+    public string? ObservacionRespuesta { get; set; }
+    public List<SolicitudReaperturaLecturaDto> Lecturas { get; set; } = new();
+}
+
+public class SolicitudReaperturaLecturaDto
+{
+    public int SolicitudReaperturaLecturaId { get; set; }
+    public int SolicitudReaperturaId { get; set; }
+    public string UsuarioLectura { get; set; } = string.Empty;
+    public DateTime FechaLectura { get; set; }
+}
