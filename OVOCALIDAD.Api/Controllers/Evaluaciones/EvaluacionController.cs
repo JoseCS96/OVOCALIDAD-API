@@ -94,6 +94,43 @@ public class EvaluacionController : ControllerBase
         return Ok(response);
     }
 
+
+    [HttpGet("reaperturas")]
+    public async Task<ActionResult<List<SolicitudReaperturaItemDto>>> ListarReaperturas(
+        [FromQuery] string? estado = null)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.AUTORIZAR_REAPERTURA")) return Forbid();
+
+        if (!string.IsNullOrWhiteSpace(estado))
+        {
+            estado = estado.Trim().ToUpperInvariant();
+            if (estado is not ("PENDIENTE" or "APROBADA" or "RECHAZADA"))
+                return BadRequest(new { mensaje = "Estado de solicitud no válido." });
+        }
+
+        var response = await _service.ListarSolicitudesReaperturaAsync(usuario, estado);
+        return Ok(response);
+    }
+
+    [HttpGet("reaperturas/{solicitudReaperturaId:int}")]
+    public async Task<ActionResult<SolicitudReaperturaDetalleDto>> ObtenerReapertura(
+        int solicitudReaperturaId)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.AUTORIZAR_REAPERTURA")) return Forbid();
+
+        var response = await _service.ObtenerSolicitudReaperturaAsync(solicitudReaperturaId, usuario);
+        if (response is null) return NotFound();
+
+        if (response.CodigoResultado != 0)
+            return NotFound(response);
+
+        return Ok(response);
+    }
+
     [HttpPost("reaperturas/{solicitudReaperturaId:int}/resolver")]
     public async Task<ActionResult<ResolverReaperturaResponse>> ResolverReapertura(
         int solicitudReaperturaId,
