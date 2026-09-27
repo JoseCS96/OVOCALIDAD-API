@@ -32,4 +32,10 @@ public class EvaluacionService : IEvaluacionService
 
     public Task<ResolverReaperturaResponse> ResolverReaperturaAsync(int solicitudReaperturaId, ResolverReaperturaRequest request, string usuario) =>
         _repository.ResolverReaperturaAsync(solicitudReaperturaId, request, usuario);
+
+    public Task<List<SolicitudReaperturaItemDto>> ListarSolicitudesReaperturaAsync(string usuario, string? estadoSolicitud) =>
+        _repository.ListarSolicitudesReaperturaAsync(usuario, estadoSolicitud);
+
+    public Task<SolicitudReaperturaDetalleDto?> ObtenerSolicitudReaperturaAsync(int solicitudReaperturaId, string usuario) =>
+        _repository.ObtenerSolicitudReaperturaAsync(solicitudReaperturaId, usuario);
 }
