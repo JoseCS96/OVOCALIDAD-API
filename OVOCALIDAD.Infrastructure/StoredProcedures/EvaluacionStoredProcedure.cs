@@ -166,6 +166,46 @@ public class EvaluacionStoredProcedure
         };
     }
 
+
+    public async Task<List<SolicitudReaperturaItemDto>> ListarSolicitudesReaperturaAsync(string usuario, string? estadoSolicitud)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Usuario", usuario),
+            new("@EstadoSolicitud", (object?)estadoSolicitud ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_SOLICITUDES_REAPERTURA, parametros);
+        var items = new List<SolicitudReaperturaItemDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<SolicitudReaperturaItemDto>());
+
+        return items;
+    }
+
+    public async Task<SolicitudReaperturaDetalleDto?> ObtenerSolicitudReaperturaAsync(int solicitudReaperturaId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@SolicitudReaperturaId", solicitudReaperturaId),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_SOLICITUD_REAPERTURA, parametros);
+        if (!await reader.ReadAsync())
+            return null;
+
+        var detalle = reader.MapTo<SolicitudReaperturaDetalleDto>();
+        if (detalle.CodigoResultado != 0)
+            return detalle;
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                detalle.Lecturas.Add(reader.MapTo<SolicitudReaperturaLecturaDto>());
+
+        return detalle;
+    }
+
     public async Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario)
     {
         var parametros = new List<SqlParameter>
