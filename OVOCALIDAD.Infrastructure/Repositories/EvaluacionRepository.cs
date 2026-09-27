@@ -33,4 +33,10 @@ public class EvaluacionRepository : IEvaluacionRepository
 
     public Task<ResolverReaperturaResponse> ResolverReaperturaAsync(int solicitudReaperturaId, ResolverReaperturaRequest request, string usuario) =>
         _storedProcedure.ResolverReaperturaAsync(solicitudReaperturaId, request, usuario);
+
+    public Task<List<SolicitudReaperturaItemDto>> ListarSolicitudesReaperturaAsync(string usuario, string? estadoSolicitud) =>
+        _storedProcedure.ListarSolicitudesReaperturaAsync(usuario, estadoSolicitud);
+
+    public Task<SolicitudReaperturaDetalleDto?> ObtenerSolicitudReaperturaAsync(int solicitudReaperturaId, string usuario) =>
+        _storedProcedure.ObtenerSolicitudReaperturaAsync(solicitudReaperturaId, usuario);
 }
