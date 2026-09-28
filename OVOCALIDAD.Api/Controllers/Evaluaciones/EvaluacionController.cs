@@ -158,6 +158,43 @@ public class EvaluacionController : ControllerBase
         return Ok(response);
     }
 
+
+    [HttpGet("pendientes-calculo")]
+    public async Task<ActionResult<List<EvaluacionPendienteCalculoDto>>> ListarPendientesCalculo()
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.CONSOLIDAR")) return Forbid();
+
+        return Ok(await _service.ListarPendientesCalculoAsync());
+    }
+
+    [HttpPost("precalcular-disposicion")]
+    public async Task<ActionResult<PrecalculoEvaluacionesResponse>> PrecalcularDisposicion(
+        [FromBody] PrecalculoEvaluacionesRequest request)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.CONSOLIDAR")) return Forbid();
+        if (request.EvaluacionIds.Count == 0)
+            return BadRequest(new { mensaje = "Debe seleccionar al menos una evaluación." });
+
+        return Ok(await _service.PrecalcularAsync(request.EvaluacionIds));
+    }
+
+    [HttpPost("consolidar")]
+    public async Task<ActionResult<List<ConsolidacionEvaluacionResultadoDto>>> Consolidar(
+        [FromBody] ConsolidarEvaluacionesRequest request)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.CONSOLIDAR")) return Forbid();
+        if (request.EvaluacionIds.Count == 0)
+            return BadRequest(new { mensaje = "Debe seleccionar al menos una evaluación." });
+
+        return Ok(await _service.ConsolidarAsync(request.EvaluacionIds, usuario, request.Observacion));
+    }
+
     private async Task<bool> TienePermisoAsync(string usuario, string permiso)
     {
         var accesos = await _seguridadService.ObtenerAccesosUsuarioAsync(usuario);
