@@ -16,7 +16,8 @@ public class LoteStoredProcedure
     }
 
     public async Task<GenerarLoteResponse> GenerarLoteAsync(
-        GenerarLoteRequest request)
+        GenerarLoteRequest request,
+        string usuario)
     {
         var parametros = new List<SqlParameter>
         {
@@ -25,7 +26,7 @@ public class LoteStoredProcedure
             new("@FaseId", request.FaseId),
             new("@LineaOrigenId", request.LineaOrigenId),
             new("@Observacion", (object?)request.Observacion ?? DBNull.Value),
-            new("@Usuario", request.Usuario)
+            new("@Usuario", usuario)
         };
 
         using var reader = await _executor.ExecuteReaderAsync(
