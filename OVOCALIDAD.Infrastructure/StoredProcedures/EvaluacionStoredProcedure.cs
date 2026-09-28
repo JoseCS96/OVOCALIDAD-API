@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using System.Data;
 using OVOCALIDAD.Application.DTOs.Evaluaciones;
 using OVOCALIDAD.Infrastructure.Mappers;
 using SPNames = OVOCALIDAD.Shared.Constants.StoredProcedures;
@@ -221,4 +222,63 @@ public class EvaluacionStoredProcedure
             Mensaje = "El procedimiento no devolvió resultado."
         };
     }
+
+    private static SqlParameter CrearEvaluacionesParameter(IReadOnlyCollection<int> evaluacionIds)
+    {
+        var table = new DataTable();
+        table.Columns.Add("EvaluacionId", typeof(int));
+        foreach (var id in evaluacionIds.Distinct())
+            table.Rows.Add(id);
+
+        return new SqlParameter("@Evaluaciones", SqlDbType.Structured)
+        {
+            TypeName = "dbo.TT_EVALUACION_ID",
+            Value = table
+        };
+    }
+
+    public async Task<List<EvaluacionPendienteCalculoDto>> ListarPendientesCalculoAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_EVALUACIONES_PENDIENTES_CALCULO);
+        var items = new List<EvaluacionPendienteCalculoDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<EvaluacionPendienteCalculoDto>());
+        return items;
+    }
+
+    public async Task<PrecalculoEvaluacionesResponse> PrecalcularAsync(IReadOnlyCollection<int> evaluacionIds)
+    {
+        var parametros = new List<SqlParameter> { CrearEvaluacionesParameter(evaluacionIds) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_PRECALCULAR_DISPOSICION_EVALUACIONES, parametros);
+
+        var response = new PrecalculoEvaluacionesResponse();
+        while (await reader.ReadAsync())
+            response.Evaluaciones.Add(reader.MapTo<PrecalculoEvaluacionDto>());
+
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                response.Detalle.Add(reader.MapTo<PrecalculoDetalleDto>());
+
+        return response;
+    }
+
+    public async Task<List<ConsolidacionEvaluacionResultadoDto>> ConsolidarAsync(
+        IReadOnlyCollection<int> evaluacionIds,
+        string usuario,
+        string? observacion)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            CrearEvaluacionesParameter(evaluacionIds),
+            new("@Usuario", usuario),
+            new("@Observacion", (object?)observacion ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CONSOLIDAR_EVALUACIONES, parametros);
+        var items = new List<ConsolidacionEvaluacionResultadoDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<ConsolidacionEvaluacionResultadoDto>());
+        return items;
+    }
+
 }
