@@ -40,6 +40,8 @@ public class InformacionGeneralEtDto
     public int? VersionNroPaginas { get; set; }
     public DateTime? VersionFechaFirmado { get; set; }
     public string? VersionDescripcion { get; set; }
+    public string? ArchivoOriginalNombre { get; set; }
+    public string? ArchivoOriginalRuta { get; set; }
     public int? EnvyEmbId { get; set; }
     public string? EnvyEmbDescripcion { get; set; }
     public int? AlmacyDistId { get; set; }
