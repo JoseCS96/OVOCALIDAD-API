@@ -1,0 +1,84 @@
+namespace OVOCALIDAD.Application.DTOs.Lotes;
+
+public class DetalleLoteDto
+{
+    public LoteDetalleCabeceraDto? Lote { get; set; }
+    public IReadOnlyList<LoteEvaluacionDto> Evaluaciones { get; set; } = [];
+    public LoteEvaluacionesResumenDto Resumen { get; set; } = new();
+}
+
+public class LoteDetalleCabeceraDto
+{
+    public int LoteId { get; set; }
+    public string CodigoLote { get; set; } = string.Empty;
+    public string ProductoCodigo { get; set; } = string.Empty;
+    public string ProductoDescripcion { get; set; } = string.Empty;
+    public int Correlativo { get; set; }
+    public DateTime FechaHoraProduccion { get; set; }
+    public int NumeroCorrelativoId { get; set; }
+    public int NaturalezaId { get; set; }
+    public string NaturalezaCodigo { get; set; } = string.Empty;
+    public string NaturalezaDescripcion { get; set; } = string.Empty;
+    public int FaseId { get; set; }
+    public string FaseCodigo { get; set; } = string.Empty;
+    public string FaseDescripcion { get; set; } = string.Empty;
+    public int LineaOrigenId { get; set; }
+    public string LineaOrigenCodigo { get; set; } = string.Empty;
+    public string LineaOrigenDescripcion { get; set; } = string.Empty;
+    public int VersionId { get; set; }
+    public decimal VersionNumero { get; set; }
+    public DateTime VersionInicioVigencia { get; set; }
+    public DateTime? VersionFinVigencia { get; set; }
+    public int EstadoLoteId { get; set; }
+    public string EstadoLoteCodigo { get; set; } = string.Empty;
+    public string EstadoLoteDescripcion { get; set; } = string.Empty;
+    public int TotalEvaluaciones { get; set; }
+    public int EvaluacionesTerminadas { get; set; }
+    public int TotalParametrosEvaluacion { get; set; }
+    public int ResultadosRegistrados { get; set; }
+    public int ParametrosPendientes { get; set; }
+    public decimal PorcentajeAvance { get; set; }
+    public decimal PorcentajeFaltante { get; set; }
+    public string? Observacion { get; set; }
+    public string Estado { get; set; } = string.Empty;
+    public DateTime AudFechaCreacion { get; set; }
+    public DateTime? AudFechaActualizacion { get; set; }
+}
+
+public class LoteEvaluacionDto
+{
+    public int EvaluacionId { get; set; }
+    public int LoteId { get; set; }
+    public int? EvaluacionPadreId { get; set; }
+    public int TipoEvaluacionId { get; set; }
+    public string TipoEvaluacionCodigo { get; set; } = string.Empty;
+    public string TipoEvaluacionDescripcion { get; set; } = string.Empty;
+    public int EstadoEvaluacionId { get; set; }
+    public string EstadoEvaluacionCodigo { get; set; } = string.Empty;
+    public string EstadoEvaluacionDescripcion { get; set; } = string.Empty;
+    public short Intento { get; set; }
+    public bool? ResultadoGeneral { get; set; }
+    public string ResultadoDescripcion { get; set; } = string.Empty;
+    public DateTime FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
+    public string? MotivoReevaluacion { get; set; }
+    public string? Observacion { get; set; }
+    public string? UsuarioEvaluador { get; set; }
+    public int ResultadosRegistrados { get; set; }
+    public int TotalParametros { get; set; }
+    public int ParametrosPendientes { get; set; }
+    public decimal PorcentajeAvance { get; set; }
+    public string Estado { get; set; } = string.Empty;
+    public DateTime AudFechaCreacion { get; set; }
+    public DateTime? AudFechaActualizacion { get; set; }
+}
+
+public class LoteEvaluacionesResumenDto
+{
+    public int TotalEvaluaciones { get; set; }
+    public int EvaluacionesPendientes { get; set; }
+    public int EvaluacionesEnProceso { get; set; }
+    public int EvaluacionesTerminadas { get; set; }
+    public int EvaluacionesConformes { get; set; }
+    public int EvaluacionesNoConformes { get; set; }
+}

@@ -16,7 +16,8 @@ public class LoteStoredProcedure
     }
 
     public async Task<GenerarLoteResponse> GenerarLoteAsync(
-        GenerarLoteRequest request)
+        GenerarLoteRequest request,
+        string usuario)
     {
         var parametros = new List<SqlParameter>
         {
@@ -25,7 +26,7 @@ public class LoteStoredProcedure
             new("@FaseId", request.FaseId),
             new("@LineaOrigenId", request.LineaOrigenId),
             new("@Observacion", (object?)request.Observacion ?? DBNull.Value),
-            new("@Usuario", request.Usuario)
+            new("@Usuario", usuario)
         };
 
         using var reader = await _executor.ExecuteReaderAsync(
@@ -75,6 +76,26 @@ public class LoteStoredProcedure
         }
 
         return lotes;
+    }
+
+    public async Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId)
+    {
+        var parametros = new List<SqlParameter> { new("@LoteId", loteId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_DETALLE_LOTE, parametros);
+
+        if (!await reader.ReadAsync()) return null;
+        var lote = reader.MapTo<LoteDetalleCabeceraDto>();
+
+        var evaluaciones = new List<LoteEvaluacionDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                evaluaciones.Add(reader.MapTo<LoteEvaluacionDto>());
+
+        var resumen = new LoteEvaluacionesResumenDto();
+        if (await reader.NextResultAsync() && await reader.ReadAsync())
+            resumen = reader.MapTo<LoteEvaluacionesResumenDto>();
+
+        return new DetalleLoteDto { Lote = lote, Evaluaciones = evaluaciones, Resumen = resumen };
     }
 
     public async Task<CatalogosLoteDto> ObtenerCatalogosAsync()

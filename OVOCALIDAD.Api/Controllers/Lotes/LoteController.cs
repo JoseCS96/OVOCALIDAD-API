@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Application.Interfaces;
@@ -5,6 +6,7 @@ using OVOCALIDAD.Application.Interfaces;
 namespace OVOCALIDAD.Api.Controllers.Lotes;
 
 [ApiController]
+[Authorize]
 [Route("api/lotes")]
 public class LoteController : ControllerBase
 {
@@ -25,6 +27,15 @@ public class LoteController : ControllerBase
         return Ok(lotes);
     }
 
+    [HttpGet("{loteId:int}")]
+    [ProducesResponseType(typeof(DetalleLoteDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<DetalleLoteDto>> ObtenerDetalle(int loteId)
+    {
+        var detalle = await _loteService.ObtenerDetalleAsync(loteId);
+        return detalle is null ? NotFound() : Ok(detalle);
+    }
+
     [HttpGet("catalogos")]
     [ProducesResponseType(typeof(CatalogosLoteDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<CatalogosLoteDto>> Catalogos()
@@ -37,7 +48,10 @@ public class LoteController : ControllerBase
     public async Task<ActionResult<GenerarLoteResponse>> Generar(
         [FromBody] GenerarLoteRequest request)
     {
-        var response = await _loteService.GenerarLoteAsync(request);
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        var response = await _loteService.GenerarLoteAsync(request, usuario);
 
         return Ok(response);
     }

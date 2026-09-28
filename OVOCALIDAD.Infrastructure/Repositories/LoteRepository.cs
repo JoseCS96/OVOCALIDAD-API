@@ -10,11 +10,14 @@ public class LoteRepository : ILoteRepository
 
     public LoteRepository(LoteStoredProcedure storedProcedure) => _storedProcedure = storedProcedure;
 
-    public Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request) =>
-        _storedProcedure.GenerarLoteAsync(request);
+    public Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request, string usuario) =>
+        _storedProcedure.GenerarLoteAsync(request, usuario);
 
     public Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro) =>
         _storedProcedure.ListarLotesAsync(filtro);
+
+    public Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId) =>
+        _storedProcedure.ObtenerDetalleAsync(loteId);
 
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
