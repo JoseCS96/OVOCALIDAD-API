@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Lotes;
 using OVOCALIDAD.Application.Interfaces;
@@ -5,6 +6,7 @@ using OVOCALIDAD.Application.Interfaces;
 namespace OVOCALIDAD.Api.Controllers.Lotes;
 
 [ApiController]
+[Authorize]
 [Route("api/lotes")]
 public class LoteController : ControllerBase
 {
@@ -46,7 +48,10 @@ public class LoteController : ControllerBase
     public async Task<ActionResult<GenerarLoteResponse>> Generar(
         [FromBody] GenerarLoteRequest request)
     {
-        var response = await _loteService.GenerarLoteAsync(request);
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        var response = await _loteService.GenerarLoteAsync(request, usuario);
 
         return Ok(response);
     }
