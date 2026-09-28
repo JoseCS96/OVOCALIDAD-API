@@ -136,8 +136,14 @@ public class EspecificacionTecnicaController : ControllerBase
             ? Path.GetFileName(rutaCompleta)
             : archivo.ArchivoOriginalNombre;
 
-        Response.Headers.ContentDisposition = $"inline; filename=\"{nombreArchivo.Replace("\"", string.Empty)}\"";
-        return PhysicalFile(rutaCompleta, "application/pdf");
+        var nombreSeguro = nombreArchivo.Replace("\"", string.Empty);
+        Response.Headers.ContentDisposition = $"inline; filename=\"{nombreSeguro}\"";
+        Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+        return new PhysicalFileResult(rutaCompleta, "application/pdf")
+        {
+            EnableRangeProcessing = true
+        };
     }
 
     [HttpPut("{versionId:int}/informacion-general")]
