@@ -9,8 +9,8 @@ public class LoteService : ILoteService
 
     public LoteService(ILoteRepository loteRepository) => _loteRepository = loteRepository;
 
-    public Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request) =>
-        _loteRepository.GenerarLoteAsync(request);
+    public Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request, string usuario) =>
+        _loteRepository.GenerarLoteAsync(request, usuario);
 
     public Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro) =>
         _loteRepository.ListarLotesAsync(filtro);
