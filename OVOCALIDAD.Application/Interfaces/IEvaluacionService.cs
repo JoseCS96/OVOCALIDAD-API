@@ -14,4 +14,7 @@ public interface IEvaluacionService
     Task<ResolverReaperturaResponse> ResolverReaperturaAsync(int solicitudReaperturaId, ResolverReaperturaRequest request, string usuario);
     Task<List<SolicitudReaperturaItemDto>> ListarSolicitudesReaperturaAsync(string usuario, string? estadoSolicitud);
     Task<SolicitudReaperturaDetalleDto?> ObtenerSolicitudReaperturaAsync(int solicitudReaperturaId, string usuario);
+    Task<List<EvaluacionPendienteCalculoDto>> ListarPendientesCalculoAsync();
+    Task<PrecalculoEvaluacionesResponse> PrecalcularAsync(IReadOnlyCollection<int> evaluacionIds);
+    Task<List<ConsolidacionEvaluacionResultadoDto>> ConsolidarAsync(IReadOnlyCollection<int> evaluacionIds, string usuario, string? observacion);
 }
