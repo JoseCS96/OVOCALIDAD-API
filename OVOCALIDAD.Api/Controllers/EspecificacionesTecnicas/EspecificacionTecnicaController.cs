@@ -9,10 +9,17 @@ namespace OVOCALIDAD.Api.Controllers.EspecificacionesTecnicas;
 public class EspecificacionTecnicaController : ControllerBase
 {
     private readonly IEspecificacionTecnicaService _service;
+    private readonly IWebHostEnvironment _environment;
+    private readonly IConfiguration _configuration;
 
-    public EspecificacionTecnicaController(IEspecificacionTecnicaService service)
+    public EspecificacionTecnicaController(
+        IEspecificacionTecnicaService service,
+        IWebHostEnvironment environment,
+        IConfiguration configuration)
     {
         _service = service;
+        _environment = environment;
+        _configuration = configuration;
     }
 
     [HttpPost]
@@ -90,6 +97,47 @@ public class EspecificacionTecnicaController : ControllerBase
     {
         var detalle = await _service.ObtenerDetalleAsync(versionId);
         return detalle is null ? NotFound() : Ok(detalle);
+    }
+
+    [HttpGet("{versionId:int}/pdf")]
+    [Produces("application/pdf")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObtenerPdf(int versionId)
+    {
+        var detalle = await _service.ObtenerDetalleAsync(versionId);
+        if (detalle is null)
+            return NotFound();
+
+        var archivo = detalle.InformacionGeneral;
+        if (string.IsNullOrWhiteSpace(archivo.ArchivoOriginalRuta))
+            return NotFound(new { mensaje = "La versión no tiene un PDF original vinculado." });
+
+        var rootConfigurado = _configuration["DocumentStorage:RootPath"];
+        var rootPath = string.IsNullOrWhiteSpace(rootConfigurado)
+            ? Path.Combine(_environment.ContentRootPath, "Documentos")
+            : Path.GetFullPath(rootConfigurado);
+
+        var rutaRelativa = archivo.ArchivoOriginalRuta
+            .Replace('/', Path.DirectorySeparatorChar)
+            .TrimStart(Path.DirectorySeparatorChar);
+
+        var rutaCompleta = Path.GetFullPath(Path.Combine(rootPath, rutaRelativa));
+        var rootCompleto = Path.GetFullPath(rootPath).TrimEnd(Path.DirectorySeparatorChar)
+            + Path.DirectorySeparatorChar;
+
+        if (!rutaCompleta.StartsWith(rootCompleto, StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { mensaje = "La ruta del documento no es válida." });
+
+        if (!System.IO.File.Exists(rutaCompleta))
+            return NotFound(new { mensaje = "El PDF original no se encuentra en el almacenamiento documental." });
+
+        var nombreArchivo = string.IsNullOrWhiteSpace(archivo.ArchivoOriginalNombre)
+            ? Path.GetFileName(rutaCompleta)
+            : archivo.ArchivoOriginalNombre;
+
+        Response.Headers.ContentDisposition = $"inline; filename=\"{nombreArchivo.Replace("\"", string.Empty)}\"";
+        return PhysicalFile(rutaCompleta, "application/pdf");
     }
 
     [HttpPut("{versionId:int}/informacion-general")]
