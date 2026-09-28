@@ -1,4 +1,4 @@
-﻿namespace OVOCALIDAD.Application.DTOs.Lotes;
+namespace OVOCALIDAD.Application.DTOs.Lotes;
 
 public class GenerarLoteRequest
 {
@@ -11,6 +11,4 @@ public class GenerarLoteRequest
     public int LineaOrigenId { get; set; }
 
     public string? Observacion { get; set; }
-
-    public string Usuario { get; set; } = string.Empty;
 }
