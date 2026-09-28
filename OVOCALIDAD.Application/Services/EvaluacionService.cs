@@ -38,4 +38,13 @@ public class EvaluacionService : IEvaluacionService
 
     public Task<SolicitudReaperturaDetalleDto?> ObtenerSolicitudReaperturaAsync(int solicitudReaperturaId, string usuario) =>
         _repository.ObtenerSolicitudReaperturaAsync(solicitudReaperturaId, usuario);
+
+    public Task<List<EvaluacionPendienteCalculoDto>> ListarPendientesCalculoAsync() =>
+        _repository.ListarPendientesCalculoAsync();
+
+    public Task<PrecalculoEvaluacionesResponse> PrecalcularAsync(IReadOnlyCollection<int> evaluacionIds) =>
+        _repository.PrecalcularAsync(evaluacionIds);
+
+    public Task<List<ConsolidacionEvaluacionResultadoDto>> ConsolidarAsync(IReadOnlyCollection<int> evaluacionIds, string usuario, string? observacion) =>
+        _repository.ConsolidarAsync(evaluacionIds, usuario, observacion);
 }
