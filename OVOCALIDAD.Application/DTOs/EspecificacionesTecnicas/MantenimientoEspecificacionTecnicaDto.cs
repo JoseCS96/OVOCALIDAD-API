@@ -39,6 +39,32 @@ public class GuardarContenidoBaseEtResponse
     public string? TipoContenido { get; set; }
 }
 
+public class ResponsableEtCatalogoDto
+{
+    public string UsuarioDni { get; set; } = string.Empty;
+    public string UsuarioNombresApellidos { get; set; } = string.Empty;
+    public int CargoId { get; set; }
+    public string CargoDescripcion { get; set; } = string.Empty;
+}
+
+public class GuardarResponsablesEtRequest
+{
+    public IReadOnlyList<string> ElaboradoPor { get; set; } = [];
+    public IReadOnlyList<string> RevisadoPor { get; set; } = [];
+    public IReadOnlyList<string> AprobadoPor { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarResponsablesEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadElaboradores { get; set; }
+    public int? CantidadRevisores { get; set; }
+    public int? CantidadAprobadores { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
