@@ -108,6 +108,27 @@ public class GuardarIngredientesEtResponse
     public int? CantidadIngredientes { get; set; }
 }
 
+public class GuardarRecetaEtItemRequest
+{
+    public string Descripcion { get; set; } = string.Empty;
+    public int? IdTipoContenido { get; set; }
+    public int Orden { get; set; }
+}
+
+public class GuardarRecetasEtRequest
+{
+    public IReadOnlyList<GuardarRecetaEtItemRequest> Recetas { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarRecetasEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadRecetas { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
