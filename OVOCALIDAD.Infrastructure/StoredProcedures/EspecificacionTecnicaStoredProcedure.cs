@@ -434,6 +434,31 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<GuardarProcedimientosEtResponse> GuardarProcedimientosAsync(int versionId, GuardarProcedimientosEtRequest request)
+    {
+        var payload = new
+        {
+            procedimientos = request.Procedimientos.Select(x => new
+            {
+                descripcion = x.Descripcion,
+                idTipoContenido = x.IdTipoContenido,
+                orden = x.Orden
+            })
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@ProcedimientosJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_PROCEDIMIENTOS_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarProcedimientosEtResponse>() : new GuardarProcedimientosEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
