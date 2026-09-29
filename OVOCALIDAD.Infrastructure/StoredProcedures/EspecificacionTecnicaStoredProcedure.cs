@@ -340,6 +340,36 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<IReadOnlyList<ResponsableEtCatalogoDto>> ObtenerResponsablesAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_RESPONSABLES_ET);
+        var items = new List<ResponsableEtCatalogoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<ResponsableEtCatalogoDto>());
+        return items;
+    }
+
+    public async Task<GuardarResponsablesEtResponse> GuardarResponsablesAsync(int versionId, GuardarResponsablesEtRequest request)
+    {
+        var payload = new
+        {
+            elaboradoPor = request.ElaboradoPor,
+            revisadoPor = request.RevisadoPor,
+            aprobadoPor = request.AprobadoPor
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@ResponsablesJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_RESPONSABLES_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarResponsablesEtResponse>() : new GuardarResponsablesEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
