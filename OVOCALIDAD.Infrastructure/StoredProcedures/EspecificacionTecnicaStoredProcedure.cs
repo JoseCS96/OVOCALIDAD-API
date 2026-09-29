@@ -376,11 +376,36 @@ public class EspecificacionTecnicaStoredProcedure
         };
 
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_VERSION_ET, parametros);
-        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoVersionEtResponse>() : new CambiarEstadoVersionEtResponse
+        var response = await reader.ReadAsync() ? reader.MapTo<CambiarEstadoVersionEtResponse>() : new CambiarEstadoVersionEtResponse
         {
             CodigoResultado = -1,
             Mensaje = "El procedimiento no devolvió resultado."
         };
+
+        if (response.CodigoResultado == 0 &&
+            string.Equals(request.Accion, "OBSERVAR", StringComparison.OrdinalIgnoreCase))
+        {
+            var parametrosNotificacion = new List<SqlParameter>
+            {
+                new("@VersionId", versionId),
+                new("@Usuario", request.Usuario)
+            };
+
+            using var notificacionReader = await _executor.ExecuteReaderAsync(
+                SPNames.SP_GENERAR_NOTIFICACION_ET_OBSERVADA,
+                parametrosNotificacion);
+
+            if (await notificacionReader.ReadAsync())
+            {
+                var codigoNotificacion = notificacionReader.GetInt32(
+                    notificacionReader.GetOrdinal("CodigoResultado"));
+
+                if (codigoNotificacion != 0)
+                    throw new InvalidOperationException("No se pudo generar la notificación de ET observada.");
+            }
+        }
+
+        return response;
     }
 
 
