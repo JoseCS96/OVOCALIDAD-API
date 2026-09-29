@@ -459,6 +459,53 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<CatalogosTratamientosEtDto> ObtenerCatalogosTratamientosAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CATALOGOS_TRATAMIENTOS_ET);
+        var tratamientos = new List<TratamientoEtCatalogoDto>();
+        while (await reader.ReadAsync()) tratamientos.Add(reader.MapTo<TratamientoEtCatalogoDto>());
+        var parametros = new List<ParametroTratamientoEtCatalogoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync()) parametros.Add(reader.MapTo<ParametroTratamientoEtCatalogoDto>());
+        var criterios = new List<TipoCriterioTratamientoEtCatalogoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync()) criterios.Add(reader.MapTo<TipoCriterioTratamientoEtCatalogoDto>());
+        return new CatalogosTratamientosEtDto { Tratamientos = tratamientos, Parametros = parametros, TiposCriterio = criterios };
+    }
+
+    public async Task<GuardarTratamientosEtResponse> GuardarTratamientosAsync(int versionId, GuardarTratamientosEtRequest request)
+    {
+        var payload = new
+        {
+            tratamientos = request.Tratamientos.Select(t => new
+            {
+                tratConservId = t.TratConservId,
+                parametros = t.Parametros.Select(p => new
+                {
+                    parametroTratId = p.ParametroTratId,
+                    tipoCriterioId = p.TipoCriterioId,
+                    valorCuantitativoInicial = p.ValorCuantitativoInicial,
+                    valorCuantitativoFinal = p.ValorCuantitativoFinal,
+                    valorCuantitativoIgual = p.ValorCuantitativoIgual,
+                    valorCualitativo = p.ValorCualitativo,
+                    orden = p.Orden
+                })
+            })
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@TratamientosJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_TRATAMIENTOS_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarTratamientosEtResponse>() : new GuardarTratamientosEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
