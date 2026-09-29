@@ -219,6 +219,29 @@ public class GuardarInstruccionesEtResponse
     public int? CantidadInstrucciones { get; set; }
 }
 
+public class ContenidoRotuladoCatalogoDto
+{
+    public int ContRotuladoId { get; set; }
+    public string ContRotuladoDescripcion { get; set; } = string.Empty;
+}
+public class GuardarContenidoRotuladoItemRequest
+{
+    public int ContRotuladoId { get; set; }
+    public int Orden { get; set; }
+}
+public class GuardarContenidoRotuladoEtRequest
+{
+    public IReadOnlyList<GuardarContenidoRotuladoItemRequest> ContenidoRotulado { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+public class GuardarContenidoRotuladoEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadContenidoRotulado { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
