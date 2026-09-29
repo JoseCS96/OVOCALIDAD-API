@@ -370,6 +370,45 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<CatalogosIngredientesEtDto> ObtenerCatalogosIngredientesAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CATALOGOS_INGREDIENTES_ET);
+        var ingredientes = new List<IngredienteEtCatalogoDto>();
+        while (await reader.ReadAsync()) ingredientes.Add(reader.MapTo<IngredienteEtCatalogoDto>());
+
+        var tiposContenido = new List<TipoContenidoEtCatalogoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync()) tiposContenido.Add(reader.MapTo<TipoContenidoEtCatalogoDto>());
+
+        return new CatalogosIngredientesEtDto { Ingredientes = ingredientes, TiposContenido = tiposContenido };
+    }
+
+    public async Task<GuardarIngredientesEtResponse> GuardarIngredientesAsync(int versionId, GuardarIngredientesEtRequest request)
+    {
+        var payload = new
+        {
+            ingredientes = request.Ingredientes.Select(x => new
+            {
+                ingredienteId = x.IngredienteId,
+                valor = x.Valor,
+                idTipoContenido = x.IdTipoContenido,
+                orden = x.Orden
+            })
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@IngredientesJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_INGREDIENTES_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarIngredientesEtResponse>() : new GuardarIngredientesEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
