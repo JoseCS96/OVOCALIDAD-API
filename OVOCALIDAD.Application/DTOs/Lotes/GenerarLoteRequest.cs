@@ -2,7 +2,7 @@ namespace OVOCALIDAD.Application.DTOs.Lotes;
 
 public class GenerarLoteRequest
 {
-    public string ProductoCodigo { get; set; } = string.Empty;
+    public string CodigoGenesis { get; set; } = string.Empty;
 
     public int NaturalezaId { get; set; }
 
