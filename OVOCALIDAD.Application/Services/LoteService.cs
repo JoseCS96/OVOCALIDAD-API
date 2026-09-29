@@ -20,4 +20,7 @@ public class LoteService : ILoteService
 
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _loteRepository.ObtenerCatalogosAsync();
+
+    public Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda) =>
+        _loteRepository.BuscarProductosGenesisAsync(busqueda);
 }
