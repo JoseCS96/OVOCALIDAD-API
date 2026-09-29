@@ -558,6 +558,23 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<GuardarAnexosEtResponse> GuardarAnexosAsync(int versionId, GuardarAnexosEtRequest request)
+    {
+        var payload = new { anexos = request.Anexos.Select(x => new { descripcion = x.Descripcion }) };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@AnexosJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_ANEXOS_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarAnexosEtResponse>() : new GuardarAnexosEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCambiosEtResponse> GuardarCambiosAsync(int versionId, GuardarCambiosEtRequest request)
     {
         var payload = new
