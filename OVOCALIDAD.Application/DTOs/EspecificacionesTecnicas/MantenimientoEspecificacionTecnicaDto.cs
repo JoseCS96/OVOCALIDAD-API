@@ -41,17 +41,21 @@ public class GuardarContenidoBaseEtResponse
 
 public class ResponsableEtCatalogoDto
 {
+    public int UsuarioCargoHistorialId { get; set; }
     public string UsuarioDni { get; set; } = string.Empty;
     public string UsuarioNombresApellidos { get; set; } = string.Empty;
     public int CargoId { get; set; }
     public string CargoDescripcion { get; set; } = string.Empty;
+    public bool CargoActual { get; set; }
+    public DateTime? FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
 }
 
 public class GuardarResponsablesEtRequest
 {
-    public IReadOnlyList<string> ElaboradoPor { get; set; } = [];
-    public IReadOnlyList<string> RevisadoPor { get; set; } = [];
-    public IReadOnlyList<string> AprobadoPor { get; set; } = [];
+    public IReadOnlyList<int> ElaboradoPor { get; set; } = [];
+    public IReadOnlyList<int> RevisadoPor { get; set; } = [];
+    public IReadOnlyList<int> AprobadoPor { get; set; } = [];
     public string Usuario { get; set; } = string.Empty;
 }
 
