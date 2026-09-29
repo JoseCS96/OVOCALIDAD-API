@@ -201,6 +201,24 @@ public class GuardarTratamientosEtResponse
     public int? CantidadParametros { get; set; }
 }
 
+public class GuardarInstruccionEtItemRequest
+{
+    public string Descripcion { get; set; } = string.Empty;
+    public int Orden { get; set; }
+}
+public class GuardarInstruccionesEtRequest
+{
+    public IReadOnlyList<GuardarInstruccionEtItemRequest> Instrucciones { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+public class GuardarInstruccionesEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadInstrucciones { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
