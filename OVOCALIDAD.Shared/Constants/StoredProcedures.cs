@@ -5,6 +5,7 @@ public static class StoredProcedures
     public const string SP_OBTENER_VERSION_VIGENTE = "SP_OBTENER_VERSION_VIGENTE";
     public const string SP_OBTENER_SIGUIENTE_CORRELATIVO = "SP_OBTENER_SIGUIENTE_CORRELATIVO";
     public const string SP_GENERAR_LOTE_GENESIS = "SP_GENERAR_LOTE_GENESIS";
+    public const string SP_BUSCAR_PRODUCTOS_GENESIS = "SP_BUSCAR_PRODUCTOS_GENESIS";
     public const string SP_LISTAR_LOTES = "SP_LISTAR_LOTES";
     public const string SP_OBTENER_CATALOGOS_LOTE = "SP_OBTENER_CATALOGOS_LOTE";
     public const string SP_OBTENER_DETALLE_LOTE = "SP_OBTENER_DETALLE_LOTE";
