@@ -409,6 +409,29 @@ public class EspecificacionTecnicaStoredProcedure
     }
 
 
+    public async Task<OperacionEstructuraEtResponse> ResetearAsync(int versionId, QuitarSeccionVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_RESETEAR_ESPECIFICACION_TECNICA, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<OperacionEstructuraEtResponse>() : new OperacionEstructuraEtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<OperacionEstructuraEtResponse> EliminarBorradorAsync(int versionId, QuitarSeccionVersionEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_ESPECIFICACION_TECNICA_BORRADOR, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<OperacionEstructuraEtResponse>() : new OperacionEstructuraEtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+
     public async Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro)
     {
         var parametros = new List<SqlParameter>
