@@ -43,14 +43,9 @@ public class EspecificacionTecnicaStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(
             SPNames.SP_OBTENER_CATALOGOS_ET);
 
-        var productos = new List<ProductoEtCatalogoDto>();
-        while (await reader.ReadAsync())
-            productos.Add(reader.MapTo<ProductoEtCatalogoDto>());
-
         var tiposCaracteristica = new List<TipoCaracteristicaEtCatalogoDto>();
-        if (await reader.NextResultAsync())
-            while (await reader.ReadAsync())
-                tiposCaracteristica.Add(reader.MapTo<TipoCaracteristicaEtCatalogoDto>());
+        while (await reader.ReadAsync())
+            tiposCaracteristica.Add(reader.MapTo<TipoCaracteristicaEtCatalogoDto>());
 
         var metodosEnsayo = new List<MetodoEnsayoEtCatalogoDto>();
         if (await reader.NextResultAsync())
@@ -74,7 +69,6 @@ public class EspecificacionTecnicaStoredProcedure
 
         return new CatalogosEspecificacionTecnicaDto
         {
-            Productos = productos,
             TiposCaracteristica = tiposCaracteristica,
             MetodosEnsayo = metodosEnsayo,
             Caracteristicas = caracteristicas,
