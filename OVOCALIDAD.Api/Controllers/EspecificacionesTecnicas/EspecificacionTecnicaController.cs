@@ -172,6 +172,21 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarContenidoBaseAsync(versionId, request));
     }
 
+    [HttpGet("responsables")]
+    public async Task<ActionResult<IReadOnlyList<ResponsableEtCatalogoDto>>> Responsables()
+    {
+        return Ok(await _service.ObtenerResponsablesAsync());
+    }
+
+    [HttpPut("{versionId:int}/responsables")]
+    public async Task<ActionResult<GuardarResponsablesEtResponse>> GuardarResponsables(
+        int versionId,
+        [FromBody] GuardarResponsablesEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarResponsablesAsync(versionId, request));
+    }
+
     [HttpPut("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
         int versionId,
