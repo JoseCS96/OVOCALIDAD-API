@@ -24,6 +24,21 @@ public class GuardarInformacionGeneralEtResponse
     public string? EstadoVersion { get; set; }
 }
 
+public class GuardarContenidoBaseEtRequest
+{
+    public string TipoContenido { get; set; } = string.Empty;
+    public string? Contenido { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarContenidoBaseEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public string? TipoContenido { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
