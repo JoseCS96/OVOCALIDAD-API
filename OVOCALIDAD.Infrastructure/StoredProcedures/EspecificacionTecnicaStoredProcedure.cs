@@ -21,7 +21,7 @@ public class EspecificacionTecnicaStoredProcedure
         {
             new("@DocumentoCodigo", request.DocumentoCodigo),
             new("@DocumentoDescripcionDocumento", request.DocumentoDescripcionDocumento),
-            new("@ProductoCodigo", request.ProductoCodigo),
+            new("@PresentacionesGenesisJson", JsonSerializer.Serialize(request.PresentacionesGenesis, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })),
             new("@VersionNumero", request.VersionNumero),
             new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia?.Date ?? DBNull.Value),
             new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
