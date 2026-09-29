@@ -47,4 +47,74 @@ public class MantenimientoStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_INGREDIENTE, parametros);
         return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoIngredienteResponse>() : new CambiarEstadoIngredienteResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+
+    public async Task<IReadOnlyList<CaracteristicaMantenimientoDto>> ListarCaracteristicasAsync(CaracteristicaMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@TipoCaractId", (object?)filtro.TipoCaractId ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_CARACTERISTICAS, parametros);
+        var items = new List<CaracteristicaMantenimientoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<CaracteristicaMantenimientoDto>());
+        return items;
+    }
+
+    public async Task<CatalogosCaracteristicaMantenimientoDto> ObtenerCatalogosCaracteristicaAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_OBTENER_CATALOGOS_CARACTERISTICA,
+            new List<SqlParameter>());
+
+        var tipos = new List<TipoCaracteristicaMantenimientoDto>();
+        while (await reader.ReadAsync()) tipos.Add(reader.MapTo<TipoCaracteristicaMantenimientoDto>());
+
+        var metodos = new List<MetodoEnsayoMantenimientoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync()) metodos.Add(reader.MapTo<MetodoEnsayoMantenimientoDto>());
+
+        return new CatalogosCaracteristicaMantenimientoDto
+        {
+            TiposCaracteristica = tipos,
+            MetodosEnsayo = metodos
+        };
+    }
+
+    public async Task<GuardarCaracteristicaResponse> GuardarCaracteristicaAsync(GuardarCaracteristicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CaracteristicaId", (object?)request.CaracteristicaId ?? DBNull.Value),
+            new("@CaracteristicaDescripcion", request.CaracteristicaDescripcion),
+            new("@CaracteristicaUnidadDeMedida", (object?)request.CaracteristicaUnidadDeMedida ?? DBNull.Value),
+            new("@TipoCaractId", request.TipoCaractId),
+            new("@MetEnsayoId", (object?)request.MetEnsayoId ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CARACTERISTICA, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<GuardarCaracteristicaResponse>()
+            : new GuardarCaracteristicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarEstadoCaracteristicaResponse> CambiarEstadoCaracteristicaAsync(
+        int caracteristicaId,
+        CambiarEstadoCaracteristicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CaracteristicaId", caracteristicaId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_CARACTERISTICA, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<CambiarEstadoCaracteristicaResponse>()
+            : new CambiarEstadoCaracteristicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
 }
