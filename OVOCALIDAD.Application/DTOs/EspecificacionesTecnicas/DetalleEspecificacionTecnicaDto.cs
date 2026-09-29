@@ -16,6 +16,7 @@ public class DetalleEspecificacionTecnicaDto
     public IReadOnlyList<CambioVersionEtDto> CambiosVersion { get; set; } = [];
     public IReadOnlyList<AnexoEtDto> Anexos { get; set; } = [];
     public IReadOnlyList<HistorialEstadoEtDto> Historial { get; set; } = [];
+    public IReadOnlyList<PresentacionGenesisEtDto> PresentacionesGenesis { get; set; } = [];
 }
 
 public class InformacionGeneralEtDto
@@ -209,4 +210,16 @@ public class HistorialEstadoEtDto
     public string? Comentario { get; set; }
     public string Usuario { get; set; } = string.Empty;
     public DateTime Fecha { get; set; }
+}
+
+public class PresentacionGenesisEtDto
+{
+    public int VersionKardexId { get; set; }
+    public int VersionId { get; set; }
+    public int Kardex { get; set; }
+    public string CodigoGenesis { get; set; } = string.Empty;
+    public string? NombreGenesis { get; set; }
+    public string? DescripcionGenesis { get; set; }
+    public int? EstadoGenesis { get; set; }
+    public string? Estado { get; set; }
 }
