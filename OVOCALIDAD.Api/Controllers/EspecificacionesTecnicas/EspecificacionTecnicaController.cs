@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.EspecificacionesTecnicas;
 using OVOCALIDAD.Application.Interfaces;
@@ -6,6 +7,7 @@ namespace OVOCALIDAD.Api.Controllers.EspecificacionesTecnicas;
 
 [ApiController]
 [Route("api/especificaciones-tecnicas")]
+[Authorize]
 public class EspecificacionTecnicaController : ControllerBase
 {
     private readonly IEspecificacionTecnicaService _service;
@@ -26,6 +28,7 @@ public class EspecificacionTecnicaController : ControllerBase
     [ProducesResponseType(typeof(CrearEspecificacionTecnicaResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<CrearEspecificacionTecnicaResponse>> Crear([FromBody] CrearEspecificacionTecnicaRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.CrearAsync(request));
     }
 
@@ -47,6 +50,7 @@ public class EspecificacionTecnicaController : ControllerBase
     [ProducesResponseType(typeof(CrearSeccionEtResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<CrearSeccionEtResponse>> CrearSeccion([FromBody] CrearSeccionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.CrearSeccionAsync(request));
     }
 
@@ -55,6 +59,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versionId,
         [FromBody] AgregarSeccionVersionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.AgregarSeccionVersionAsync(versionId, request));
     }
 
@@ -64,6 +69,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versSeccId,
         [FromBody] QuitarSeccionVersionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.QuitarSeccionVersionAsync(versionId, versSeccId, request));
     }
 
@@ -72,6 +78,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versionId,
         [FromBody] ReordenarSeccionesVersionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.ReordenarSeccionesVersionAsync(versionId, request));
     }
 
@@ -81,6 +88,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versSeccId,
         [FromBody] GuardarContenidoSeccionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.GuardarContenidoSeccionAsync(versionId, versSeccId, request));
     }
 
@@ -151,6 +159,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versionId,
         [FromBody] GuardarInformacionGeneralEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.GuardarInformacionGeneralAsync(versionId, request));
     }
 
@@ -159,6 +168,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versionId,
         [FromBody] GuardarCaracteristicaEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.GuardarCaracteristicaAsync(versionId, request));
     }
 
@@ -168,6 +178,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versCaractId,
         [FromBody] EliminarCaracteristicaEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.EliminarCaracteristicaAsync(versionId, versCaractId, request));
     }
 
@@ -177,6 +188,7 @@ public class EspecificacionTecnicaController : ControllerBase
         int versionId,
         [FromBody] CambiarEstadoVersionEtRequest request)
     {
+        request.Usuario = UsuarioSesion();
         return Ok(await _service.CambiarEstadoAsync(versionId, request));
     }
 
@@ -187,5 +199,13 @@ public class EspecificacionTecnicaController : ControllerBase
         [FromQuery] ListarEspecificacionesTecnicasFiltro filtro)
     {
         return Ok(await _service.ListarAsync(filtro));
+    }
+
+    private string UsuarioSesion()
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario))
+            throw new UnauthorizedAccessException("No se pudo identificar al usuario autenticado.");
+        return usuario;
     }
 }
