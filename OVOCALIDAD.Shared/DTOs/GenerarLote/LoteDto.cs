@@ -8,6 +8,10 @@ public class LoteDto
 
     public string ProductoCodigo { get; set; } = string.Empty;
 
+    public string CodigoGenesis { get; set; } = string.Empty;
+
+    public int? Kardex { get; set; }
+
     public string ProductoDescripcion { get; set; } = string.Empty;
 
     public int DocumentoId { get; set; }
