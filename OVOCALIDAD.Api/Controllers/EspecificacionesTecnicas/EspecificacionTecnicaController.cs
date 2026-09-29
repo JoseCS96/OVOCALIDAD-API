@@ -257,6 +257,15 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarContenidoRotuladoAsync(versionId, request));
     }
 
+    [HttpPut("{versionId:int}/anexos")]
+    public async Task<ActionResult<GuardarAnexosEtResponse>> GuardarAnexos(
+        int versionId,
+        [FromBody] GuardarAnexosEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarAnexosAsync(versionId, request));
+    }
+
     [HttpPut("{versionId:int}/cambios")]
     public async Task<ActionResult<GuardarCambiosEtResponse>> GuardarCambios(
         int versionId,
