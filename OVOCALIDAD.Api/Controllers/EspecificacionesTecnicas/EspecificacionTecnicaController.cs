@@ -193,6 +193,21 @@ public class EspecificacionTecnicaController : ControllerBase
     }
 
 
+    [HttpPost("{versionId:int}/resetear")]
+    public async Task<ActionResult<OperacionEstructuraEtResponse>> Resetear(int versionId)
+    {
+        var request = new QuitarSeccionVersionEtRequest { Usuario = UsuarioSesion() };
+        return Ok(await _service.ResetearAsync(versionId, request));
+    }
+
+    [HttpDelete("{versionId:int}")]
+    public async Task<ActionResult<OperacionEstructuraEtResponse>> EliminarBorrador(int versionId)
+    {
+        var request = new QuitarSeccionVersionEtRequest { Usuario = UsuarioSesion() };
+        return Ok(await _service.EliminarBorradorAsync(versionId, request));
+    }
+
+
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<EspecificacionTecnicaListadoDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<EspecificacionTecnicaListadoDto>>> Listar(
