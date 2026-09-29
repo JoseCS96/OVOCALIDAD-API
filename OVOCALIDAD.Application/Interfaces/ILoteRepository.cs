@@ -7,5 +7,6 @@ public interface ILoteRepository
     Task<GenerarLoteResponse> GenerarLoteAsync(GenerarLoteRequest request, string usuario);
     Task<IReadOnlyList<LoteListadoDto>> ListarLotesAsync(ListarLotesFiltro filtro);
     Task<CatalogosLoteDto> ObtenerCatalogosAsync();
+    Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda);
     Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId);
 }
