@@ -530,6 +530,34 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<IReadOnlyList<ContenidoRotuladoCatalogoDto>> ObtenerCatalogoContenidoRotuladoAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CATALOGO_CONTENIDO_ROTULADO_ET, []);
+        var items = new List<ContenidoRotuladoCatalogoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<ContenidoRotuladoCatalogoDto>());
+        return items;
+    }
+
+    public async Task<GuardarContenidoRotuladoEtResponse> GuardarContenidoRotuladoAsync(int versionId, GuardarContenidoRotuladoEtRequest request)
+    {
+        var payload = new
+        {
+            contenidoRotulado = request.ContenidoRotulado.Select(x => new { contRotuladoId = x.ContRotuladoId, orden = x.Orden })
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@ContenidoRotuladoJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CONTENIDO_ROTULADO_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarContenidoRotuladoEtResponse>() : new GuardarContenidoRotuladoEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
