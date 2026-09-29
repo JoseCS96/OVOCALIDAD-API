@@ -274,6 +274,11 @@ public class EspecificacionTecnicaStoredProcedure
             while (await reader.ReadAsync())
                 historial.Add(reader.MapTo<HistorialEstadoEtDto>());
 
+        var presentacionesGenesis = new List<PresentacionGenesisEtDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                presentacionesGenesis.Add(reader.MapTo<PresentacionGenesisEtDto>());
+
         return new DetalleEspecificacionTecnicaDto
         {
             InformacionGeneral = informacionGeneral,
@@ -289,7 +294,8 @@ public class EspecificacionTecnicaStoredProcedure
             ContenidoRotulado = contenidoRotulado,
             CambiosVersion = cambiosVersion,
             Anexos = anexos,
-            Historial = historial
+            Historial = historial,
+            PresentacionesGenesis = presentacionesGenesis
         };
     }
 
