@@ -322,6 +322,24 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<GuardarContenidoBaseEtResponse> GuardarContenidoBaseAsync(int versionId, GuardarContenidoBaseEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@TipoContenido", request.TipoContenido),
+            new("@Contenido", (object?)request.Contenido ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CONTENIDO_BASE_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarContenidoBaseEtResponse>() : new GuardarContenidoBaseEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
