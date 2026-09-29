@@ -187,6 +187,21 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarResponsablesAsync(versionId, request));
     }
 
+    [HttpGet("ingredientes/catalogos")]
+    public async Task<ActionResult<CatalogosIngredientesEtDto>> CatalogosIngredientes()
+    {
+        return Ok(await _service.ObtenerCatalogosIngredientesAsync());
+    }
+
+    [HttpPut("{versionId:int}/ingredientes")]
+    public async Task<ActionResult<GuardarIngredientesEtResponse>> GuardarIngredientes(
+        int versionId,
+        [FromBody] GuardarIngredientesEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarIngredientesAsync(versionId, request));
+    }
+
     [HttpPut("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
         int versionId,
