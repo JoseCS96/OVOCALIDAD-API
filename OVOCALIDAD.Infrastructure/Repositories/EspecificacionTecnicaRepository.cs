@@ -75,6 +75,12 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
     public Task<GuardarInstruccionesEtResponse> GuardarInstruccionesAsync(int versionId, GuardarInstruccionesEtRequest request) =>
         _storedProcedure.GuardarInstruccionesAsync(versionId, request);
 
+    public Task<IReadOnlyList<ContenidoRotuladoCatalogoDto>> ObtenerCatalogoContenidoRotuladoAsync() =>
+        _storedProcedure.ObtenerCatalogoContenidoRotuladoAsync();
+
+    public Task<GuardarContenidoRotuladoEtResponse> GuardarContenidoRotuladoAsync(int versionId, GuardarContenidoRotuladoEtRequest request) =>
+        _storedProcedure.GuardarContenidoRotuladoAsync(versionId, request);
+
     public Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request) =>
         _storedProcedure.GuardarCaracteristicaAsync(versionId, request);
 
