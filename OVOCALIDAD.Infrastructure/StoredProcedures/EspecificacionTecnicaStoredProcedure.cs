@@ -306,7 +306,6 @@ public class EspecificacionTecnicaStoredProcedure
         {
             new("@VersionId", versionId),
             new("@DocumentoDescripcionDocumento", request.DocumentoDescripcionDocumento),
-            new("@ProductoCodigo", request.ProductoCodigo),
             new("@VersionNumero", (object?)request.VersionNumero ?? DBNull.Value),
             new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia?.Date ?? DBNull.Value),
             new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
