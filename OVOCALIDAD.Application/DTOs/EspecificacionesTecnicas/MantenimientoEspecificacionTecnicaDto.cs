@@ -242,6 +242,23 @@ public class GuardarContenidoRotuladoEtResponse
     public int? CantidadContenidoRotulado { get; set; }
 }
 
+public class GuardarAnexoEtItemRequest
+{
+    public string Descripcion { get; set; } = string.Empty;
+}
+public class GuardarAnexosEtRequest
+{
+    public IReadOnlyList<GuardarAnexoEtItemRequest> Anexos { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+public class GuardarAnexosEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadAnexos { get; set; }
+}
+
 public class GuardarCambioEtItemRequest
 {
     public int NumeroRevision { get; set; }
