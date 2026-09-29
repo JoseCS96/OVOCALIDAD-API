@@ -150,6 +150,57 @@ public class GuardarProcedimientosEtResponse
     public int? CantidadProcedimientos { get; set; }
 }
 
+public class TratamientoEtCatalogoDto
+{
+    public int TratConservId { get; set; }
+    public string TratConservDescripcion { get; set; } = string.Empty;
+}
+public class ParametroTratamientoEtCatalogoDto
+{
+    public int ParamTratId { get; set; }
+    public string ParamTratDescripcion { get; set; } = string.Empty;
+    public string? ParamTratUnidadDeMedida { get; set; }
+}
+public class TipoCriterioTratamientoEtCatalogoDto
+{
+    public int TipoCriterioId { get; set; }
+    public string TipCritDescripcion { get; set; } = string.Empty;
+}
+public class CatalogosTratamientosEtDto
+{
+    public IReadOnlyList<TratamientoEtCatalogoDto> Tratamientos { get; set; } = [];
+    public IReadOnlyList<ParametroTratamientoEtCatalogoDto> Parametros { get; set; } = [];
+    public IReadOnlyList<TipoCriterioTratamientoEtCatalogoDto> TiposCriterio { get; set; } = [];
+}
+public class GuardarParametroTratamientoEtItemRequest
+{
+    public int ParametroTratId { get; set; }
+    public int TipoCriterioId { get; set; }
+    public decimal? ValorCuantitativoInicial { get; set; }
+    public decimal? ValorCuantitativoFinal { get; set; }
+    public decimal? ValorCuantitativoIgual { get; set; }
+    public string? ValorCualitativo { get; set; }
+    public int Orden { get; set; }
+}
+public class GuardarTratamientoEtItemRequest
+{
+    public int TratConservId { get; set; }
+    public IReadOnlyList<GuardarParametroTratamientoEtItemRequest> Parametros { get; set; } = [];
+}
+public class GuardarTratamientosEtRequest
+{
+    public IReadOnlyList<GuardarTratamientoEtItemRequest> Tratamientos { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+public class GuardarTratamientosEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadTratamientos { get; set; }
+    public int? CantidadParametros { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
