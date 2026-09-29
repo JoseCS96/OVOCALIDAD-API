@@ -2,18 +2,11 @@ namespace OVOCALIDAD.Application.DTOs.EspecificacionesTecnicas;
 
 public class CatalogosEspecificacionTecnicaDto
 {
-    public IReadOnlyList<ProductoEtCatalogoDto> Productos { get; set; } = [];
     public IReadOnlyList<TipoCaracteristicaEtCatalogoDto> TiposCaracteristica { get; set; } = [];
     public IReadOnlyList<MetodoEnsayoEtCatalogoDto> MetodosEnsayo { get; set; } = [];
     public IReadOnlyList<CaracteristicaEtCatalogoDto> Caracteristicas { get; set; } = [];
     public IReadOnlyList<TipoCriterioEtCatalogoDto> TiposCriterio { get; set; } = [];
     public IReadOnlyList<FaseEtCatalogoDto> Fases { get; set; } = [];
-}
-
-public class ProductoEtCatalogoDto
-{
-    public string ProductoCodigo { get; set; } = string.Empty;
-    public string ProductoDescripcion { get; set; } = string.Empty;
 }
 
 public class TipoCaracteristicaEtCatalogoDto
