@@ -244,6 +244,19 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarInstruccionesAsync(versionId, request));
     }
 
+    [HttpGet("contenido-rotulado/catalogo")]
+    public async Task<ActionResult<IReadOnlyList<ContenidoRotuladoCatalogoDto>>> ObtenerCatalogoContenidoRotulado() =>
+        Ok(await _service.ObtenerCatalogoContenidoRotuladoAsync());
+
+    [HttpPut("{versionId:int}/contenido-rotulado")]
+    public async Task<ActionResult<GuardarContenidoRotuladoEtResponse>> GuardarContenidoRotulado(
+        int versionId,
+        [FromBody] GuardarContenidoRotuladoEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarContenidoRotuladoAsync(versionId, request));
+    }
+
     [HttpPut("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
         int versionId,
