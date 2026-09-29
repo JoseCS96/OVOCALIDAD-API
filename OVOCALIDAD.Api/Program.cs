@@ -93,6 +93,8 @@ builder.Services.AddScoped<EvaluacionStoredProcedure>();
 
 builder.Services.AddScoped<EspecificacionTecnicaStoredProcedure>();
 
+builder.Services.AddScoped<MantenimientoStoredProcedure>();
+
 builder.Services.AddScoped<SeguridadStoredProcedure>();
 builder.Services.AddScoped<AuthStoredProcedure>();
 
