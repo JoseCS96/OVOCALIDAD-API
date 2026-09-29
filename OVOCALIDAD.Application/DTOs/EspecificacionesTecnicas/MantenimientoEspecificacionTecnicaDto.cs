@@ -65,6 +65,49 @@ public class GuardarResponsablesEtResponse
     public int? CantidadAprobadores { get; set; }
 }
 
+public class IngredienteEtCatalogoDto
+{
+    public int IngredienteId { get; set; }
+    public string IngredienteDescripcion { get; set; } = string.Empty;
+    public string? UnidadDeMedida { get; set; }
+}
+
+public class TipoContenidoEtCatalogoDto
+{
+    public int IdTipoContenido { get; set; }
+    public string Codigo { get; set; } = string.Empty;
+    public string Nombre { get; set; } = string.Empty;
+    public string? Descripcion { get; set; }
+}
+
+public class CatalogosIngredientesEtDto
+{
+    public IReadOnlyList<IngredienteEtCatalogoDto> Ingredientes { get; set; } = [];
+    public IReadOnlyList<TipoContenidoEtCatalogoDto> TiposContenido { get; set; } = [];
+}
+
+public class GuardarIngredienteEtItemRequest
+{
+    public int IngredienteId { get; set; }
+    public decimal? Valor { get; set; }
+    public int? IdTipoContenido { get; set; }
+    public int Orden { get; set; }
+}
+
+public class GuardarIngredientesEtRequest
+{
+    public IReadOnlyList<GuardarIngredienteEtItemRequest> Ingredientes { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarIngredientesEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadIngredientes { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
