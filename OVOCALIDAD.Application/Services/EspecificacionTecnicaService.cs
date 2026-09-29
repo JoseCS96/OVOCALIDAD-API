@@ -54,4 +54,10 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
 
     public Task<CambiarEstadoVersionEtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoVersionEtRequest request) =>
         _repository.CambiarEstadoAsync(versionId, request);
+
+    public Task<OperacionEstructuraEtResponse> ResetearAsync(int versionId, QuitarSeccionVersionEtRequest request) =>
+        _repository.ResetearAsync(versionId, request);
+
+    public Task<OperacionEstructuraEtResponse> EliminarBorradorAsync(int versionId, QuitarSeccionVersionEtRequest request) =>
+        _repository.EliminarBorradorAsync(versionId, request);
 }
