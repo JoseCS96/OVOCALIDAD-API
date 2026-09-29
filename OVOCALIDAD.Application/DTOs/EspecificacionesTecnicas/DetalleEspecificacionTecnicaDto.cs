@@ -83,7 +83,10 @@ public class ResponsableEtDto
     public int IdRelacion { get; set; }
     public string UsuarioDni { get; set; } = string.Empty;
     public string UsuarioNombresApellidos { get; set; } = string.Empty;
+    public int? UsuarioCargoHistorialId { get; set; }
     public int? CargoId { get; set; }
+    public string? CargoDescripcion { get; set; }
+    public bool? CargoActual { get; set; }
 }
 
 public class IngredienteEtDto
