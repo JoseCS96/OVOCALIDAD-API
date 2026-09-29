@@ -390,7 +390,7 @@ public class EspecificacionTecnicaStoredProcedure
         var parametros = new List<SqlParameter>
         {
             new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
-            new("@ProductoCodigo", (object?)filtro.ProductoCodigo ?? DBNull.Value),
+            new("@CodigoGenesis", (object?)filtro.ProductoCodigo ?? DBNull.Value),
             new("@EstVerId", (object?)filtro.EstVerId ?? DBNull.Value)
         };
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_ESPECIFICACIONES_TECNICAS, parametros);
