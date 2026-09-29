@@ -235,6 +235,15 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarTratamientosAsync(versionId, request));
     }
 
+    [HttpPut("{versionId:int}/instrucciones")]
+    public async Task<ActionResult<GuardarInstruccionesEtResponse>> GuardarInstrucciones(
+        int versionId,
+        [FromBody] GuardarInstruccionesEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarInstruccionesAsync(versionId, request));
+    }
+
     [HttpPut("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
         int versionId,
