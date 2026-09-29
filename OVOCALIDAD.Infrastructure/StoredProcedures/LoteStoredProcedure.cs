@@ -98,6 +98,24 @@ public class LoteStoredProcedure
         return new DetalleLoteDto { Lote = lote, Evaluaciones = evaluaciones, Resumen = resumen };
     }
 
+    public async Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", string.IsNullOrWhiteSpace(busqueda) ? DBNull.Value : busqueda.Trim())
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_BUSCAR_PRODUCTOS_GENESIS,
+            parametros);
+
+        var productos = new List<ProductoGenesisDto>();
+        while (await reader.ReadAsync())
+            productos.Add(reader.MapTo<ProductoGenesisDto>());
+
+        return productos;
+    }
+
     public async Task<CatalogosLoteDto> ObtenerCatalogosAsync()
     {
         using var reader = await _executor.ExecuteReaderAsync(
