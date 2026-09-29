@@ -242,6 +242,25 @@ public class GuardarContenidoRotuladoEtResponse
     public int? CantidadContenidoRotulado { get; set; }
 }
 
+public class GuardarCambioEtItemRequest
+{
+    public int NumeroRevision { get; set; }
+    public DateTime FechaActualizacion { get; set; }
+    public string Descripcion { get; set; } = string.Empty;
+}
+public class GuardarCambiosEtRequest
+{
+    public IReadOnlyList<GuardarCambioEtItemRequest> Cambios { get; set; } = [];
+    public string Usuario { get; set; } = string.Empty;
+}
+public class GuardarCambiosEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? CantidadCambios { get; set; }
+}
+
 public class GuardarCaracteristicaEtRequest
 {
     public int? VersCaractId { get; set; }
