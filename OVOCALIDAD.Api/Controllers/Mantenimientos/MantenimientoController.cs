@@ -40,6 +40,37 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoIngredienteAsync(ingredienteId, request));
     }
 
+    [HttpGet("caracteristicas")]
+    public async Task<ActionResult<IReadOnlyList<CaracteristicaMantenimientoDto>>> ListarCaracteristicas([FromQuery] CaracteristicaMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarCaracteristicasAsync(filtro));
+
+    [HttpGet("caracteristicas/catalogos")]
+    public async Task<ActionResult<CatalogosCaracteristicaMantenimientoDto>> ObtenerCatalogosCaracteristica() =>
+        Ok(await _storedProcedure.ObtenerCatalogosCaracteristicaAsync());
+
+    [HttpPost("caracteristicas")]
+    public async Task<ActionResult<GuardarCaracteristicaResponse>> CrearCaracteristica([FromBody] GuardarCaracteristicaRequest request)
+    {
+        request.CaracteristicaId = null;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarCaracteristicaAsync(request));
+    }
+
+    [HttpPut("caracteristicas/{caracteristicaId:int}")]
+    public async Task<ActionResult<GuardarCaracteristicaResponse>> EditarCaracteristica(int caracteristicaId, [FromBody] GuardarCaracteristicaRequest request)
+    {
+        request.CaracteristicaId = caracteristicaId;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarCaracteristicaAsync(request));
+    }
+
+    [HttpPatch("caracteristicas/{caracteristicaId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoCaracteristicaResponse>> CambiarEstadoCaracteristica(int caracteristicaId, [FromBody] CambiarEstadoCaracteristicaRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoCaracteristicaAsync(caracteristicaId, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
