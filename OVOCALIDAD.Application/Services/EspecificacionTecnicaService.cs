@@ -59,6 +59,9 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
     public Task<GuardarIngredientesEtResponse> GuardarIngredientesAsync(int versionId, GuardarIngredientesEtRequest request) =>
         _repository.GuardarIngredientesAsync(versionId, request);
 
+    public Task<GuardarRecetasEtResponse> GuardarRecetasAsync(int versionId, GuardarRecetasEtRequest request) =>
+        _repository.GuardarRecetasAsync(versionId, request);
+
     public Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request) =>
         _repository.GuardarCaracteristicaAsync(versionId, request);
 
