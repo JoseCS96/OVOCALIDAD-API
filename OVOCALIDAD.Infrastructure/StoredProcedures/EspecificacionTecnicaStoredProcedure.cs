@@ -409,6 +409,31 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<GuardarRecetasEtResponse> GuardarRecetasAsync(int versionId, GuardarRecetasEtRequest request)
+    {
+        var payload = new
+        {
+            recetas = request.Recetas.Select(x => new
+            {
+                descripcion = x.Descripcion,
+                idTipoContenido = x.IdTipoContenido,
+                orden = x.Orden
+            })
+        };
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@RecetasJson", JsonSerializer.Serialize(payload)),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_RECETAS_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarRecetasEtResponse>() : new GuardarRecetasEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
