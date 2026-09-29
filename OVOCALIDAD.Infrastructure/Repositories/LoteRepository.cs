@@ -21,4 +21,7 @@ public class LoteRepository : ILoteRepository
 
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
+
+    public Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda) =>
+        _storedProcedure.BuscarProductosGenesisAsync(busqueda);
 }
