@@ -43,6 +43,14 @@ public class LoteController : ControllerBase
         return Ok(await _loteService.ObtenerCatalogosAsync());
     }
 
+    [HttpGet("productos-genesis")]
+    [ProducesResponseType(typeof(IReadOnlyList<ProductoGenesisDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<ProductoGenesisDto>>> BuscarProductosGenesis(
+        [FromQuery] string? busqueda)
+    {
+        return Ok(await _loteService.BuscarProductosGenesisAsync(busqueda));
+    }
+
     [HttpPost("generar")]
     [ProducesResponseType(typeof(GenerarLoteResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<GenerarLoteResponse>> Generar(
