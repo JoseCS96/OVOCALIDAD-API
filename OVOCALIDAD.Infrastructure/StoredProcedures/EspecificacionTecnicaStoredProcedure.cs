@@ -300,6 +300,16 @@ public class EspecificacionTecnicaStoredProcedure
     }
 
 
+    public async Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId)
+    {
+        var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_VERSIONES_REEMPLAZABLES_ET, parametros);
+        var items = new List<VersionReemplazableEtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<VersionReemplazableEtDto>());
+        return items;
+    }
+
     public async Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request)
     {
         var parametros = new List<SqlParameter>
