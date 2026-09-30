@@ -42,6 +42,9 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
 
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _storedProcedure.ObtenerDetalleAsync(versionId);
+    public Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId) =>
+        _storedProcedure.ObtenerVersionesReemplazablesAsync(versionId);
+
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
         _storedProcedure.GuardarInformacionGeneralAsync(versionId, request);
 
