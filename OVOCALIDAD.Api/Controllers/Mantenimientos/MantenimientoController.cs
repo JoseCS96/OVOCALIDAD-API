@@ -71,6 +71,61 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoCaracteristicaAsync(caracteristicaId, request));
     }
 
+
+    [HttpGet("tipos-caracteristica")]
+    public async Task<ActionResult<IReadOnlyList<TipoCaracteristicaMantenimientoDetalleDto>>> ListarTiposCaracteristica([FromQuery] TipoCaracteristicaMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarTiposCaracteristicaAsync(filtro));
+
+    [HttpPost("tipos-caracteristica")]
+    public async Task<ActionResult<GuardarTipoCaracteristicaResponse>> CrearTipoCaracteristica([FromBody] GuardarTipoCaracteristicaRequest request)
+    {
+        request.TipoCaractId = null;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarTipoCaracteristicaAsync(request));
+    }
+
+    [HttpPut("tipos-caracteristica/{tipoCaractId:int}")]
+    public async Task<ActionResult<GuardarTipoCaracteristicaResponse>> EditarTipoCaracteristica(int tipoCaractId, [FromBody] GuardarTipoCaracteristicaRequest request)
+    {
+        request.TipoCaractId = tipoCaractId;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarTipoCaracteristicaAsync(request));
+    }
+
+    [HttpPatch("tipos-caracteristica/{tipoCaractId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoTipoCaracteristicaResponse>> CambiarEstadoTipoCaracteristica(int tipoCaractId, [FromBody] CambiarEstadoTipoCaracteristicaRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoTipoCaracteristicaAsync(tipoCaractId, request));
+    }
+
+    [HttpGet("metodos-ensayo")]
+    public async Task<ActionResult<IReadOnlyList<MetodoEnsayoMantenimientoDetalleDto>>> ListarMetodosEnsayo([FromQuery] MetodoEnsayoMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarMetodosEnsayoAsync(filtro));
+
+    [HttpPost("metodos-ensayo")]
+    public async Task<ActionResult<GuardarMetodoEnsayoResponse>> CrearMetodoEnsayo([FromBody] GuardarMetodoEnsayoRequest request)
+    {
+        request.MetEnsayoId = null;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarMetodoEnsayoAsync(request));
+    }
+
+    [HttpPut("metodos-ensayo/{metEnsayoId:int}")]
+    public async Task<ActionResult<GuardarMetodoEnsayoResponse>> EditarMetodoEnsayo(int metEnsayoId, [FromBody] GuardarMetodoEnsayoRequest request)
+    {
+        request.MetEnsayoId = metEnsayoId;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarMetodoEnsayoAsync(request));
+    }
+
+    [HttpPatch("metodos-ensayo/{metEnsayoId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoMetodoEnsayoResponse>> CambiarEstadoMetodoEnsayo(int metEnsayoId, [FromBody] CambiarEstadoMetodoEnsayoRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoMetodoEnsayoAsync(metEnsayoId, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
