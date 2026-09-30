@@ -14,6 +14,7 @@ public interface IEspecificacionTecnicaRepository
     Task<GuardarContenidoSeccionEtResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionEtRequest request);
     Task<IReadOnlyList<ContenidoSeccionEtDto>> ObtenerContenidoSeccionesAsync(int versionId);
     Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId);
+    Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId);
     Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request);
     Task<GuardarContenidoBaseEtResponse> GuardarContenidoBaseAsync(int versionId, GuardarContenidoBaseEtRequest request);
     Task<IReadOnlyList<ResponsableEtCatalogoDto>> ObtenerResponsablesAsync();
