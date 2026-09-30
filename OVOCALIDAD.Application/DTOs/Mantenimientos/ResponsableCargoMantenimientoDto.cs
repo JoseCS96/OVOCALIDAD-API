@@ -156,3 +156,21 @@ public class CambiarEstadoResponsableResponse
     public string? UsuarioDni { get; set; }
     public bool? Estado { get; set; }
 }
+
+
+public class GuardarCargoHistoricoResponsableRequest
+{
+    public int CargoId { get; set; }
+    public DateTime? FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarCargoHistoricoResponsableResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? UsuarioCargoHistorialId { get; set; }
+    public string? UsuarioDni { get; set; }
+    public int? CargoId { get; set; }
+}
