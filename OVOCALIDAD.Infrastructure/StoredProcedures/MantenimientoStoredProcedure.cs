@@ -350,4 +350,32 @@ public class MantenimientoStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_RESPONSABLE, parametros);
         return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoResponsableResponse>() : new CambiarEstadoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+
+    public async Task<GuardarCargoHistoricoResponsableResponse> AgregarCargoHistoricoResponsableAsync(string usuarioDni, GuardarCargoHistoricoResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@CargoId", request.CargoId),
+            new("@FechaInicio", (object?)request.FechaInicio?.Date ?? DBNull.Value),
+            new("@FechaFin", (object?)request.FechaFin?.Date ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_AGREGAR_CARGO_HISTORICO_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarCargoHistoricoResponsableResponse>() : new GuardarCargoHistoricoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<GuardarCargoHistoricoResponsableResponse> EditarCargoHistoricoResponsableAsync(int usuarioCargoHistorialId, GuardarCargoHistoricoResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioCargoHistorialId", usuarioCargoHistorialId),
+            new("@CargoId", request.CargoId),
+            new("@FechaInicio", (object?)request.FechaInicio?.Date ?? DBNull.Value),
+            new("@FechaFin", (object?)request.FechaFin?.Date ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_EDITAR_HISTORIAL_CARGO_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarCargoHistoricoResponsableResponse>() : new GuardarCargoHistoricoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
 }
