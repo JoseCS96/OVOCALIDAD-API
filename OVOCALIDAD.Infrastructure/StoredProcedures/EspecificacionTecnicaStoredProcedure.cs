@@ -716,6 +716,31 @@ public class EspecificacionTecnicaStoredProcedure
             }
         }
 
+        if (response.CodigoResultado == 0 &&
+            (string.Equals(request.Accion, "PUBLICAR", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(request.Accion, "VIGENTAR", StringComparison.OrdinalIgnoreCase)))
+        {
+            var parametrosNotificacion = new List<SqlParameter>
+            {
+                new("@VersionId", versionId),
+                new("@Accion", request.Accion),
+                new("@Usuario", request.Usuario)
+            };
+
+            using var notificacionReader = await _executor.ExecuteReaderAsync(
+                SPNames.SP_GENERAR_NOTIFICACION_GENERAL_ET,
+                parametrosNotificacion);
+
+            if (await notificacionReader.ReadAsync())
+            {
+                var codigoNotificacion = notificacionReader.GetInt32(
+                    notificacionReader.GetOrdinal("CodigoResultado"));
+
+                if (codigoNotificacion != 0)
+                    throw new InvalidOperationException("No se pudieron generar las notificaciones generales de la ET.");
+            }
+        }
+
         return response;
     }
 
