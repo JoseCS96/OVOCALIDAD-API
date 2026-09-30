@@ -126,6 +126,34 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoMetodoEnsayoAsync(metEnsayoId, request));
     }
 
+
+    [HttpGet("contenidos-rotulado")]
+    public async Task<ActionResult<IReadOnlyList<ContenidoRotuladoMantenimientoDto>>> ListarContenidosRotulado([FromQuery] ContenidoRotuladoMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarContenidosRotuladoAsync(filtro));
+
+    [HttpPost("contenidos-rotulado")]
+    public async Task<ActionResult<GuardarContenidoRotuladoResponse>> CrearContenidoRotulado([FromBody] GuardarContenidoRotuladoRequest request)
+    {
+        request.ContRotuladoId = null;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarContenidoRotuladoAsync(request));
+    }
+
+    [HttpPut("contenidos-rotulado/{contRotuladoId:int}")]
+    public async Task<ActionResult<GuardarContenidoRotuladoResponse>> EditarContenidoRotulado(int contRotuladoId, [FromBody] GuardarContenidoRotuladoRequest request)
+    {
+        request.ContRotuladoId = contRotuladoId;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarContenidoRotuladoAsync(request));
+    }
+
+    [HttpPatch("contenidos-rotulado/{contRotuladoId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoContenidoRotuladoResponse>> CambiarEstadoContenidoRotulado(int contRotuladoId, [FromBody] CambiarEstadoContenidoRotuladoRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoContenidoRotuladoAsync(contRotuladoId, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
