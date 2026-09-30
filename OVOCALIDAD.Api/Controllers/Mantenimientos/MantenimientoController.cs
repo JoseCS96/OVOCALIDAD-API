@@ -154,6 +154,74 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoContenidoRotuladoAsync(contRotuladoId, request));
     }
 
+
+    [HttpGet("cargos")]
+    public async Task<ActionResult<IReadOnlyList<CargoMantenimientoDto>>> ListarCargos([FromQuery] CargoMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarCargosAsync(filtro));
+
+    [HttpGet("cargos/activos")]
+    public async Task<ActionResult<IReadOnlyList<CargoActivoDto>>> ObtenerCargosActivos() =>
+        Ok(await _storedProcedure.ObtenerCargosActivosAsync());
+
+    [HttpPost("cargos")]
+    public async Task<ActionResult<GuardarCargoResponse>> CrearCargo([FromBody] GuardarCargoRequest request)
+    {
+        request.CargoId = null;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarCargoAsync(request));
+    }
+
+    [HttpPut("cargos/{cargoId:int}")]
+    public async Task<ActionResult<GuardarCargoResponse>> EditarCargo(int cargoId, [FromBody] GuardarCargoRequest request)
+    {
+        request.CargoId = cargoId;
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.GuardarCargoAsync(request));
+    }
+
+    [HttpPatch("cargos/{cargoId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoCargoResponse>> CambiarEstadoCargo(int cargoId, [FromBody] CambiarEstadoCargoRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoCargoAsync(cargoId, request));
+    }
+
+    [HttpGet("responsables")]
+    public async Task<ActionResult<IReadOnlyList<ResponsableMantenimientoDto>>> ListarResponsables([FromQuery] ResponsableMantenimientoFiltro filtro) =>
+        Ok(await _storedProcedure.ListarResponsablesAsync(filtro));
+
+    [HttpPost("responsables")]
+    public async Task<ActionResult<CrearResponsableResponse>> CrearResponsable([FromBody] CrearResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CrearResponsableAsync(request));
+    }
+
+    [HttpPut("responsables/{usuarioDni}")]
+    public async Task<ActionResult<OperacionResponsableResponse>> EditarResponsable(string usuarioDni, [FromBody] EditarResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.EditarResponsableAsync(usuarioDni, request));
+    }
+
+    [HttpPut("responsables/{usuarioDni}/cargo")]
+    public async Task<ActionResult<CambiarCargoResponsableResponse>> CambiarCargoResponsable(string usuarioDni, [FromBody] CambiarCargoResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarCargoResponsableAsync(usuarioDni, request));
+    }
+
+    [HttpGet("responsables/{usuarioDni}/historial-cargos")]
+    public async Task<ActionResult<IReadOnlyList<HistorialCargoResponsableDto>>> ObtenerHistorialCargosResponsable(string usuarioDni) =>
+        Ok(await _storedProcedure.ObtenerHistorialCargosResponsableAsync(usuarioDni));
+
+    [HttpPatch("responsables/{usuarioDni}/estado")]
+    public async Task<ActionResult<CambiarEstadoResponsableResponse>> CambiarEstadoResponsable(string usuarioDni, [FromBody] CambiarEstadoResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.CambiarEstadoResponsableAsync(usuarioDni, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
