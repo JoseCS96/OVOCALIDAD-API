@@ -191,4 +191,45 @@ public class MantenimientoStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_METODO_ENSAYO, parametros);
         return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoMetodoEnsayoResponse>() : new CambiarEstadoMetodoEnsayoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+
+    public async Task<IReadOnlyList<ContenidoRotuladoMantenimientoDto>> ListarContenidosRotuladoAsync(ContenidoRotuladoMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_CONTENIDOS_ROTULADO, parametros);
+        var items = new List<ContenidoRotuladoMantenimientoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<ContenidoRotuladoMantenimientoDto>());
+        return items;
+    }
+
+    public async Task<GuardarContenidoRotuladoResponse> GuardarContenidoRotuladoAsync(GuardarContenidoRotuladoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@ContRotuladoId", (object?)request.ContRotuladoId ?? DBNull.Value),
+            new("@ContRotuladoDescripcion", request.ContRotuladoDescripcion),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CONTENIDO_ROTULADO, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<GuardarContenidoRotuladoResponse>()
+            : new GuardarContenidoRotuladoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarEstadoContenidoRotuladoResponse> CambiarEstadoContenidoRotuladoAsync(int contRotuladoId, CambiarEstadoContenidoRotuladoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@ContRotuladoId", contRotuladoId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_CONTENIDO_ROTULADO, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<CambiarEstadoContenidoRotuladoResponse>()
+            : new CambiarEstadoContenidoRotuladoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
 }
