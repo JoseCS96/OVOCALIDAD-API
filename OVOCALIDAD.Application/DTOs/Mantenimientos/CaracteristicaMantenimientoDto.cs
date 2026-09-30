@@ -48,7 +48,7 @@ public class GuardarCaracteristicaRequest
     public string CaracteristicaDescripcion { get; set; } = string.Empty;
     public string? CaracteristicaUnidadDeMedida { get; set; }
     public int TipoCaractId { get; set; }
-    public int? MetEnsayoId { get; set; }
+    public int MetEnsayoId { get; set; }
     public string Usuario { get; set; } = string.Empty;
 }
 
