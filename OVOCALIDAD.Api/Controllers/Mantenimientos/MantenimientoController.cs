@@ -222,6 +222,20 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoResponsableAsync(usuarioDni, request));
     }
 
+    [HttpPost("responsables/{usuarioDni}/historial-cargos")]
+    public async Task<ActionResult<GuardarCargoHistoricoResponsableResponse>> AgregarCargoHistoricoResponsable(string usuarioDni, [FromBody] GuardarCargoHistoricoResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.AgregarCargoHistoricoResponsableAsync(usuarioDni, request));
+    }
+
+    [HttpPut("responsables/historial-cargos/{usuarioCargoHistorialId:int}")]
+    public async Task<ActionResult<GuardarCargoHistoricoResponsableResponse>> EditarCargoHistoricoResponsable(int usuarioCargoHistorialId, [FromBody] GuardarCargoHistoricoResponsableRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.EditarCargoHistoricoResponsableAsync(usuarioCargoHistorialId, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
