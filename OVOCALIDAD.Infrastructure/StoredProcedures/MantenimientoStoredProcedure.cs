@@ -117,4 +117,78 @@ public class MantenimientoStoredProcedure
             ? reader.MapTo<CambiarEstadoCaracteristicaResponse>()
             : new CambiarEstadoCaracteristicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+
+    public async Task<IReadOnlyList<TipoCaracteristicaMantenimientoDetalleDto>> ListarTiposCaracteristicaAsync(TipoCaracteristicaMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_TIPOS_CARACTERISTICA, parametros);
+        var items = new List<TipoCaracteristicaMantenimientoDetalleDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<TipoCaracteristicaMantenimientoDetalleDto>());
+        return items;
+    }
+
+    public async Task<GuardarTipoCaracteristicaResponse> GuardarTipoCaracteristicaAsync(GuardarTipoCaracteristicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@TipoCaractId", (object?)request.TipoCaractId ?? DBNull.Value),
+            new("@TipoCaractDescripcion", request.TipoCaractDescripcion),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_TIPO_CARACTERISTICA, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarTipoCaracteristicaResponse>() : new GuardarTipoCaracteristicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarEstadoTipoCaracteristicaResponse> CambiarEstadoTipoCaracteristicaAsync(int tipoCaractId, CambiarEstadoTipoCaracteristicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@TipoCaractId", tipoCaractId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_TIPO_CARACTERISTICA, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoTipoCaracteristicaResponse>() : new CambiarEstadoTipoCaracteristicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<MetodoEnsayoMantenimientoDetalleDto>> ListarMetodosEnsayoAsync(MetodoEnsayoMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_METODOS_ENSAYO, parametros);
+        var items = new List<MetodoEnsayoMantenimientoDetalleDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<MetodoEnsayoMantenimientoDetalleDto>());
+        return items;
+    }
+
+    public async Task<GuardarMetodoEnsayoResponse> GuardarMetodoEnsayoAsync(GuardarMetodoEnsayoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@MetEnsayoId", (object?)request.MetEnsayoId ?? DBNull.Value),
+            new("@MetEnsayoDescripcion", request.MetEnsayoDescripcion),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_METODO_ENSAYO, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarMetodoEnsayoResponse>() : new GuardarMetodoEnsayoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarEstadoMetodoEnsayoResponse> CambiarEstadoMetodoEnsayoAsync(int metEnsayoId, CambiarEstadoMetodoEnsayoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@MetEnsayoId", metEnsayoId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_METODO_ENSAYO, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoMetodoEnsayoResponse>() : new CambiarEstadoMetodoEnsayoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
 }
