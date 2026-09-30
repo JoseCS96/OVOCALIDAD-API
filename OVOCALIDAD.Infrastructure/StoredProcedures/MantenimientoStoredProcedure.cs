@@ -232,4 +232,122 @@ public class MantenimientoStoredProcedure
             ? reader.MapTo<CambiarEstadoContenidoRotuladoResponse>()
             : new CambiarEstadoContenidoRotuladoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+
+    public async Task<IReadOnlyList<CargoMantenimientoDto>> ListarCargosAsync(CargoMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_CARGOS, parametros);
+        var items = new List<CargoMantenimientoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<CargoMantenimientoDto>());
+        return items;
+    }
+
+    public async Task<GuardarCargoResponse> GuardarCargoAsync(GuardarCargoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CargoId", (object?)request.CargoId ?? DBNull.Value),
+            new("@CargoDescripcion", request.CargoDescripcion),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CARGO, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarCargoResponse>() : new GuardarCargoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarEstadoCargoResponse> CambiarEstadoCargoAsync(int cargoId, CambiarEstadoCargoRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CargoId", cargoId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_CARGO, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoCargoResponse>() : new CambiarEstadoCargoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<CargoActivoDto>> ObtenerCargosActivosAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CARGOS_ACTIVOS, new List<SqlParameter>());
+        var items = new List<CargoActivoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<CargoActivoDto>());
+        return items;
+    }
+
+    public async Task<IReadOnlyList<ResponsableMantenimientoDto>> ListarResponsablesAsync(ResponsableMantenimientoFiltro filtro)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)filtro.Busqueda ?? DBNull.Value),
+            new("@Estado", (object?)filtro.Estado ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_RESPONSABLES, parametros);
+        var items = new List<ResponsableMantenimientoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<ResponsableMantenimientoDto>());
+        return items;
+    }
+
+    public async Task<CrearResponsableResponse> CrearResponsableAsync(CrearResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", request.UsuarioDni),
+            new("@UsuarioNombresApellidos", request.UsuarioNombresApellidos),
+            new("@CargoId", request.CargoId),
+            new("@FechaInicioCargo", (object?)request.FechaInicioCargo?.Date ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CREAR_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CrearResponsableResponse>() : new CrearResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<OperacionResponsableResponse> EditarResponsableAsync(string usuarioDni, EditarResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@UsuarioNombresApellidos", request.UsuarioNombresApellidos),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_EDITAR_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<OperacionResponsableResponse>() : new OperacionResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<CambiarCargoResponsableResponse> CambiarCargoResponsableAsync(string usuarioDni, CambiarCargoResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@CargoId", request.CargoId),
+            new("@FechaInicioCargo", (object?)request.FechaInicioCargo?.Date ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_CARGO_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarCargoResponsableResponse>() : new CambiarCargoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<HistorialCargoResponsableDto>> ObtenerHistorialCargosResponsableAsync(string usuarioDni)
+    {
+        var parametros = new List<SqlParameter> { new("@UsuarioDni", usuarioDni) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_HISTORIAL_CARGOS_RESPONSABLE, parametros);
+        var items = new List<HistorialCargoResponsableDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<HistorialCargoResponsableDto>());
+        return items;
+    }
+
+    public async Task<CambiarEstadoResponsableResponse> CambiarEstadoResponsableAsync(string usuarioDni, CambiarEstadoResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoResponsableResponse>() : new CambiarEstadoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
 }
