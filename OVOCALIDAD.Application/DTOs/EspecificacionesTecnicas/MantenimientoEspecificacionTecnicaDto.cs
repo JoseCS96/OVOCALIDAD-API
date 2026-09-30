@@ -499,6 +499,8 @@ public class CambiarEstadoVersionEtResponse
     public string? EstadoDestino { get; set; }
     public string? Accion { get; set; }
     public string? Comentario { get; set; }
+    public int? VersionVigenteAnteriorId { get; set; }
+    public DateTime? FechaVigencia { get; set; }
 }
 
 
