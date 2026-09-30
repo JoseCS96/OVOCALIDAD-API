@@ -165,3 +165,50 @@ public class CambiarEstadoMetodoEnsayoResponse
     public int? MetEnsayoId { get; set; }
     public bool? Estado { get; set; }
 }
+
+
+public class ContenidoRotuladoMantenimientoDto
+{
+    public int ContRotuladoId { get; set; }
+    public string? ContRotuladoDescripcion { get; set; }
+    public bool Estado { get; set; }
+    public string AudUsuarioCreacion { get; set; } = string.Empty;
+    public DateTime AudFechaCreacion { get; set; }
+    public string? AudUsuarioModificacion { get; set; }
+    public DateTime? AudFechaActualizacion { get; set; }
+    public bool TieneUso { get; set; }
+}
+
+public class ContenidoRotuladoMantenimientoFiltro
+{
+    public string? Busqueda { get; set; }
+    public bool? Estado { get; set; }
+}
+
+public class GuardarContenidoRotuladoRequest
+{
+    public int? ContRotuladoId { get; set; }
+    public string ContRotuladoDescripcion { get; set; } = string.Empty;
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarContenidoRotuladoResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? ContRotuladoId { get; set; }
+}
+
+public class CambiarEstadoContenidoRotuladoRequest
+{
+    public bool Estado { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class CambiarEstadoContenidoRotuladoResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? ContRotuladoId { get; set; }
+    public bool? Estado { get; set; }
+}
