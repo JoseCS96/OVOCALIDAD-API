@@ -335,6 +335,7 @@ public class CrearEspecificacionTecnicaRequest
 {
     public string DocumentoCodigo { get; set; } = string.Empty;
     public string DocumentoDescripcionDocumento { get; set; } = string.Empty;
+    public string ProductoCodigo { get; set; } = string.Empty;
     public IReadOnlyList<PresentacionGenesisEtRequest> PresentacionesGenesis { get; set; } = [];
     public decimal VersionNumero { get; set; } = 1;
     public DateTime? VersionInicioVigencia { get; set; }
