@@ -500,3 +500,14 @@ public class CambiarEstadoVersionEtResponse
     public string? Accion { get; set; }
     public string? Comentario { get; set; }
 }
+
+
+public class VersionReemplazableEtDto
+{
+    public int VersionId { get; set; }
+    public string DocumentoCodigo { get; set; } = string.Empty;
+    public decimal VersionNumero { get; set; }
+    public DateTime? VersionInicioVigencia { get; set; }
+    public DateTime? VersionFinVigencia { get; set; }
+    public string EstadoVersion { get; set; } = string.Empty;
+}
