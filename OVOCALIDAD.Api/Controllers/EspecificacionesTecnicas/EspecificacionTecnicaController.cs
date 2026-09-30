@@ -154,6 +154,12 @@ public class EspecificacionTecnicaController : ControllerBase
         };
     }
 
+    [HttpGet("{versionId:int}/versiones-reemplazables")]
+    public async Task<ActionResult<IReadOnlyList<VersionReemplazableEtDto>>> ObtenerVersionesReemplazables(int versionId)
+    {
+        return Ok(await _service.ObtenerVersionesReemplazablesAsync(versionId));
+    }
+
     [HttpPut("{versionId:int}/informacion-general")]
     public async Task<ActionResult<GuardarInformacionGeneralEtResponse>> GuardarInformacionGeneral(
         int versionId,
