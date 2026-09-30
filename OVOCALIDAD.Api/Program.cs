@@ -1,5 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OVOCALIDAD.Api.Security;
@@ -76,7 +77,12 @@ builder.Services
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("JefeCalidad", policy =>
+        policy.Requirements.Add(new PerfilRequirement("JEFE_CALIDAD")));
+});
+builder.Services.AddScoped<IAuthorizationHandler, PerfilAuthorizationHandler>();
 
 
 //---------------------------------------------------------
