@@ -7,7 +7,7 @@ namespace OVOCALIDAD.Api.Controllers.Mantenimientos;
 
 [ApiController]
 [Route("api/mantenimientos")]
-[Authorize]
+[Authorize(Policy = "JefeCalidad")]
 public class MantenimientoController : ControllerBase
 {
     private readonly MantenimientoStoredProcedure _storedProcedure;
