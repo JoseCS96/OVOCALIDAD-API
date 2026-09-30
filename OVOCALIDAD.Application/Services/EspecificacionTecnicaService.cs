@@ -41,6 +41,9 @@ public class EspecificacionTecnicaService : IEspecificacionTecnicaService
 
     public Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId) =>
         _repository.ObtenerDetalleAsync(versionId);
+    public Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId) =>
+        _repository.ObtenerVersionesReemplazablesAsync(versionId);
+
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
         _repository.GuardarInformacionGeneralAsync(versionId, request);
 
