@@ -60,7 +60,20 @@ public class EvaluacionController : ControllerBase
         if (!await TienePermisoAsync(usuario, "EVALUACION.VER")) return Forbid();
 
         var response = await _service.ObtenerAsync(evaluacionId);
-        return response is null ? NotFound() : Ok(response);
+        if (response is null) return NotFound();
+
+        var accesos = await _seguridadService.ObtenerAccesosUsuarioAsync(usuario);
+        var perfiles = accesos?.Perfiles.Select(p => p.PerfilCodigo).ToHashSet(StringComparer.OrdinalIgnoreCase)
+            ?? new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var supervisor = perfiles.Overlaps(new[] { "ANALISTA_CALIDAD", "JEFE_CALIDAD", "ADMINISTRADOR" });
+        if (!supervisor && perfiles.Contains("AUXILIAR_CALIDAD"))
+        {
+            var propio = string.Equals(response.Cabecera.UsuarioEvaluador, usuario, StringComparison.OrdinalIgnoreCase);
+            var disponible = string.Equals(response.Cabecera.EstadoEvaluacion, "PENDIENTE", StringComparison.OrdinalIgnoreCase)
+                && string.IsNullOrWhiteSpace(response.Cabecera.UsuarioEvaluador);
+            if (!propio && !disponible) return Forbid();
+        }
+        return Ok(response);
     }
 
     [HttpPut("{evaluacionId:int}/resultados")]
