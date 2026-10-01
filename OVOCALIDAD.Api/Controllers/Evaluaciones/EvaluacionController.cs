@@ -32,6 +32,15 @@ public class EvaluacionController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("listado")]
+    public async Task<ActionResult<List<PanelEvaluacionItemDto>>> ListarEvaluaciones()
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.VER")) return Forbid();
+        return Ok(await _service.ListarEvaluacionesAsync(usuario));
+    }
+
     [HttpPost("{evaluacionId:int}/iniciar")]
     public async Task<ActionResult<IniciarEvaluacionResponse>> Iniciar(int evaluacionId)
     {
