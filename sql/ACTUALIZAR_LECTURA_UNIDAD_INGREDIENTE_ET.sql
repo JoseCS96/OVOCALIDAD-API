@@ -24,8 +24,24 @@ IF CHARINDEX(N'VI.UnidadDeMedida,',@Sql)=0
  N'I.IngredienteDescripcion,'+CHAR(10)+N'        VI.UnidadDeMedida,');
 IF CHARINDEX(N'VI.UnidadDeMedida,',@Sql)=0
  THROW 51003, 'No se reconoció el formato del RS4; realizar cambio manual.', 1;
--- El módulo original facilitado usa ALTER PROCEDURE.
-IF UPPER(LEFT(LTRIM(@Sql),16)) NOT LIKE 'ALTER PROCEDURE%'
- THROW 51004, 'La definición no comienza con ALTER PROCEDURE; revisar manualmente.', 1;
+-- OBJECT_DEFINITION suele conservar CREATE PROCEDURE incluso después de ALTER.
+-- sp_executesql ejecuta CREATE OR ALTER como primera instrucción del lote.
+DECLARE @Inicio NVARCHAR(MAX) = LTRIM(@Sql);
+IF UPPER(@Inicio) LIKE N'CREATE PROCEDURE%'
+BEGIN
+    SET @Sql = STUFF(@Sql,
+        PATINDEX(N'%CREATE PROCEDURE%', UPPER(@Sql)),
+        LEN(N'CREATE PROCEDURE'),
+        N'CREATE OR ALTER PROCEDURE');
+END
+ELSE IF UPPER(@Inicio) LIKE N'ALTER PROCEDURE%'
+BEGIN
+    SET @Sql = STUFF(@Sql,
+        PATINDEX(N'%ALTER PROCEDURE%', UPPER(@Sql)),
+        LEN(N'ALTER PROCEDURE'),
+        N'CREATE OR ALTER PROCEDURE');
+END
+ELSE IF UPPER(@Inicio) NOT LIKE N'CREATE OR ALTER PROCEDURE%'
+    THROW 51004, 'Encabezado no reconocido; revisar manualmente.', 1;
 EXEC sys.sp_executesql @Sql;
 PRINT 'RS4 actualizado: la unidad se lee de VERSIONINGREDIENTE.';
