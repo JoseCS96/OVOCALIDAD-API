@@ -61,6 +61,16 @@ public class EvaluacionStoredProcedure
         return panel;
     }
 
+    public async Task<List<PanelEvaluacionItemDto>> ListarEvaluacionesAsync(string usuario)
+    {
+        var parametros = new List<SqlParameter> { new("@Usuario", usuario) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_EVALUACIONES_CALIDAD, parametros);
+        var items = new List<PanelEvaluacionItemDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<PanelEvaluacionItemDto>());
+        return items;
+    }
+
     public async Task<EvaluacionDto?> ObtenerAsync(int evaluacionId)
     {
         var parametros = new List<SqlParameter> { new("@EvaluacionId", evaluacionId) };
