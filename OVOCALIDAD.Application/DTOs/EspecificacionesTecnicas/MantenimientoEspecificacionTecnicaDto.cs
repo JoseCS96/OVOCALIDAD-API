@@ -285,7 +285,6 @@ public class GuardarCambiosEtResponse
 
 public class GuardarCaracteristicaEtRequest
 {
-    public string? UnidadDeMedida { get; set; }
     public int? VersCaractId { get; set; }
     public int CaracteristicaId { get; set; }
     public int TipoCriterioId { get; set; }
