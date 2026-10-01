@@ -29,7 +29,7 @@ public class MantenimientoStoredProcedure
         {
             new("@IngredienteId", (object?)request.IngredienteId ?? DBNull.Value),
             new("@IngredienteDescripcion", request.IngredienteDescripcion),
-            new("@UnidadDeMedida", (object?)request.UnidadDeMedida ?? DBNull.Value),
+            new("@UnidadDeMedida", DBNull.Value), // Compatibilidad con SP existente; el maestro ya no administra unidades.
             new("@Usuario", request.Usuario)
         };
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_INGREDIENTE, parametros);
