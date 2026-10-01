@@ -625,6 +625,7 @@ public class EspecificacionTecnicaStoredProcedure
             new("@ValorCuantitativoIgual", (object?)request.ValorCuantitativoIgual ?? DBNull.Value),
             new("@ValorCualitativo", (object?)request.ValorCualitativo ?? DBNull.Value),
             new("@FaseId", (object?)request.FaseId ?? DBNull.Value),
+            new("@UnidadDeMedida", (object?)request.UnidadDeMedida ?? DBNull.Value),
             new("@EsObligatorio", request.EsObligatorio),
             new("@Orden", request.Orden),
             new("@Usuario", request.Usuario)
