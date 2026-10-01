@@ -93,6 +93,7 @@ public class CatalogosIngredientesEtDto
 public class GuardarIngredienteEtItemRequest
 {
     public int IngredienteId { get; set; }
+    public string? UnidadDeMedida { get; set; }
     public decimal? Valor { get; set; }
     public int? IdTipoContenido { get; set; }
     public int Orden { get; set; }
