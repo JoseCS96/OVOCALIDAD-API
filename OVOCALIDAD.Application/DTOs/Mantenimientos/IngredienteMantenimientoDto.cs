@@ -17,7 +17,6 @@ public class GuardarIngredienteRequest
 {
     public int? IngredienteId { get; set; }
     public string IngredienteDescripcion { get; set; } = string.Empty;
-    public string? UnidadDeMedida { get; set; }
     public string Usuario { get; set; } = string.Empty;
 }
 public class GuardarIngredienteResponse
