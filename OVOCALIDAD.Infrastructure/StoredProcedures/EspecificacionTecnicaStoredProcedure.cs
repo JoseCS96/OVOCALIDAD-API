@@ -401,6 +401,7 @@ public class EspecificacionTecnicaStoredProcedure
             ingredientes = request.Ingredientes.Select(x => new
             {
                 ingredienteId = x.IngredienteId,
+                unidadDeMedida = x.UnidadDeMedida,
                 valor = x.Valor,
                 idTipoContenido = x.IdTipoContenido,
                 orden = x.Orden
