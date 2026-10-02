@@ -236,6 +236,44 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.EditarCargoHistoricoResponsableAsync(usuarioCargoHistorialId, request));
     }
 
+
+    [HttpGet("fases")]
+    public async Task<ActionResult<IReadOnlyList<FaseMantenimientoDto>>> ListarFases([FromQuery] string? buscar = null, [FromQuery] bool incluirInactivos = true) =>
+        Ok(await _storedProcedure.ListarFasesAsync(buscar, incluirInactivos));
+
+    [HttpPost("fases")]
+    public async Task<ActionResult<FaseMantenimientoDto>> CrearFase([FromBody] GuardarFaseRequest request)
+    {
+        if (!int.TryParse(UsuarioSesion(), out var usuario)) return BadRequest("El usuario autenticado debe tener identificador numérico para auditar FASE.");
+        if (string.IsNullOrWhiteSpace(request.Codigo) || request.Codigo.Length > 20 ||
+            string.IsNullOrWhiteSpace(request.Descripcion) || request.Descripcion.Length > 150)
+            return BadRequest("Código (máx. 20) y descripción (máx. 150) son obligatorios.");
+        request.FaseId = null;
+        request.Usuario = usuario;
+        return Ok(await _storedProcedure.GuardarFaseAsync(request));
+    }
+
+    [HttpPut("fases/{faseId:int}")]
+    public async Task<ActionResult<FaseMantenimientoDto>> EditarFase(int faseId, [FromBody] GuardarFaseRequest request)
+    {
+        if (!int.TryParse(UsuarioSesion(), out var usuario)) return BadRequest("El usuario autenticado debe tener identificador numérico para auditar FASE.");
+        if (string.IsNullOrWhiteSpace(request.Codigo) || request.Codigo.Length > 20 ||
+            string.IsNullOrWhiteSpace(request.Descripcion) || request.Descripcion.Length > 150)
+            return BadRequest("Código (máx. 20) y descripción (máx. 150) son obligatorios.");
+        request.FaseId = faseId;
+        request.Usuario = usuario;
+        return Ok(await _storedProcedure.GuardarFaseAsync(request));
+    }
+
+    [HttpPatch("fases/{faseId:int}/estado")]
+    public async Task<ActionResult<FaseMantenimientoDto>> CambiarEstadoFase(int faseId, [FromBody] CambiarEstadoFaseRequest request)
+    {
+        if (!int.TryParse(UsuarioSesion(), out var usuario)) return BadRequest("El usuario autenticado debe tener identificador numérico para auditar FASE.");
+        if (request.Estado is not ("ACTIVO" or "INACTIVO")) return BadRequest("Estado inválido.");
+        request.Usuario = usuario;
+        return Ok(await _storedProcedure.CambiarEstadoFaseAsync(faseId, request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
