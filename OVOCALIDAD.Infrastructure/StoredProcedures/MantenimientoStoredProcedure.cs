@@ -7,6 +7,47 @@ namespace OVOCALIDAD.Infrastructure.StoredProcedures;
 
 public class MantenimientoStoredProcedure
 {
+
+    public async Task<IReadOnlyList<FaseMantenimientoDto>> ListarFasesAsync(string? buscar, bool incluirInactivos)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Buscar", (object?)buscar ?? DBNull.Value),
+            new("@IncluirInactivos", incluirInactivos)
+        };
+        using var reader = await _executor.ExecuteReaderAsync("dbo.SP_LISTAR_FASES", parametros);
+        var items = new List<FaseMantenimientoDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<FaseMantenimientoDto>());
+        return items;
+    }
+
+    public async Task<FaseMantenimientoDto> GuardarFaseAsync(GuardarFaseRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@FaseId", (object?)request.FaseId ?? DBNull.Value),
+            new("@Codigo", request.Codigo),
+            new("@Descripcion", request.Descripcion),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync("dbo.SP_GUARDAR_FASE", parametros);
+        if (await reader.ReadAsync()) return reader.MapTo<FaseMantenimientoDto>();
+        throw new InvalidOperationException("El procedimiento no devolvió la fase.");
+    }
+
+    public async Task<FaseMantenimientoDto> CambiarEstadoFaseAsync(int faseId, CambiarEstadoFaseRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@FaseId", faseId),
+            new("@Estado", request.Estado),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync("dbo.SP_CAMBIAR_ESTADO_FASE", parametros);
+        if (await reader.ReadAsync()) return reader.MapTo<FaseMantenimientoDto>();
+        throw new InvalidOperationException("El procedimiento no devolvió la fase.");
+    }
+
     private readonly StoredProcedureExecutor _executor;
     public MantenimientoStoredProcedure(StoredProcedureExecutor executor) => _executor = executor;
 
