@@ -483,6 +483,12 @@ public class ContenidoSeccionEtDto
     public string? Contenido { get; set; }
 }
 
+public class RetornarVersionBorradorRequest
+{
+    public string Password { get; set; } = string.Empty;
+    public string? Comentario { get; set; }
+}
+
 public class CambiarEstadoVersionEtRequest
 {
     public string Accion { get; set; } = string.Empty;
