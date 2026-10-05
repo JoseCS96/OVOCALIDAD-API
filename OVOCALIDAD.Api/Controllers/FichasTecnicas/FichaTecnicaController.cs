@@ -17,6 +17,13 @@ public class FichaTecnicaController : ControllerBase
         _service = service;
     }
 
+    [HttpPost]
+    public async Task<ActionResult<CrearFichaTecnicaResponse>> Crear([FromBody] CrearFichaTecnicaRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.CrearAsync(request));
+    }
+
     [HttpGet("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<IReadOnlyList<FichaTecnicaCaracteristicaDto>>> ListarCaracteristicas(int versionId) =>
         Ok(await _service.ListarCaracteristicasAsync(versionId));
