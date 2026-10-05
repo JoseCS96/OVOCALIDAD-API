@@ -13,15 +13,18 @@ public class EspecificacionTecnicaController : ControllerBase
     private readonly IEspecificacionTecnicaService _service;
     private readonly IWebHostEnvironment _environment;
     private readonly IConfiguration _configuration;
+    private readonly IAuthService _authService;
 
     public EspecificacionTecnicaController(
         IEspecificacionTecnicaService service,
         IWebHostEnvironment environment,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IAuthService authService)
     {
         _service = service;
         _environment = environment;
         _configuration = configuration;
+        _authService = authService;
     }
 
     [HttpPost]
@@ -308,6 +311,33 @@ public class EspecificacionTecnicaController : ControllerBase
     {
         request.Usuario = UsuarioSesion();
         return Ok(await _service.CambiarEstadoAsync(versionId, request));
+    }
+
+
+    [HttpPost("{versionId:int}/retornar-borrador")]
+    [Authorize(Policy = "JefeCalidad")]
+    [ProducesResponseType(typeof(CambiarEstadoVersionEtResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<CambiarEstadoVersionEtResponse>> RetornarBorrador(
+        int versionId,
+        [FromBody] RetornarVersionBorradorRequest request)
+    {
+        var usuario = UsuarioSesion();
+
+        if (!await _authService.ValidarPasswordAsync(usuario, request.Password))
+            return Unauthorized(new { mensaje = "La contraseña ingresada no es correcta." });
+
+        var cambio = new CambiarEstadoVersionEtRequest
+        {
+            Accion = "RETORNAR_BORRADOR",
+            Comentario = string.IsNullOrWhiteSpace(request.Comentario)
+                ? "ET vigente retornada a borrador por Jefe de Calidad."
+                : request.Comentario.Trim(),
+            Usuario = usuario
+        };
+
+        return Ok(await _service.CambiarEstadoAsync(versionId, cambio));
     }
 
 
