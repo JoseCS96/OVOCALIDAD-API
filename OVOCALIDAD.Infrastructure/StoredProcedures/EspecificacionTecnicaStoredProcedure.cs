@@ -311,6 +311,23 @@ public class EspecificacionTecnicaStoredProcedure
         return items;
     }
 
+    public async Task<OperacionEstructuraEtResponse> VincularPdfAsync(int versionId, string nombre, string ruta, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@ArchivoOriginalNombre", nombre),
+            new("@ArchivoOriginalRuta", ruta),
+            new("@Usuario", usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_VINCULAR_PDF_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<OperacionEstructuraEtResponse>() : new OperacionEstructuraEtResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request)
     {
         var parametros = new List<SqlParameter>
