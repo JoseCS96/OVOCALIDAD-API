@@ -293,6 +293,7 @@ public class GuardarCaracteristicaEtRequest
     public decimal? ValorCuantitativoIgual { get; set; }
     public string? ValorCualitativo { get; set; }
     public int? FaseId { get; set; }
+    public string? UnidadDeMedida { get; set; }
     public bool EsObligatorio { get; set; } = true;
     public int Orden { get; set; }
     public string Usuario { get; set; } = string.Empty;
