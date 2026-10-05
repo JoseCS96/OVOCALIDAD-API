@@ -19,6 +19,17 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
+    public async Task<bool> ValidarPasswordAsync(string nombreUsuario, string password)
+    {
+        if (string.IsNullOrWhiteSpace(nombreUsuario) || string.IsNullOrWhiteSpace(password))
+            return false;
+
+        var usuario = await _repository.ObtenerUsuarioAutenticacionAsync(nombreUsuario.Trim());
+        return usuario is not null &&
+               !string.IsNullOrWhiteSpace(usuario.PasswordHash) &&
+               _passwordService.Verify(password, usuario.PasswordHash);
+    }
+
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.NombreUsuario) ||
