@@ -12,6 +12,9 @@ public class FichaTecnicaService : IFichaTecnicaService
         _repository = repository;
     }
 
+    public Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request) =>
+        _repository.CrearAsync(request);
+
     public Task<IReadOnlyList<FichaTecnicaCaracteristicaDto>> ListarCaracteristicasAsync(int versionId) =>
         _repository.ListarCaracteristicasAsync(versionId);
 
