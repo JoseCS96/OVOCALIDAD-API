@@ -45,6 +45,9 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
     public Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId) =>
         _storedProcedure.ObtenerVersionesReemplazablesAsync(versionId);
 
+    public Task<OperacionEstructuraEtResponse> VincularPdfAsync(int versionId, string nombre, string ruta, string usuario) =>
+        _storedProcedure.VincularPdfAsync(versionId, nombre, ruta, usuario);
+
     public Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request) =>
         _storedProcedure.GuardarInformacionGeneralAsync(versionId, request);
 
