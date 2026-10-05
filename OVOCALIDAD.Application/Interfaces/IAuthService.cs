@@ -5,4 +5,5 @@ namespace OVOCALIDAD.Application.Interfaces;
 public interface IAuthService
 {
     Task<LoginResponse?> LoginAsync(LoginRequest request);
+    Task<bool> ValidarPasswordAsync(string nombreUsuario, string password);
 }
