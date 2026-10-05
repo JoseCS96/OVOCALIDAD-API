@@ -98,6 +98,7 @@ builder.Services.AddScoped<LoteStoredProcedure>();
 builder.Services.AddScoped<EvaluacionStoredProcedure>();
 
 builder.Services.AddScoped<EspecificacionTecnicaStoredProcedure>();
+builder.Services.AddScoped<FichaTecnicaStoredProcedure>();
 
 builder.Services.AddScoped<MantenimientoStoredProcedure>();
 
@@ -114,6 +115,7 @@ builder.Services.AddScoped<ILoteRepository, LoteRepository>();
 builder.Services.AddScoped<IEvaluacionRepository, EvaluacionRepository>();
 
 builder.Services.AddScoped<IEspecificacionTecnicaRepository, EspecificacionTecnicaRepository>();
+builder.Services.AddScoped<IFichaTecnicaRepository, FichaTecnicaRepository>();
 
 builder.Services.AddScoped<ISeguridadRepository, SeguridadRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
@@ -128,6 +130,7 @@ builder.Services.AddScoped<ILoteService, LoteService>();
 builder.Services.AddScoped<IEvaluacionService, EvaluacionService>();
 
 builder.Services.AddScoped<IEspecificacionTecnicaService, EspecificacionTecnicaService>();
+builder.Services.AddScoped<IFichaTecnicaService, FichaTecnicaService>();
 
 builder.Services.AddScoped<ISeguridadService, SeguridadService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
