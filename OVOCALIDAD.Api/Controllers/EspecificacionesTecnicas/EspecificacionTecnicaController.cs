@@ -110,6 +110,35 @@ public class EspecificacionTecnicaController : ControllerBase
         return detalle is null ? NotFound() : Ok(detalle);
     }
 
+    [HttpPost("{versionId:int}/pdf")]
+    [RequestSizeLimit(15728640)]
+    public async Task<ActionResult<OperacionEstructuraEtResponse>> VincularPdf(int versionId, IFormFile archivo)
+    {
+        var detalle = await _service.ObtenerDetalleAsync(versionId);
+        if (detalle is null) return NotFound();
+        if (!detalle.InformacionGeneral.PermiteEditar)
+            return BadRequest(new { mensaje = "La versión no permite edición." });
+        if (archivo is null || archivo.Length == 0 || archivo.Length > 15728640)
+            return BadRequest(new { mensaje = "Seleccione un PDF de hasta 15 MB." });
+        if (!string.Equals(Path.GetExtension(archivo.FileName), ".pdf", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { mensaje = "Solo se permiten archivos PDF." });
+
+        var root = _configuration["DocumentStorage:RootPath"];
+        var rootPath = string.IsNullOrWhiteSpace(root) ? Path.Combine(_environment.ContentRootPath, "Documentos") : Path.GetFullPath(root);
+        var relativeFolder = Path.Combine("EspecificacionesTecnicas", versionId.ToString());
+        var folder = Path.Combine(rootPath, relativeFolder);
+        Directory.CreateDirectory(folder);
+        var physicalName = $"ET_{versionId}_{Guid.NewGuid():N}.pdf";
+        var fullPath = Path.Combine(folder, physicalName);
+        var relativePath = Path.Combine(relativeFolder, physicalName).Replace(Path.DirectorySeparatorChar, '/');
+
+        await using var stream = new FileStream(fullPath, FileMode.CreateNew);
+        await archivo.CopyToAsync(stream);
+
+        var result = await _service.VincularPdfAsync(versionId, Path.GetFileName(archivo.FileName), relativePath, UsuarioSesion());
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
     [HttpGet("{versionId:int}/pdf")]
     [Produces("application/pdf")]
     [ProducesResponseType(StatusCodes.Status200OK)]
