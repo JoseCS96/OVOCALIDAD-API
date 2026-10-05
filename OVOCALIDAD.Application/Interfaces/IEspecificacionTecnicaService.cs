@@ -15,6 +15,7 @@ public interface IEspecificacionTecnicaService
     Task<IReadOnlyList<ContenidoSeccionEtDto>> ObtenerContenidoSeccionesAsync(int versionId);
     Task<DetalleEspecificacionTecnicaDto?> ObtenerDetalleAsync(int versionId);
     Task<IReadOnlyList<VersionReemplazableEtDto>> ObtenerVersionesReemplazablesAsync(int versionId);
+    Task<OperacionEstructuraEtResponse> VincularPdfAsync(int versionId, string nombre, string ruta, string usuario);
     Task<GuardarInformacionGeneralEtResponse> GuardarInformacionGeneralAsync(int versionId, GuardarInformacionGeneralEtRequest request);
     Task<GuardarContenidoBaseEtResponse> GuardarContenidoBaseAsync(int versionId, GuardarContenidoBaseEtRequest request);
     Task<IReadOnlyList<ResponsableEtCatalogoDto>> ObtenerResponsablesAsync();
