@@ -14,6 +14,27 @@ public class FichaTecnicaStoredProcedure
         _executor = executor;
     }
 
+    public async Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@DocumentoCodigo", request.DocumentoCodigo),
+            new("@DocumentoDescripcionDocumento", request.DocumentoDescripcionDocumento),
+            new("@ProductoCodigo", (object?)request.ProductoCodigo ?? DBNull.Value),
+            new("@VersionNumero", (object?)request.VersionNumero ?? DBNull.Value),
+            new("@VersionInicioVigencia", (object?)request.VersionInicioVigencia ?? DBNull.Value),
+            new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
+            new("@VersionNroPaginas", (object?)request.VersionNroPaginas ?? DBNull.Value),
+            new("@VersionDescripcion", (object?)request.VersionDescripcion ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CREAR_FICHA_TECNICA, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<CrearFichaTecnicaResponse>()
+            : new CrearFichaTecnicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
     public async Task<IReadOnlyList<FichaTecnicaCaracteristicaDto>> ListarCaracteristicasAsync(int versionId)
     {
         var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
