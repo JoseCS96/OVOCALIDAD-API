@@ -313,6 +313,33 @@ public class EspecificacionTecnicaController : ControllerBase
         return Ok(await _service.GuardarCambiosAsync(versionId, request));
     }
 
+    [HttpGet("{versionId:int}/fases")]
+    public async Task<ActionResult<IReadOnlyList<VersionFaseEtDto>>> ListarFases(int versionId)
+    {
+        return Ok(await _service.ListarFasesAsync(versionId));
+    }
+
+    [HttpPut("{versionId:int}/fases")]
+    public async Task<ActionResult<GuardarFaseEtResponse>> GuardarFase(
+        int versionId,
+        [FromBody] GuardarFaseEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.GuardarFaseAsync(versionId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpDelete("{versionId:int}/fases/{versionFaseId:int}")]
+    public async Task<ActionResult<EliminarFaseEtResponse>> EliminarFase(
+        int versionId,
+        int versionFaseId,
+        [FromBody] EliminarFaseEtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.EliminarFaseAsync(versionId, versionFaseId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
     [HttpPut("{versionId:int}/caracteristicas")]
     public async Task<ActionResult<GuardarCaracteristicaEtResponse>> GuardarCaracteristica(
         int versionId,
