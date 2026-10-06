@@ -92,6 +92,17 @@ public class EvaluacionStoredProcedure
         return items;
     }
 
+    public async Task<RutaEvaluacionLoteDto> ObtenerRutaLoteAsync(int loteId)
+    {
+        var parametros = new List<SqlParameter> { new("@LoteId", loteId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_RUTA_EVALUACION_LOTE, parametros);
+        var response = new RutaEvaluacionLoteDto();
+        while (await reader.ReadAsync()) response.Etapas.Add(reader.MapTo<RutaEvaluacionEtapaDto>());
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync()) response.Intentos.Add(reader.MapTo<RutaEvaluacionIntentoDto>());
+        return response;
+    }
+
     public async Task<EvaluacionDto?> ObtenerAsync(int evaluacionId)
     {
         var parametros = new List<SqlParameter> { new("@EvaluacionId", evaluacionId) };
