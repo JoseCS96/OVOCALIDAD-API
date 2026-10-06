@@ -280,6 +280,11 @@ public class EspecificacionTecnicaStoredProcedure
             while (await reader.ReadAsync())
                 presentacionesGenesis.Add(reader.MapTo<PresentacionGenesisEtDto>());
 
+        var fasesEvaluacion = new List<VersionFaseEtDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                fasesEvaluacion.Add(reader.MapTo<VersionFaseEtDto>());
+
         return new DetalleEspecificacionTecnicaDto
         {
             InformacionGeneral = informacionGeneral,
@@ -296,7 +301,8 @@ public class EspecificacionTecnicaStoredProcedure
             CambiosVersion = cambiosVersion,
             Anexos = anexos,
             Historial = historial,
-            PresentacionesGenesis = presentacionesGenesis
+            PresentacionesGenesis = presentacionesGenesis,
+            FasesEvaluacion = fasesEvaluacion
         };
     }
 
@@ -629,6 +635,45 @@ public class EspecificacionTecnicaStoredProcedure
         };
     }
 
+    public async Task<IReadOnlyList<VersionFaseEtDto>> ListarFasesAsync(int versionId)
+    {
+        var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_FASES_ET, parametros);
+        var items = new List<VersionFaseEtDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<VersionFaseEtDto>());
+        return items;
+    }
+
+    public async Task<GuardarFaseEtResponse> GuardarFaseAsync(int versionId, GuardarFaseEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersionFaseId", (object?)request.VersionFaseId ?? DBNull.Value),
+            new("@FaseId", request.FaseId),
+            new("@CodigoReferencia", request.CodigoReferencia),
+            new("@Descripcion", (object?)request.Descripcion ?? DBNull.Value),
+            new("@Orden", request.Orden),
+            new("@EsFinal", request.EsFinal),
+            new("@EsObligatoria", request.EsObligatoria),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_FASE_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<GuardarFaseEtResponse>() : new GuardarFaseEtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<EliminarFaseEtResponse> EliminarFaseAsync(int versionId, int versionFaseId, EliminarFaseEtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@VersionFaseId", versionFaseId),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_FASE_ET, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<EliminarFaseEtResponse>() : new EliminarFaseEtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
     public async Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request)
     {
         var parametros = new List<SqlParameter>
@@ -641,6 +686,7 @@ public class EspecificacionTecnicaStoredProcedure
             new("@ValorCuantitativoFinal", (object?)request.ValorCuantitativoFinal ?? DBNull.Value),
             new("@ValorCuantitativoIgual", (object?)request.ValorCuantitativoIgual ?? DBNull.Value),
             new("@ValorCualitativo", (object?)request.ValorCualitativo ?? DBNull.Value),
+            new("@VersionFaseId", (object?)request.VersionFaseId ?? DBNull.Value),
             new("@FaseId", (object?)request.FaseId ?? DBNull.Value),
             new("@UnidadDeMedida", (object?)request.UnidadDeMedida ?? DBNull.Value),
             new("@EsObligatorio", request.EsObligatorio),
