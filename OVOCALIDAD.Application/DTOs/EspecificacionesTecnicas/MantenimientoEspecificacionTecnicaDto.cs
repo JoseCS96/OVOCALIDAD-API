@@ -292,6 +292,7 @@ public class GuardarCaracteristicaEtRequest
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
     public string? ValorCualitativo { get; set; }
+    public int? VersionFaseId { get; set; }
     public int? FaseId { get; set; }
     public string? UnidadDeMedida { get; set; }
     public bool EsObligatorio { get; set; } = true;
@@ -312,6 +313,7 @@ public class GuardarCaracteristicaEtResponse
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
     public string? ValorCualitativo { get; set; }
+    public int? VersionFaseId { get; set; }
     public int? FaseId { get; set; }
     public bool? EsObligatorio { get; set; }
     public int? Orden { get; set; }
@@ -521,4 +523,43 @@ public class VersionReemplazableEtDto
     public DateTime? VersionInicioVigencia { get; set; }
     public DateTime? VersionFinVigencia { get; set; }
     public string EstadoVersion { get; set; } = string.Empty;
+}
+
+public class GuardarFaseEtRequest
+{
+    public int? VersionFaseId { get; set; }
+    public int FaseId { get; set; }
+    public string CodigoReferencia { get; set; } = string.Empty;
+    public string? Descripcion { get; set; }
+    public int Orden { get; set; }
+    public bool EsFinal { get; set; }
+    public bool EsObligatoria { get; set; } = true;
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarFaseEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionFaseId { get; set; }
+    public int? VersionId { get; set; }
+    public int? FaseId { get; set; }
+    public string? CodigoReferencia { get; set; }
+    public string? Descripcion { get; set; }
+    public int? Orden { get; set; }
+    public bool? EsFinal { get; set; }
+    public bool? EsObligatoria { get; set; }
+}
+
+public class EliminarFaseEtRequest
+{
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class EliminarFaseEtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionFaseId { get; set; }
+    public int? VersionId { get; set; }
 }
