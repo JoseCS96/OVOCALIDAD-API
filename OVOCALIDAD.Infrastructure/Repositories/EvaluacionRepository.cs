@@ -10,6 +10,9 @@ public class EvaluacionRepository : IEvaluacionRepository
 
     public EvaluacionRepository(EvaluacionStoredProcedure storedProcedure) => _storedProcedure = storedProcedure;
 
+    public Task<CrearEvaluacionResponse> CrearAsync(CrearEvaluacionRequest request, string usuario) =>
+        _storedProcedure.CrearAsync(request, usuario);
+
     public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario) =>
         _storedProcedure.IniciarAsync(evaluacionId, usuario);
 
