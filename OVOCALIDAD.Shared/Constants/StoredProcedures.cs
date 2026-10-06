@@ -66,6 +66,9 @@ public static class StoredProcedures
     public const string SP_GUARDAR_CONTENIDO_ROTULADO_ET = "SP_GUARDAR_CONTENIDO_ROTULADO_ET";
     public const string SP_GUARDAR_CAMBIOS_ET = "SP_GUARDAR_CAMBIOS_ET";
     public const string SP_GUARDAR_ANEXOS_ET = "SP_GUARDAR_ANEXOS_ET";
+    public const string SP_LISTAR_FASES_ET = "SP_LISTAR_FASES_ET";
+    public const string SP_GUARDAR_FASE_ET = "SP_GUARDAR_FASE_ET";
+    public const string SP_ELIMINAR_FASE_ET = "SP_ELIMINAR_FASE_ET";
     public const string SP_GUARDAR_CARACTERISTICA_ET = "SP_GUARDAR_CARACTERISTICA_ET";
     public const string SP_ELIMINAR_CARACTERISTICA_ET = "SP_ELIMINAR_CARACTERISTICA_ET";
     public const string SP_CAMBIAR_ESTADO_VERSION_ET = "SP_CAMBIAR_ESTADO_VERSION_ET";
