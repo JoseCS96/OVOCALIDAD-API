@@ -22,6 +22,9 @@ public class EvaluacionRepository : IEvaluacionRepository
     public Task<List<PanelEvaluacionItemDto>> ListarEvaluacionesAsync(string usuario) =>
         _storedProcedure.ListarEvaluacionesAsync(usuario);
 
+    public Task<RutaEvaluacionLoteDto> ObtenerRutaLoteAsync(int loteId) =>
+        _storedProcedure.ObtenerRutaLoteAsync(loteId);
+
     public Task<EvaluacionDto?> ObtenerAsync(int evaluacionId) =>
         _storedProcedure.ObtenerAsync(evaluacionId);
 
