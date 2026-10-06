@@ -65,6 +65,15 @@ public class EvaluacionController : ControllerBase
         return Ok(response);
     }
 
+    [HttpGet("lote/{loteId:int}/ruta")]
+    public async Task<ActionResult<RutaEvaluacionLoteDto>> ObtenerRutaLote(int loteId)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.VER")) return Forbid();
+        return Ok(await _service.ObtenerRutaLoteAsync(loteId));
+    }
+
     [HttpGet("{evaluacionId:int}")]
     public async Task<ActionResult<EvaluacionDto>> Obtener(int evaluacionId)
     {
