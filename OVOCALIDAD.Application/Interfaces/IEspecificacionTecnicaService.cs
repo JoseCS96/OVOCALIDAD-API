@@ -31,6 +31,9 @@ public interface IEspecificacionTecnicaService
     Task<GuardarContenidoRotuladoEtResponse> GuardarContenidoRotuladoAsync(int versionId, GuardarContenidoRotuladoEtRequest request);
     Task<GuardarCambiosEtResponse> GuardarCambiosAsync(int versionId, GuardarCambiosEtRequest request);
     Task<GuardarAnexosEtResponse> GuardarAnexosAsync(int versionId, GuardarAnexosEtRequest request);
+    Task<IReadOnlyList<VersionFaseEtDto>> ListarFasesAsync(int versionId);
+    Task<GuardarFaseEtResponse> GuardarFaseAsync(int versionId, GuardarFaseEtRequest request);
+    Task<EliminarFaseEtResponse> EliminarFaseAsync(int versionId, int versionFaseId, EliminarFaseEtRequest request);
     Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request);
     Task<EliminarCaracteristicaEtResponse> EliminarCaracteristicaAsync(int versionId, int versCaractId, EliminarCaracteristicaEtRequest request);
     Task<IReadOnlyList<EspecificacionTecnicaListadoDto>> ListarAsync(ListarEspecificacionesTecnicasFiltro filtro);
