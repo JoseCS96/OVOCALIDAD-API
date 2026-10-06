@@ -93,6 +93,15 @@ public class EspecificacionTecnicaRepository : IEspecificacionTecnicaRepository
     public Task<GuardarAnexosEtResponse> GuardarAnexosAsync(int versionId, GuardarAnexosEtRequest request) =>
         _storedProcedure.GuardarAnexosAsync(versionId, request);
 
+    public Task<IReadOnlyList<VersionFaseEtDto>> ListarFasesAsync(int versionId) =>
+        _storedProcedure.ListarFasesAsync(versionId);
+
+    public Task<GuardarFaseEtResponse> GuardarFaseAsync(int versionId, GuardarFaseEtRequest request) =>
+        _storedProcedure.GuardarFaseAsync(versionId, request);
+
+    public Task<EliminarFaseEtResponse> EliminarFaseAsync(int versionId, int versionFaseId, EliminarFaseEtRequest request) =>
+        _storedProcedure.EliminarFaseAsync(versionId, versionFaseId, request);
+
     public Task<GuardarCaracteristicaEtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaEtRequest request) =>
         _storedProcedure.GuardarCaracteristicaAsync(versionId, request);
 
