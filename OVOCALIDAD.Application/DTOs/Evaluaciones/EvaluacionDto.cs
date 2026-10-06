@@ -108,3 +108,48 @@ public class EvaluacionAvanceDto
     public int ParametrosPendientes { get; set; }
     public decimal PorcentajeAvance { get; set; }
 }
+
+public class RutaEvaluacionLoteDto
+{
+    public List<RutaEvaluacionEtapaDto> Etapas { get; set; } = [];
+    public List<RutaEvaluacionIntentoDto> Intentos { get; set; } = [];
+}
+public class RutaEvaluacionEtapaDto
+{
+    public int VersionFaseId { get; set; }
+    public int Orden { get; set; }
+    public string CodigoReferencia { get; set; } = string.Empty;
+    public string? VersionFaseDescripcion { get; set; }
+    public int FaseId { get; set; }
+    public string FaseCodigo { get; set; } = string.Empty;
+    public string FaseDescripcion { get; set; } = string.Empty;
+    public bool EsFinal { get; set; }
+    public bool EsObligatoria { get; set; }
+    public int CantidadCaracteristicas { get; set; }
+    public int CantidadIntentos { get; set; }
+    public int? UltimaEvaluacionId { get; set; }
+    public string EstadoEtapa { get; set; } = string.Empty;
+}
+public class RutaEvaluacionIntentoDto
+{
+    public int EvaluacionId { get; set; }
+    public int? VersionFaseId { get; set; }
+    public int? VersionFaseOrden { get; set; }
+    public string? CodigoReferencia { get; set; }
+    public int? EvaluacionPadreId { get; set; }
+    public short Intento { get; set; }
+    public int TipoEvaluacionId { get; set; }
+    public string TipoEvaluacion { get; set; } = string.Empty;
+    public int EstadoEvaluacionId { get; set; }
+    public string EstadoEvaluacion { get; set; } = string.Empty;
+    public bool? ResultadoGeneral { get; set; }
+    public string? UsuarioEvaluador { get; set; }
+    public DateTime? FechaInicio { get; set; }
+    public DateTime? FechaFin { get; set; }
+    public string? MotivoReevaluacion { get; set; }
+    public string? Observacion { get; set; }
+    public bool EsReevaluacion { get; set; }
+    public int ResultadosRegistrados { get; set; }
+    public int ResultadosConformes { get; set; }
+    public int ResultadosNoConformes { get; set; }
+}
