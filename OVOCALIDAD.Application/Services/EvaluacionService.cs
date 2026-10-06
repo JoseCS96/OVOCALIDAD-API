@@ -9,6 +9,9 @@ public class EvaluacionService : IEvaluacionService
 
     public EvaluacionService(IEvaluacionRepository repository) => _repository = repository;
 
+    public Task<CrearEvaluacionResponse> CrearAsync(CrearEvaluacionRequest request, string usuario) =>
+        _repository.CrearAsync(request, usuario);
+
     public Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario) =>
         _repository.IniciarAsync(evaluacionId, usuario);
 
