@@ -8,6 +8,7 @@ public interface IEvaluacionService
     Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario);
     Task<PanelEvaluadorDto> ObtenerPanelAsync(string usuario);
     Task<List<PanelEvaluacionItemDto>> ListarEvaluacionesAsync(string usuario);
+    Task<RutaEvaluacionLoteDto> ObtenerRutaLoteAsync(int loteId);
     Task<EvaluacionDto?> ObtenerAsync(int evaluacionId);
     Task<GuardarResultadoResponse> GuardarResultadoAsync(int evaluacionId, GuardarResultadoRequest request, string usuario);
     Task<CerrarEvaluacionResponse> CerrarAsync(int evaluacionId, string usuario);
