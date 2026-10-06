@@ -17,6 +17,7 @@ public class DetalleEspecificacionTecnicaDto
     public IReadOnlyList<AnexoEtDto> Anexos { get; set; } = [];
     public IReadOnlyList<HistorialEstadoEtDto> Historial { get; set; } = [];
     public IReadOnlyList<PresentacionGenesisEtDto> PresentacionesGenesis { get; set; } = [];
+    public IReadOnlyList<VersionFaseEtDto> FasesEvaluacion { get; set; } = [];
 }
 
 public class InformacionGeneralEtDto
@@ -163,6 +164,12 @@ public class CaracteristicaVersionEtDto
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
     public string? ValorCualitativo { get; set; }
+    public int? VersionFaseId { get; set; }
+    public string? FaseCodigoReferencia { get; set; }
+    public string? VersionFaseDescripcion { get; set; }
+    public int? VersionFaseOrden { get; set; }
+    public bool? VersionFaseEsFinal { get; set; }
+    public bool? VersionFaseEsObligatoria { get; set; }
     public int? FaseId { get; set; }
     public string? FaseCodigo { get; set; }
     public string? Fase { get; set; }
@@ -225,4 +232,19 @@ public class PresentacionGenesisEtDto
     public string? DescripcionGenesis { get; set; }
     public int? EstadoGenesis { get; set; }
     public string? Estado { get; set; }
+}
+
+public class VersionFaseEtDto
+{
+    public int VersionFaseId { get; set; }
+    public int VersionId { get; set; }
+    public int Orden { get; set; }
+    public string CodigoReferencia { get; set; } = string.Empty;
+    public string? Descripcion { get; set; }
+    public int FaseId { get; set; }
+    public string FaseCodigo { get; set; } = string.Empty;
+    public string FaseDescripcion { get; set; } = string.Empty;
+    public bool EsFinal { get; set; }
+    public bool EsObligatoria { get; set; }
+    public int CantidadCaracteristicas { get; set; }
 }
