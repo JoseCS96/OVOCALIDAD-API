@@ -7,6 +7,8 @@ public class GuardarResultadoResponse
     public int? EvaluacionResultadoId { get; set; }
     public int? EvaluacionId { get; set; }
     public int? VersCaractId { get; set; }
+    public int? VersionFaseId { get; set; }
+    public int? EvaluacionPadreId { get; set; }
     public string? TipoCriterio { get; set; }
     public string? TipoResultado { get; set; }
     public string? ResultadoTexto { get; set; }
