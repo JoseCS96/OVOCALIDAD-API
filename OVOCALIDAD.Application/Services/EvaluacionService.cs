@@ -21,6 +21,9 @@ public class EvaluacionService : IEvaluacionService
     public Task<List<PanelEvaluacionItemDto>> ListarEvaluacionesAsync(string usuario) =>
         _repository.ListarEvaluacionesAsync(usuario);
 
+    public Task<RutaEvaluacionLoteDto> ObtenerRutaLoteAsync(int loteId) =>
+        _repository.ObtenerRutaLoteAsync(loteId);
+
     public Task<EvaluacionDto?> ObtenerAsync(int evaluacionId) =>
         _repository.ObtenerAsync(evaluacionId);
 
