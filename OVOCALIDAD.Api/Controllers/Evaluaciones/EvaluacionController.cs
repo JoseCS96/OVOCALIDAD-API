@@ -41,6 +41,19 @@ public class EvaluacionController : ControllerBase
         return Ok(await _service.ListarEvaluacionesAsync(usuario));
     }
 
+    [HttpPost("crear")]
+    public async Task<ActionResult<CrearEvaluacionResponse>> Crear([FromBody] CrearEvaluacionRequest request)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+        if (!await TienePermisoAsync(usuario, "EVALUACION.INICIAR")) return Forbid();
+        if (request.LoteId <= 0 || request.TipoEvaluacionId <= 0)
+            return BadRequest(new { mensaje = "Lote y tipo de evaluación son obligatorios." });
+
+        var response = await _service.CrearAsync(request, usuario);
+        return Ok(response);
+    }
+
     [HttpPost("{evaluacionId:int}/iniciar")]
     public async Task<ActionResult<IniciarEvaluacionResponse>> Iniciar(int evaluacionId)
     {
@@ -90,13 +103,16 @@ public class EvaluacionController : ControllerBase
     }
 
     [HttpPost("{evaluacionId:int}/terminar")]
-    public async Task<ActionResult<TerminarEvaluacionResponse>> Terminar(int evaluacionId)
+    public async Task<ActionResult<CerrarEvaluacionResponse>> Terminar(int evaluacionId)
     {
         var usuario = User.Identity?.Name;
         if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
         if (!await TienePermisoAsync(usuario, "EVALUACION.TERMINAR")) return Forbid();
 
-        var response = await _service.TerminarAsync(evaluacionId, usuario);
+        // En el flujo por etapas, "Terminar" debe consolidar el intento:
+        // calcula ResultadoGeneral, mantiene el lote en EVALUACION si corresponde
+        // y habilita siguiente etapa o reevaluación.
+        var response = await _service.CerrarAsync(evaluacionId, usuario);
         return Ok(response);
     }
 
