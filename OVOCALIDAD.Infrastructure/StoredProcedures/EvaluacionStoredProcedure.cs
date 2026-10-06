@@ -12,6 +12,27 @@ public class EvaluacionStoredProcedure
 
     public EvaluacionStoredProcedure(StoredProcedureExecutor executor) => _executor = executor;
 
+    public async Task<CrearEvaluacionResponse> CrearAsync(CrearEvaluacionRequest request, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@LoteId", request.LoteId),
+            new("@TipoEvaluacionId", request.TipoEvaluacionId),
+            new("@Usuario", usuario),
+            new("@UsuarioEvaluador", DBNull.Value),
+            new("@EvaluacionPadreId", (object?)request.EvaluacionPadreId ?? DBNull.Value),
+            new("@MotivoReevaluacion", (object?)request.MotivoReevaluacion ?? DBNull.Value),
+            new("@Observacion", (object?)request.Observacion ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CREAR_EVALUACION, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<CrearEvaluacionResponse>() : new CrearEvaluacionResponse
+        {
+            CodigoResultado = -1,
+            Mensaje = "El procedimiento no devolvió resultado."
+        };
+    }
+
     public async Task<IniciarEvaluacionResponse> IniciarAsync(int evaluacionId, string usuario)
     {
         var parametros = new List<SqlParameter>
