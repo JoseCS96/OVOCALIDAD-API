@@ -65,6 +65,21 @@ public class FichaTecnicaController : ControllerBase
     public async Task<ActionResult<EliminarFichaTecnicaResponse>> EliminarBorrador(int versionId) =>
         Ok(await _service.EliminarBorradorAsync(versionId, UsuarioSesion()));
 
+    [HttpGet("{versionId:int}/secciones")]
+    public async Task<ActionResult<IReadOnlyList<SeccionFtDto>>> ListarSecciones(int versionId) => Ok(await _service.ListarSeccionesAsync(versionId));
+
+    [HttpPost("{versionId:int}/secciones")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> AgregarSeccion(int versionId,[FromBody] AgregarSeccionFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.AgregarSeccionAsync(versionId,request));}
+
+    [HttpPut("{versionId:int}/secciones/{versSeccId:int}/contenido")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> GuardarContenidoSeccion(int versionId,int versSeccId,[FromBody] GuardarContenidoSeccionFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.GuardarContenidoSeccionAsync(versionId,versSeccId,request));}
+
+    [HttpDelete("{versionId:int}/secciones/{versSeccId:int}")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> QuitarSeccion(int versionId,int versSeccId) => Ok(await _service.QuitarSeccionAsync(versionId,versSeccId,UsuarioSesion()));
+
+    [HttpPut("{versionId:int}/secciones/orden")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> ReordenarSecciones(int versionId,[FromBody] ReordenarSeccionesFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.ReordenarSeccionesAsync(versionId,request));}
+
     [HttpGet("{versionId:int}/configuracion-certificado")]
     public async Task<ActionResult<IReadOnlyList<ConfiguracionCertificadoFtDto>>> ObtenerConfiguracionCertificado(int versionId) =>
         Ok(await _service.ObtenerConfiguracionCertificadoAsync(versionId));
