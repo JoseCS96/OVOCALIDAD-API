@@ -42,6 +42,10 @@ public class ConfiguracionCertificadoFtDto
     public string Determinacion { get; set; } = string.Empty;
     public int? TipoCaractId { get; set; }
     public string? TipoCaractDescripcion { get; set; }
+    public int? FaseId { get; set; }
+    public int? VersionFaseId { get; set; }
+    public string? FaseCodigo { get; set; }
+    public string? FaseDescripcion { get; set; }
     public int TipoCriterioId { get; set; }
     public decimal? ValorCuantitativoInicial { get; set; }
     public decimal? ValorCuantitativoFinal { get; set; }
