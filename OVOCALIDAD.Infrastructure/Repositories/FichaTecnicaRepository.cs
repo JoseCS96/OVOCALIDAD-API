@@ -13,6 +13,9 @@ public class FichaTecnicaRepository : IFichaTecnicaRepository
         _storedProcedure = storedProcedure;
     }
 
+    public Task<IReadOnlyList<FichaTecnicaCertificadoDto>> ListarParaCertificadoAsync(string? busqueda) =>
+        _storedProcedure.ListarParaCertificadoAsync(busqueda);
+
     public Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request) =>
         _storedProcedure.CrearAsync(request);
 
