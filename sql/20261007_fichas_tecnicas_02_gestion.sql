@@ -18,7 +18,7 @@ BEGIN
         , D.DocumentoDescripcionDocumento
         , D.ProductoCodigo
         , V.VersionNumero
-        , V.InicioVigencia AS VersionInicioVigencia
+        , V.VersionInicioVigencia
         , V.EstVerId
         , EV.EstVerDescripcion AS EstadoVersion
         , COUNT(CASE WHEN VFC.Estado = 1 THEN 1 END) AS CantidadCaracteristicas
@@ -35,7 +35,7 @@ BEGIN
            OR D.DocumentoCodigo LIKE '%' + @Busqueda + '%'
            OR D.DocumentoDescripcionDocumento LIKE '%' + @Busqueda + '%')
     GROUP BY V.VersionId,D.DocumentoId,D.DocumentoCodigo,D.DocumentoDescripcionDocumento,
-             D.ProductoCodigo,V.VersionNumero,V.InicioVigencia,V.EstVerId,EV.EstVerDescripcion
+             D.ProductoCodigo,V.VersionNumero,V.VersionInicioVigencia,V.EstVerId,EV.EstVerDescripcion
     ORDER BY D.ProductoCodigo,D.DocumentoCodigo,V.VersionNumero DESC;
 END;
 GO
@@ -55,11 +55,11 @@ BEGIN
         , D.DocumentoDescripcionDocumento
         , D.ProductoCodigo
         , V.VersionNumero
-        , V.InicioVigencia AS VersionInicioVigencia
+        , V.VersionInicioVigencia
         , V.EstVerId
         , EV.EstVerDescripcion AS EstadoVersion
-        , V.NroPaginas AS VersionNroPaginas
-        , V.Descripcion AS VersionDescripcion
+        , V.VersionNroPaginas
+        , V.VersionDescripcion
     FROM dbo.VERSION V
     INNER JOIN dbo.DOCUMENTO D ON D.DocumentoId = V.DocumentoId
     INNER JOIN dbo.ESTADOVERSION EV ON EV.EstVerId = V.EstVerId
