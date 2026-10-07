@@ -47,6 +47,8 @@ public class CertificadoStoredProcedure
         if (await r.NextResultAsync())
             while (await r.ReadAsync()) dto.Secciones.Add(r.MapTo<PlantillaCertificadoSeccionDto>());
         if (await r.NextResultAsync())
+            while (await r.ReadAsync()) dto.Resultados.Add(r.MapTo<PlantillaCertificadoResultadoDto>());
+        if (await r.NextResultAsync())
             while (await r.ReadAsync()) dto.Caracteristicas.Add(r.MapTo<PlantillaCertificadoCaracteristicaDto>());
         return dto;
     }
