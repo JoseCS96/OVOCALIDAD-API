@@ -15,7 +15,7 @@ BEGIN
         , D.DocumentoDescripcionDocumento
         , D.ProductoCodigo
         , V.VersionNumero
-        , V.InicioVigencia AS VersionInicioVigencia
+        , V.VersionInicioVigencia
         , V.EstVerId
         , EV.EstVerDescripcion AS EstadoVersion
         , COUNT(VFC.VersionFtCaracteristicaId) AS CantidadParametrosCertificables
@@ -29,8 +29,9 @@ BEGIN
        AND VFC.Estado = 1
        AND VFC.ImprimeCertificado = 1
     WHERE D.Estado = 1
+      AND V.Estado = 1
       AND D.TipoDocumentoId = 3
-      AND V.EstVerId = 1
+      AND EV.EstVerDescripcion = 'VIGENTE'
       AND (
             @Busqueda IS NULL
             OR D.ProductoCodigo LIKE '%' + @Busqueda + '%'
@@ -44,7 +45,7 @@ BEGIN
         , D.DocumentoDescripcionDocumento
         , D.ProductoCodigo
         , V.VersionNumero
-        , V.InicioVigencia
+        , V.VersionInicioVigencia
         , V.EstVerId
         , EV.EstVerDescripcion
     ORDER BY
@@ -52,3 +53,4 @@ BEGIN
         , D.DocumentoCodigo
         , V.VersionNumero DESC;
 END;
+GO
