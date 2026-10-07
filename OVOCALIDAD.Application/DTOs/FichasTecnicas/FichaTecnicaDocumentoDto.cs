@@ -65,3 +65,11 @@ public class FichaTecnicaGestionDto
     public int CantidadCaracteristicas { get; set; }
     public int CantidadParametrosCertificables { get; set; }
 }
+
+
+public class EliminarFichaTecnicaResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int VersionId { get; set; }
+}
