@@ -18,6 +18,9 @@ public class LoteService : ILoteService
     public Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId) =>
         _loteRepository.ObtenerDetalleAsync(loteId);
 
+    public Task<TrazabilidadLoteDto?> ObtenerTrazabilidadAsync(int loteId) =>
+        _loteRepository.ObtenerTrazabilidadAsync(loteId);
+
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _loteRepository.ObtenerCatalogosAsync();
 
