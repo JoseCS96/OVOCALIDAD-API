@@ -98,6 +98,46 @@ public class LoteStoredProcedure
         return new DetalleLoteDto { Lote = lote, Evaluaciones = evaluaciones, Resumen = resumen };
     }
 
+    public async Task<TrazabilidadLoteDto?> ObtenerTrazabilidadAsync(int loteId)
+    {
+        var parametros = new List<SqlParameter> { new("@LoteId", loteId) };
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_REPORTE_TRAZABILIDAD_LOTE,
+            parametros);
+
+        if (!await reader.ReadAsync()) return null;
+        var lote = reader.MapTo<TrazabilidadLoteCabeceraDto>();
+
+        var etapas = new List<TrazabilidadEtapaDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                etapas.Add(reader.MapTo<TrazabilidadEtapaDto>());
+
+        var evaluaciones = new List<TrazabilidadEvaluacionDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                evaluaciones.Add(reader.MapTo<TrazabilidadEvaluacionDto>());
+
+        var resultados = new List<TrazabilidadResultadoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                resultados.Add(reader.MapTo<TrazabilidadResultadoDto>());
+
+        var historial = new List<TrazabilidadEstadoDto>();
+        if (await reader.NextResultAsync())
+            while (await reader.ReadAsync())
+                historial.Add(reader.MapTo<TrazabilidadEstadoDto>());
+
+        return new TrazabilidadLoteDto
+        {
+            Lote = lote,
+            Etapas = etapas,
+            Evaluaciones = evaluaciones,
+            Resultados = resultados,
+            HistorialEstados = historial
+        };
+    }
+
     public async Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda)
     {
         var parametros = new List<SqlParameter>
