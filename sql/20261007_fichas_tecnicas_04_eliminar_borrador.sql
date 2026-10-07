@@ -10,8 +10,7 @@ BEGIN
 
     DECLARE
         @DocumentoId INT,
-        @EstVerId INT,
-        @EstadoVersion VARCHAR(100);
+        @VersionReemplazaAId INT;
 
     BEGIN TRY
         SET @Usuario = NULLIF(LTRIM(RTRIM(@Usuario)), '');
@@ -26,13 +25,10 @@ BEGIN
 
         SELECT
             @DocumentoId = V.DocumentoId,
-            @EstVerId = V.EstVerId,
-            @EstadoVersion = EV.EstVerDescripcion
+            @VersionReemplazaAId = V.VersionReemplazaAId
         FROM dbo.VERSION V
         INNER JOIN dbo.DOCUMENTO D
             ON D.DocumentoId = V.DocumentoId
-        INNER JOIN dbo.ESTADOVERSION EV
-            ON EV.EstVerId = V.EstVerId
         WHERE V.VersionId = @VersionId
           AND V.Estado = 1
           AND D.Estado = 1
@@ -46,28 +42,7 @@ BEGIN
             RETURN;
         END;
 
-        IF @EstVerId <> 2 OR UPPER(ISNULL(@EstadoVersion, '')) <> 'BORRADOR'
-        BEGIN
-            SELECT -1 AS CodigoResultado,
-                   'Solo se puede eliminar una versión de ficha técnica en estado BORRADOR.' AS Mensaje,
-                   @VersionId AS VersionId;
-            RETURN;
-        END;
-
-        IF EXISTS
-        (
-            SELECT 1
-            FROM dbo.CERTIFICADOPLANTILLA
-            WHERE VersionFtId = @VersionId
-              AND Estado = 1
-        )
-        BEGIN
-            SELECT -1 AS CodigoResultado,
-                   'No se puede eliminar la FT porque tiene plantillas de certificado activas.' AS Mensaje,
-                   @VersionId AS VersionId;
-            RETURN;
-        END;
-
+        /* Una FT utilizada en certificados emitidos ya es evidencia histórica. */
         IF EXISTS
         (
             SELECT 1
@@ -76,26 +51,56 @@ BEGIN
         )
         BEGIN
             SELECT -1 AS CodigoResultado,
-                   'No se puede eliminar la FT porque ya fue utilizada en certificados.' AS Mensaje,
-                   @VersionId AS VersionId;
-            RETURN;
-        END;
-
-        IF EXISTS
-        (
-            SELECT 1
-            FROM dbo.VERSION
-            WHERE VersionReemplazaAId = @VersionId
-              AND Estado = 1
-        )
-        BEGIN
-            SELECT -1 AS CodigoResultado,
-                   'No se puede eliminar la FT porque otra versión activa la referencia como versión reemplazada.' AS Mensaje,
+                   'No se puede eliminar la FT porque ya fue utilizada en certificados emitidos.' AS Mensaje,
                    @VersionId AS VersionId;
             RETURN;
         END;
 
         BEGIN TRANSACTION;
+
+        /* Si una versión posterior reemplaza a la versión eliminada,
+           la enlazamos con el reemplazo anterior para no dejar referencias
+           activas apuntando a una versión inactiva. */
+        UPDATE dbo.VERSION
+        SET
+            VersionReemplazaAId = @VersionReemplazaAId,
+            AudUsuarioModificacion = @Usuario,
+            AudFechaActualizacion = SYSDATETIME()
+        WHERE VersionReemplazaAId = @VersionId
+          AND Estado = 1;
+
+        /* Desactivar diseño de certificado asociado a esta FT. */
+        UPDATE CPC
+        SET
+            CPC.Estado = 0,
+            CPC.AudUsuarioModificacion = @Usuario,
+            CPC.AudFechaActualizacion = SYSDATETIME()
+        FROM dbo.CERTIFICADOPLANTILLACARACTERISTICA CPC
+        INNER JOIN dbo.CERTIFICADOPLANTILLASECCION CPS
+            ON CPS.CertificadoPlantillaSeccionId = CPC.CertificadoPlantillaSeccionId
+        INNER JOIN dbo.CERTIFICADOPLANTILLA CP
+            ON CP.CertificadoPlantillaId = CPS.CertificadoPlantillaId
+        WHERE CP.VersionFtId = @VersionId
+          AND CPC.Estado = 1;
+
+        UPDATE CPS
+        SET
+            CPS.Estado = 0,
+            CPS.AudUsuarioModificacion = @Usuario,
+            CPS.AudFechaActualizacion = SYSDATETIME()
+        FROM dbo.CERTIFICADOPLANTILLASECCION CPS
+        INNER JOIN dbo.CERTIFICADOPLANTILLA CP
+            ON CP.CertificadoPlantillaId = CPS.CertificadoPlantillaId
+        WHERE CP.VersionFtId = @VersionId
+          AND CPS.Estado = 1;
+
+        UPDATE dbo.CERTIFICADOPLANTILLA
+        SET
+            Estado = 0,
+            AudUsuarioModificacion = @Usuario,
+            AudFechaActualizacion = SYSDATETIME()
+        WHERE VersionFtId = @VersionId
+          AND Estado = 1;
 
         UPDATE dbo.VERSIONFTCARACTERISTICA
         SET
@@ -134,7 +139,7 @@ BEGIN
 
         SELECT
             0 AS CodigoResultado,
-            'Ficha técnica en borrador eliminada correctamente.' AS Mensaje,
+            'Ficha técnica eliminada correctamente.' AS Mensaje,
             @VersionId AS VersionId;
     END TRY
     BEGIN CATCH
