@@ -38,4 +38,10 @@ public class FichaTecnicaService : IFichaTecnicaService
 
     public Task<EliminarFichaTecnicaResponse> EliminarBorradorAsync(int versionId, string usuario) =>
         _repository.EliminarBorradorAsync(versionId, usuario);
+
+    public Task<IReadOnlyList<SeccionFtDto>> ListarSeccionesAsync(int versionId) => _repository.ListarSeccionesAsync(versionId);
+    public Task<SeccionFtOperacionResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionFtRequest request) => _repository.GuardarContenidoSeccionAsync(versionId, versSeccId, request);
+    public Task<SeccionFtOperacionResponse> AgregarSeccionAsync(int versionId, AgregarSeccionFtRequest request) => _repository.AgregarSeccionAsync(versionId, request);
+    public Task<SeccionFtOperacionResponse> QuitarSeccionAsync(int versionId, int versSeccId, string usuario) => _repository.QuitarSeccionAsync(versionId, versSeccId, usuario);
+    public Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request) => _repository.ReordenarSeccionesAsync(versionId, request);
 }
