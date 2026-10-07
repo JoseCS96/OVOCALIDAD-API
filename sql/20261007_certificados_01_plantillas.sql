@@ -186,7 +186,7 @@ BEGIN
         ON VFC.VersionFtCaracteristicaId = CPC.VersionFtCaracteristicaId
     INNER JOIN dbo.CARACTERISTICA C ON C.CaracteristicaId = VFC.CaracteristicaId
     LEFT JOIN dbo.TIPO_CARACTERISTICA TC ON TC.TipoCaractId = C.TipoCaractId
-    LEFT JOIN dbo.METODOENSAYO ME ON ME.MetEnsayoId = C.MetEnsayoId
+    LEFT JOIN dbo.METODO_DE_ENSAYO ME ON ME.MetEnsayoId = C.MetEnsayoId
     WHERE CPS.CertificadoPlantillaId = @CertificadoPlantillaId
       AND CPS.Estado = 1
       AND CPC.Estado = 1
