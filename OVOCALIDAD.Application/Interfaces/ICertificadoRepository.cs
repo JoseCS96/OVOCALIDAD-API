@@ -7,4 +7,6 @@ public interface ICertificadoRepository
     Task<PlantillaCertificadoDto?> ObtenerPlantillaAsync(int id);
     Task<PlantillaCertificadoOperacionResponse> GuardarDisenoAsync(int id, GuardarDisenoPlantillaCertificadoRequest request);
     Task<PlantillaCertificadoOperacionResponse> EliminarPlantillaAsync(int id, string usuario);
+    Task<CertificadoEmpresaDto?> ObtenerEmpresaAsync();
+    Task<GuardarCertificadoEmpresaResponse> GuardarEmpresaAsync(GuardarCertificadoEmpresaRequest request);
 }
