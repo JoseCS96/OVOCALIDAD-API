@@ -12,4 +12,5 @@ public interface IFichaTecnicaService
     Task<GuardarCaracteristicaFtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaFtRequest request);
     Task<EliminarCaracteristicaFtResponse> EliminarCaracteristicaAsync(int versionFtCaracteristicaId, string usuario);
     Task<IReadOnlyList<ConfiguracionCertificadoFtDto>> ObtenerConfiguracionCertificadoAsync(int versionId);
+    Task<EliminarFichaTecnicaResponse> EliminarBorradorAsync(int versionId, string usuario);
 }
