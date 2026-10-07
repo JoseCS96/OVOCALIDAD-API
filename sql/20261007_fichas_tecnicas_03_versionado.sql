@@ -1,52 +1,42 @@
-/* OVOCALIDAD - FT: documento unico por producto + version ET origen
-   Ejecutar antes de los SPs de gestion FT.
-*/
+/* OVOCALIDAD - FT: documento unico por producto + version ET origen */
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 
-BEGIN TRY
-    BEGIN TRANSACTION;
+IF COL_LENGTH('dbo.VERSION', 'VersionEtOrigenId') IS NULL
+BEGIN
+    ALTER TABLE dbo.VERSION
+    ADD VersionEtOrigenId INT NULL;
+END;
+GO
 
-    IF COL_LENGTH('dbo.VERSION', 'VersionEtOrigenId') IS NULL
-    BEGIN
-        ALTER TABLE dbo.VERSION ADD VersionEtOrigenId INT NULL;
-    END;
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.foreign_keys
+    WHERE name = 'FK_VERSION_VERSION_ET_ORIGEN'
+      AND parent_object_id = OBJECT_ID('dbo.VERSION')
+)
+BEGIN
+    ALTER TABLE dbo.VERSION WITH CHECK
+    ADD CONSTRAINT FK_VERSION_VERSION_ET_ORIGEN
+        FOREIGN KEY (VersionEtOrigenId)
+        REFERENCES dbo.VERSION(VersionId);
 
-    IF NOT EXISTS (
-        SELECT 1 FROM sys.foreign_keys
-        WHERE name = 'FK_VERSION_VERSION_ET_ORIGEN'
-          AND parent_object_id = OBJECT_ID('dbo.VERSION')
-    )
-    BEGIN
-        ALTER TABLE dbo.VERSION WITH CHECK
-        ADD CONSTRAINT FK_VERSION_VERSION_ET_ORIGEN
-            FOREIGN KEY (VersionEtOrigenId)
-            REFERENCES dbo.VERSION(VersionId);
+    ALTER TABLE dbo.VERSION
+        CHECK CONSTRAINT FK_VERSION_VERSION_ET_ORIGEN;
+END;
+GO
 
-        ALTER TABLE dbo.VERSION
-            CHECK CONSTRAINT FK_VERSION_VERSION_ET_ORIGEN;
-    END;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM sys.indexes
-        WHERE object_id = OBJECT_ID('dbo.VERSION')
-          AND name = 'IX_VERSION_VERSION_ET_ORIGEN'
-    )
-    BEGIN
-        CREATE INDEX IX_VERSION_VERSION_ET_ORIGEN
-            ON dbo.VERSION(VersionEtOrigenId)
-            WHERE VersionEtOrigenId IS NOT NULL;
-    END;
-
-    COMMIT TRANSACTION;
-
-    SELECT 0 AS CodigoResultado,
-           'Relación VERSION -> VERSION ET origen creada correctamente.' AS Mensaje;
-END TRY
-BEGIN CATCH
-    IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-    THROW;
-END CATCH;
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE object_id = OBJECT_ID('dbo.VERSION')
+      AND name = 'IX_VERSION_VERSION_ET_ORIGEN'
+)
+BEGIN
+    CREATE INDEX IX_VERSION_VERSION_ET_ORIGEN
+        ON dbo.VERSION(VersionEtOrigenId)
+        WHERE VersionEtOrigenId IS NOT NULL;
+END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.SP_CREAR_FICHA_TECNICA
@@ -132,23 +122,35 @@ BEGIN
         END;
 
         IF @VersionEtOrigenId IS NOT NULL
+           AND NOT EXISTS (
+               SELECT 1
+               FROM dbo.VERSION VE
+               INNER JOIN dbo.DOCUMENTO DE ON DE.DocumentoId = VE.DocumentoId
+               WHERE VE.VersionId = @VersionEtOrigenId
+                 AND VE.Estado = 1
+                 AND DE.Estado = 1
+                 AND DE.TipoDocumentoId = 1
+                 AND DE.ProductoCodigo = @ProductoCodigo
+           )
         BEGIN
-            IF NOT EXISTS (
-                SELECT 1
-                FROM dbo.VERSION VE
-                INNER JOIN dbo.DOCUMENTO DE ON DE.DocumentoId = VE.DocumentoId
-                WHERE VE.VersionId = @VersionEtOrigenId
-                  AND VE.Estado = 1
-                  AND DE.Estado = 1
-                  AND DE.TipoDocumentoId = 1
-                  AND DE.ProductoCodigo = @ProductoCodigo
-            )
-            BEGIN
-                SELECT -1 CodigoResultado,
-                       'La versión ET origen no existe, está inactiva o no corresponde al producto seleccionado.' Mensaje,
-                       CAST(NULL AS INT) DocumentoId, CAST(NULL AS INT) VersionId;
-                RETURN;
-            END;
+            SELECT -1 CodigoResultado,
+                   'La versión ET origen no existe, está inactiva o no corresponde al producto seleccionado.' Mensaje,
+                   CAST(NULL AS INT) DocumentoId, CAST(NULL AS INT) VersionId;
+            RETURN;
+        END;
+
+        IF (
+            SELECT COUNT(*)
+            FROM dbo.DOCUMENTO D
+            WHERE D.TipoDocumentoId = 3
+              AND D.ProductoCodigo = @ProductoCodigo
+              AND D.Estado = 1
+        ) > 1
+        BEGIN
+            SELECT -1 CodigoResultado,
+                   'El producto tiene más de un documento FT activo. Debe regularizarse antes de crear una nueva versión.' Mensaje,
+                   CAST(NULL AS INT) DocumentoId, CAST(NULL AS INT) VersionId;
+            RETURN;
         END;
 
         SELECT @DocumentoId = MIN(D.DocumentoId)
@@ -195,16 +197,18 @@ BEGIN
                   AND V.Estado = 1
                 ORDER BY V.VersionNumero DESC, V.VersionId DESC;
             END;
-        END;
+        END
         ELSE IF @VersionNumero IS NULL
             SET @VersionNumero = 1;
 
-        IF EXISTS (
-            SELECT 1 FROM dbo.VERSION
-            WHERE DocumentoId = @DocumentoId
-              AND VersionNumero = @VersionNumero
-              AND Estado = 1
-        )
+        IF @DocumentoId IS NOT NULL
+           AND EXISTS (
+               SELECT 1
+               FROM dbo.VERSION V
+               WHERE V.DocumentoId = @DocumentoId
+                 AND V.VersionNumero = @VersionNumero
+                 AND V.Estado = 1
+           )
         BEGIN
             SELECT -1 CodigoResultado, 'Ya existe esa versión para la ficha técnica del producto.' Mensaje,
                    @DocumentoId DocumentoId, CAST(NULL AS INT) VersionId;
@@ -212,10 +216,14 @@ BEGIN
         END;
 
         IF @VersionReemplazaAId IS NOT NULL
-           AND NOT EXISTS (
-               SELECT 1 FROM dbo.VERSION
-               WHERE VersionId = @VersionReemplazaAId
-                 AND DocumentoId = @DocumentoId
+           AND (
+               @DocumentoId IS NULL
+               OR NOT EXISTS (
+                   SELECT 1
+                   FROM dbo.VERSION V
+                   WHERE V.VersionId = @VersionReemplazaAId
+                     AND V.DocumentoId = @DocumentoId
+               )
            )
         BEGIN
             SELECT -1 CodigoResultado,
@@ -271,14 +279,18 @@ BEGIN
                 Estado, AudUsuarioCreacion, AudFechaCreacion
             )
             SELECT
-                @VersionId, VC.CaracteristicaId, VC.TipoCriterioId,
-                VC.ValorCuantitativoInicial, VC.ValorCuantitativoFinal,
-                VC.ValorCuantitativoIgual, VC.ValorCualitativo,
+                @VersionId,
+                VC.CaracteristicaId,
+                VC.TipoCriterioId,
+                VC.ValorCuantitativoInicial,
+                VC.ValorCuantitativoFinal,
+                VC.ValorCuantitativoIgual,
+                VC.ValorCualitativo,
                 COALESCE(VC.UnidadDeMedida, C.CaracteristicaUnidadDeMedida),
                 0, 0, NULL, 1, @Usuario, SYSDATETIME()
             FROM dbo.VERSIONCARACTERISTICA VC
-            INNER JOIN dbo.CARACTERISTICA C ON C.CaracteristicaId = VC.CaracteristicaId
-            LEFT JOIN dbo.UNIDADMEDIDA UM ON UM.UnidadMedidaId = VC.UnidadMedidaId
+            INNER JOIN dbo.CARACTERISTICA C
+                ON C.CaracteristicaId = VC.CaracteristicaId
             WHERE VC.VersionId = @VersionEtOrigenId
               AND VC.Estado = 1;
         END;
@@ -291,12 +303,21 @@ BEGIN
                  THEN 'Nueva versión de ficha técnica creada correctamente.'
                  ELSE 'Ficha técnica creada correctamente.'
             END Mensaje,
-            D.DocumentoId, D.DocumentoCodigo, D.DocumentoDescripcionDocumento,
-            D.TipoDocumentoId, TD.TipoDocumentoDescripcion, D.ProductoCodigo,
-            V.VersionId, V.VersionNumero, V.EstVerId,
-            EV.EstVerDescripcion EstadoVersion, V.VersionInicioVigencia,
-            V.VersionReemplazaAId, V.VersionNroPaginas,
-            V.VersionDescripcion, V.VersionEtOrigenId
+            D.DocumentoId,
+            D.DocumentoCodigo,
+            D.DocumentoDescripcionDocumento,
+            D.TipoDocumentoId,
+            TD.TipoDocumentoDescripcion,
+            D.ProductoCodigo,
+            V.VersionId,
+            V.VersionNumero,
+            V.EstVerId,
+            EV.EstVerDescripcion EstadoVersion,
+            V.VersionInicioVigencia,
+            V.VersionReemplazaAId,
+            V.VersionNroPaginas,
+            V.VersionDescripcion,
+            V.VersionEtOrigenId
         FROM dbo.DOCUMENTO D
         INNER JOIN dbo.TIPO_DOCUMENTO TD ON TD.TipoDocumentoId = D.TipoDocumentoId
         INNER JOIN dbo.VERSION V ON V.DocumentoId = D.DocumentoId
@@ -305,7 +326,8 @@ BEGIN
           AND V.VersionId = @VersionId;
     END TRY
     BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
 
         SELECT -1 CodigoResultado, ERROR_MESSAGE() Mensaje,
                CAST(NULL AS INT) DocumentoId, CAST(NULL AS INT) VersionId;
