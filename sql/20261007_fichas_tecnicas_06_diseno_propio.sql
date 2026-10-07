@@ -51,66 +51,224 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
+    DECLARE @VersionEtOrigenId INT;
+
     BEGIN TRY
-        IF NOT EXISTS
-        (
-            SELECT 1
-            FROM dbo.VERSION V
-            INNER JOIN dbo.DOCUMENTO D ON D.DocumentoId=V.DocumentoId
-            WHERE V.VersionId=@VersionId
-              AND V.Estado=1
-              AND D.Estado=1
-              AND D.TipoDocumentoId=3
-        )
-            THROW 50001, 'La versión indicada no corresponde a una FT activa.', 1;
 
-        DECLARE @Base TABLE
-        (
-            Codigo VARCHAR(60),
-            Titulo VARCHAR(200),
-            TipoContenido VARCHAR(30),
-            Orden INT,
-            EsSistema BIT
-        );
+        /* =====================================================
+           1. VALIDAR FT Y OBTENER ET ORIGEN
+           ===================================================== */
 
-        INSERT INTO @Base(Codigo,Titulo,TipoContenido,Orden,EsSistema)
-        VALUES
-          ('DESCRIPCION','Descripción del producto','TEXTO',1,1),
-          ('INGREDIENTES','Ingredientes','TEXTO',2,1),
-          ('ALMACENAMIENTO_DISTRIBUCION','Condiciones de almacenamiento y distribución','TEXTO',3,1),
-          ('VIDA_UTIL','Vida útil','TEXTO',4,1),
-          ('CONTENIDO_ROTULADO','Contenido rotulado','LISTA',5,1),
-          ('ENVASADO','Envasado','TEXTO',6,1),
-          ('CARACTERISTICAS','Características','CARACTERISTICAS',7,1),
-          ('PROXIMAL','Proximal','TABLA',8,0),
-          ('DECLARACIONES','Declaraciones','LISTA',9,0),
-          ('ALERGENOS','Alérgenos','TABLA',10,0);
+        SELECT
+            @VersionEtOrigenId = V.VersionEtOrigenId
+        FROM dbo.VERSION V
+        INNER JOIN dbo.DOCUMENTO D
+            ON D.DocumentoId = V.DocumentoId
+        WHERE V.VersionId = @VersionId
+          AND V.Estado = 1
+          AND D.Estado = 1
+          AND D.TipoDocumentoId = 3;
+
+        IF @VersionEtOrigenId IS NULL
+            THROW 50001,
+                  'La versión indicada no corresponde a una FT activa o no tiene ET origen.',
+                  1;
+
+
+        /* =====================================================
+           2. COPIAR ESTRUCTURA ACTIVA DE LA ET
+
+           La FT recibe una COPIA inicial.
+           Después de crearla, VERSIONFTSECCION queda independiente
+           y el usuario puede modificar títulos, contenido, orden,
+           visibilidad y agregar secciones propias sin cambiar la ET.
+           ===================================================== */
 
         INSERT INTO dbo.VERSIONFTSECCION
         (
-            VersionId,Codigo,Titulo,TipoContenido,Orden,Visible,EsSistema,
-            Contenido,Estado,AudUsuarioCreacion,AudFechaCreacion
+            VersionId,
+            Codigo,
+            Titulo,
+            TipoContenido,
+            Orden,
+            Visible,
+            EsSistema,
+            Contenido,
+            Estado,
+            AudUsuarioCreacion,
+            AudFechaCreacion
         )
         SELECT
-            @VersionId,B.Codigo,B.Titulo,B.TipoContenido,B.Orden,1,B.EsSistema,
-            NULL,1,@Usuario,SYSDATETIME()
-        FROM @Base B
-        WHERE NOT EXISTS
+              @VersionId
+
+            /* Código propio y estable dentro de esta FT */
+            , 'ET_SECCION_' + CONVERT(VARCHAR(20), VS.SeccionId)
+
+            , S.SeccionDescripcion
+
+            /*
+              CARACTERÍSTICAS se renderiza con el editor técnico.
+              Para el resto, intentamos respetar el tipo de sección ET.
+              Si no existe equivalencia clara, se trata como TEXTO.
+            */
+            , CASE
+                WHEN UPPER(LTRIM(RTRIM(S.SeccionDescripcion))) LIKE '%CARACTER%'
+                    THEN 'CARACTERISTICAS'
+
+                WHEN UPPER(ISNULL(TS.Descripcion,'')) LIKE '%LIST%'
+                    THEN 'LISTA'
+
+                WHEN UPPER(ISNULL(TS.Descripcion,'')) LIKE '%TABLA%'
+                    THEN 'TABLA'
+
+                WHEN UPPER(LTRIM(RTRIM(S.SeccionDescripcion))) LIKE '%ALERGEN%'
+                    THEN 'TABLA'
+
+                WHEN UPPER(LTRIM(RTRIM(S.SeccionDescripcion))) LIKE '%PROXIMAL%'
+                    THEN 'TABLA'
+
+                WHEN UPPER(LTRIM(RTRIM(S.SeccionDescripcion))) LIKE '%ROTUL%'
+                    THEN 'LISTA'
+
+                ELSE 'TEXTO'
+              END
+
+            , ROW_NUMBER() OVER
+              (
+                  ORDER BY
+                      ISNULL(VS.Orden, 2147483647),
+                      VS.VersSeccId
+              )
+
+            , 1
+
+            /*
+              Vienen de la ET, por eso forman parte de la estructura
+              inicial de esta FT. No se borran físicamente desde UI;
+              pueden ocultarse/configurarse.
+            */
+            , 1
+
+            , VSC.Contenido
+
+            , 1
+            , @Usuario
+            , SYSDATETIME()
+
+        FROM dbo.VERSIONSECCION VS
+
+        INNER JOIN dbo.SECCION S
+            ON S.SeccionId = VS.SeccionId
+           AND S.Estado = 1
+
+        LEFT JOIN dbo.TIPO_SECCION TS
+            ON TS.IdTipoSeccion = S.IdTipoSeccion
+
+        OUTER APPLY
+        (
+            SELECT TOP (1)
+                C.Contenido
+            FROM dbo.VERSIONSECCIONCONTENIDO C
+            WHERE C.VersSeccId = VS.VersSeccId
+              AND C.Estado = 1
+            ORDER BY C.VersionSeccionContenidoId DESC
+        ) VSC
+
+        WHERE VS.VersionId = @VersionEtOrigenId
+          AND VS.Estado = 1
+
+          AND NOT EXISTS
+          (
+              SELECT 1
+              FROM dbo.VERSIONFTSECCION FTS
+              WHERE FTS.VersionId = @VersionId
+                AND FTS.Codigo =
+                    'ET_SECCION_' + CONVERT(VARCHAR(20), VS.SeccionId)
+                AND FTS.Estado = 1
+          );
+
+
+        /* =====================================================
+           3. GARANTIZAR SECCIÓN CARACTERÍSTICAS
+
+           Si por alguna razón la ET origen no tuviera una sección
+           explícita de características, la FT igual debe disponer
+           del editor técnico porque sus características se copian
+           desde VERSIONCARACTERISTICA.
+           ===================================================== */
+
+        IF NOT EXISTS
         (
             SELECT 1
-            FROM dbo.VERSIONFTSECCION S
-            WHERE S.VersionId=@VersionId
-              AND S.Codigo=B.Codigo
-              AND S.Estado=1
-        );
+            FROM dbo.VERSIONFTSECCION
+            WHERE VersionId = @VersionId
+              AND Estado = 1
+              AND TipoContenido = 'CARACTERISTICAS'
+        )
+        BEGIN
 
-        SELECT 0 CodigoResultado,
-               'Secciones estándar de FT inicializadas correctamente.' Mensaje,
-               @VersionId VersionId;
+            INSERT INTO dbo.VERSIONFTSECCION
+            (
+                VersionId,
+                Codigo,
+                Titulo,
+                TipoContenido,
+                Orden,
+                Visible,
+                EsSistema,
+                Contenido,
+                Estado,
+                AudUsuarioCreacion,
+                AudFechaCreacion
+            )
+            VALUES
+            (
+                @VersionId,
+                'CARACTERISTICAS',
+                'Características',
+                'CARACTERISTICAS',
+                (
+                    SELECT ISNULL(MAX(Orden),0) + 1
+                    FROM dbo.VERSIONFTSECCION
+                    WHERE VersionId = @VersionId
+                      AND Estado = 1
+                ),
+                1,
+                1,
+                NULL,
+                1,
+                @Usuario,
+                SYSDATETIME()
+            );
+
+        END;
+
+
+        SELECT
+              0 AS CodigoResultado
+            , 'Secciones de la ET copiadas correctamente a la FT.' AS Mensaje
+            , @VersionId AS VersionId
+            , @VersionEtOrigenId AS VersionEtOrigenId
+            , (
+                SELECT COUNT(*)
+                FROM dbo.VERSIONFTSECCION
+                WHERE VersionId = @VersionId
+                  AND Estado = 1
+              ) AS CantidadSecciones;
+
     END TRY
+
     BEGIN CATCH
-        SELECT -1 CodigoResultado,ERROR_MESSAGE() Mensaje,@VersionId VersionId;
+
+        SELECT
+              -1 AS CodigoResultado
+            , ERROR_MESSAGE() AS Mensaje
+            , @VersionId AS VersionId
+            , @VersionEtOrigenId AS VersionEtOrigenId
+            , 0 AS CantidadSecciones;
+
     END CATCH;
+
 END;
 GO
 
