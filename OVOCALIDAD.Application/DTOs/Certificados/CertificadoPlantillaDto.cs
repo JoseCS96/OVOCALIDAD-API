@@ -105,3 +105,42 @@ public class GuardarPlantillaCaracteristicaRequest
     public int VersionFtCaracteristicaId { get; set; }
     public int Orden { get; set; }
 }
+
+
+public class CertificadoEmpresaDto
+{
+    public int CertificadoEmpresaId { get; set; }
+    public string RazonSocial { get; set; } = string.Empty;
+    public string? NombreComercial { get; set; }
+    public string? Direccion { get; set; }
+    public string? Telefono { get; set; }
+    public string? Fax { get; set; }
+    public string? Correo { get; set; }
+    public string? SitioWeb { get; set; }
+    public string? Ruc { get; set; }
+    public bool Estado { get; set; }
+    public string AudUsuarioCreacion { get; set; } = string.Empty;
+    public DateTime AudFechaCreacion { get; set; }
+    public string? AudUsuarioModificacion { get; set; }
+    public DateTime? AudFechaActualizacion { get; set; }
+}
+
+public class GuardarCertificadoEmpresaRequest
+{
+    public string RazonSocial { get; set; } = string.Empty;
+    public string? NombreComercial { get; set; }
+    public string? Direccion { get; set; }
+    public string? Telefono { get; set; }
+    public string? Fax { get; set; }
+    public string? Correo { get; set; }
+    public string? SitioWeb { get; set; }
+    public string? Ruc { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class GuardarCertificadoEmpresaResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int CertificadoEmpresaId { get; set; }
+}
