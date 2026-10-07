@@ -36,6 +36,15 @@ public class LoteController : ControllerBase
         return detalle is null ? NotFound() : Ok(detalle);
     }
 
+    [HttpGet("{loteId:int}/trazabilidad")]
+    [ProducesResponseType(typeof(TrazabilidadLoteDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TrazabilidadLoteDto>> ObtenerTrazabilidad(int loteId)
+    {
+        var trazabilidad = await _loteService.ObtenerTrazabilidadAsync(loteId);
+        return trazabilidad is null ? NotFound() : Ok(trazabilidad);
+    }
+
     [HttpGet("catalogos")]
     [ProducesResponseType(typeof(CatalogosLoteDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<CatalogosLoteDto>> Catalogos()
