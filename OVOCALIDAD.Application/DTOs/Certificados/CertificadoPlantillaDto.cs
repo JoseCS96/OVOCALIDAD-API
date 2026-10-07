@@ -40,6 +40,8 @@ public class PlantillaCertificadoDto
     public string DocumentoDescripcionDocumento { get; set; } = string.Empty;
     public string? ProductoCodigo { get; set; }
     public decimal? VersionNumero { get; set; }
+    public int EstVerId { get; set; }
+    public string EstadoVersionFt { get; set; } = string.Empty;
     public List<PlantillaCertificadoSeccionDto> Secciones { get; set; } = new();
     public List<PlantillaCertificadoCaracteristicaDto> Caracteristicas { get; set; } = new();
 }
