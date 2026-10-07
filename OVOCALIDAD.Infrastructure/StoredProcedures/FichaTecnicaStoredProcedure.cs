@@ -70,7 +70,7 @@ public class FichaTecnicaStoredProcedure
 
     public async Task<IReadOnlyList<FichaTecnicaCaracteristicaDto>> ListarCaracteristicasAsync(int versionId)
     {
-        var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
+        var parametros = new List<SqlParameter> { new("@VersionFtId", versionId) };
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_CARACTERISTICAS_FT, parametros);
         var items = new List<FichaTecnicaCaracteristicaDto>();
         while (await reader.ReadAsync())
@@ -80,11 +80,17 @@ public class FichaTecnicaStoredProcedure
 
     public async Task<GuardarCaracteristicaFtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaFtRequest request)
     {
+        if (request.VersionFtCaracteristicaId is null or <= 0)
+            return new GuardarCaracteristicaFtResponse
+            {
+                CodigoResultado = -1,
+                Mensaje = "La característica FT debe existir antes de ser editada."
+            };
+
         var parametros = new List<SqlParameter>
         {
-            new("@VersionFtCaracteristicaId", (object?)request.VersionFtCaracteristicaId ?? DBNull.Value),
-            new("@VersionId", versionId),
-            new("@CaracteristicaId", request.CaracteristicaId),
+            new("@VersionFtId", versionId),
+            new("@VersionFtCaracteristicaId", request.VersionFtCaracteristicaId.Value),
             new("@TipoCriterioId", request.TipoCriterioId),
             new("@ValorCuantitativoInicial", (object?)request.ValorCuantitativoInicial ?? DBNull.Value),
             new("@ValorCuantitativoFinal", (object?)request.ValorCuantitativoFinal ?? DBNull.Value),
