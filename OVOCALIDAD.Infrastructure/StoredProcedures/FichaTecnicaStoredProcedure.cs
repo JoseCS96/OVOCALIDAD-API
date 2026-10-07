@@ -14,6 +14,19 @@ public class FichaTecnicaStoredProcedure
         _executor = executor;
     }
 
+    public async Task<IReadOnlyList<FichaTecnicaCertificadoDto>> ListarParaCertificadoAsync(string? busqueda)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)busqueda ?? DBNull.Value)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_FICHAS_TECNICAS_CERTIFICADO, parametros);
+        var items = new List<FichaTecnicaCertificadoDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<FichaTecnicaCertificadoDto>());
+        return items;
+    }
+
     public async Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request)
     {
         var parametros = new List<SqlParameter>
