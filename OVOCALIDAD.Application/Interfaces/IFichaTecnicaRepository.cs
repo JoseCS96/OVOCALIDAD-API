@@ -13,4 +13,9 @@ public interface IFichaTecnicaRepository
     Task<EliminarCaracteristicaFtResponse> EliminarCaracteristicaAsync(int versionFtCaracteristicaId, string usuario);
     Task<IReadOnlyList<ConfiguracionCertificadoFtDto>> ObtenerConfiguracionCertificadoAsync(int versionId);
     Task<EliminarFichaTecnicaResponse> EliminarBorradorAsync(int versionId, string usuario);
+    Task<IReadOnlyList<SeccionFtDto>> ListarSeccionesAsync(int versionId);
+    Task<SeccionFtOperacionResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionFtRequest request);
+    Task<SeccionFtOperacionResponse> AgregarSeccionAsync(int versionId, AgregarSeccionFtRequest request);
+    Task<SeccionFtOperacionResponse> QuitarSeccionAsync(int versionId, int versSeccId, string usuario);
+    Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request);
 }
