@@ -58,6 +58,7 @@ public class FichaTecnicaStoredProcedure
             new("@VersionReemplazaAId", (object?)request.VersionReemplazaAId ?? DBNull.Value),
             new("@VersionNroPaginas", (object?)request.VersionNroPaginas ?? DBNull.Value),
             new("@VersionDescripcion", (object?)request.VersionDescripcion ?? DBNull.Value),
+            new("@VersionEtOrigenId", (object?)request.VersionEtOrigenId ?? DBNull.Value),
             new("@Usuario", request.Usuario)
         };
 
