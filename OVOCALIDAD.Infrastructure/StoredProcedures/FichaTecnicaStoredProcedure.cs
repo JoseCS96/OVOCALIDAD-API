@@ -201,4 +201,30 @@ public class FichaTecnicaStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_REORDENAR_SECCIONES_FT,p);
         return await reader.ReadAsync()?reader.MapTo<SeccionFtOperacionResponse>():new SeccionFtOperacionResponse{CodigoResultado=-1,Mensaje="El procedimiento no devolvió resultado."};
     }
+
+    public async Task<CambiarEstadoFtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoFtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@Accion", request.Accion),
+            new("@Comentario", (object?)request.Comentario ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_VERSION_FT, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<CambiarEstadoFtResponse>()
+            : new CambiarEstadoFtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<HistorialEstadoFtDto>> ListarHistorialEstadoAsync(int versionId)
+    {
+        var parametros = new List<SqlParameter> { new("@VersionId", versionId) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_HISTORIAL_ESTADO_FT, parametros);
+        var items = new List<HistorialEstadoFtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<HistorialEstadoFtDto>());
+        return items;
+    }
 }
