@@ -32,3 +32,17 @@ public class CrearFichaTecnicaResponse
     public int? VersionNroPaginas { get; set; }
     public string? VersionDescripcion { get; set; }
 }
+
+public class FichaTecnicaCertificadoDto
+{
+    public int VersionId { get; set; }
+    public int DocumentoId { get; set; }
+    public string DocumentoCodigo { get; set; } = string.Empty;
+    public string DocumentoDescripcionDocumento { get; set; } = string.Empty;
+    public string? ProductoCodigo { get; set; }
+    public decimal? VersionNumero { get; set; }
+    public DateTime? VersionInicioVigencia { get; set; }
+    public int EstVerId { get; set; }
+    public string EstadoVersion { get; set; } = string.Empty;
+    public int CantidadParametrosCertificables { get; set; }
+}
