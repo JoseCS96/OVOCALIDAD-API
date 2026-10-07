@@ -72,4 +72,32 @@ public class CertificadoStoredProcedure
         return await r.ReadAsync() ? r.MapTo<PlantillaCertificadoOperacionResponse>()
             : new() { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+    public async Task<CertificadoEmpresaDto?> ObtenerEmpresaAsync()
+    {
+        using var r = await _executor.ExecuteReaderAsync(
+            SPNames.SP_OBTENER_EMPRESA_CERTIFICADO,
+            new List<SqlParameter>());
+        return await r.ReadAsync() ? r.MapTo<CertificadoEmpresaDto>() : null;
+    }
+
+    public async Task<GuardarCertificadoEmpresaResponse> GuardarEmpresaAsync(GuardarCertificadoEmpresaRequest request)
+    {
+        var p = new List<SqlParameter>
+        {
+            new("@RazonSocial", request.RazonSocial),
+            new("@NombreComercial", (object?)request.NombreComercial ?? DBNull.Value),
+            new("@Direccion", (object?)request.Direccion ?? DBNull.Value),
+            new("@Telefono", (object?)request.Telefono ?? DBNull.Value),
+            new("@Fax", (object?)request.Fax ?? DBNull.Value),
+            new("@Correo", (object?)request.Correo ?? DBNull.Value),
+            new("@SitioWeb", (object?)request.SitioWeb ?? DBNull.Value),
+            new("@Ruc", (object?)request.Ruc ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var r = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_EMPRESA_CERTIFICADO, p);
+        return await r.ReadAsync()
+            ? r.MapTo<GuardarCertificadoEmpresaResponse>()
+            : new() { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
 }
