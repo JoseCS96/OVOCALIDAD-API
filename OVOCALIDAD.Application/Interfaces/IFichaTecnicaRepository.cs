@@ -4,6 +4,8 @@ namespace OVOCALIDAD.Application.Interfaces;
 
 public interface IFichaTecnicaRepository
 {
+    Task<IReadOnlyList<FichaTecnicaGestionDto>> ListarGestionAsync(string? busqueda, int? estVerId);
+    Task<FichaTecnicaGestionDto?> ObtenerAsync(int versionId);
     Task<IReadOnlyList<FichaTecnicaCertificadoDto>> ListarParaCertificadoAsync(string? busqueda);
     Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request);
     Task<IReadOnlyList<FichaTecnicaCaracteristicaDto>> ListarCaracteristicasAsync(int versionId);
