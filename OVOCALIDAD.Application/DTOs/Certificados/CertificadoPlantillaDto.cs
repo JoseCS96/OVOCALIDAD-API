@@ -43,15 +43,30 @@ public class PlantillaCertificadoDto
     public int EstVerId { get; set; }
     public string EstadoVersionFt { get; set; } = string.Empty;
     public List<PlantillaCertificadoSeccionDto> Secciones { get; set; } = new();
+    public List<PlantillaCertificadoResultadoDto> Resultados { get; set; } = new();
     public List<PlantillaCertificadoCaracteristicaDto> Caracteristicas { get; set; } = new();
 }
+
 public class PlantillaCertificadoSeccionDto
 {
     public int CertificadoPlantillaSeccionId { get; set; }
     public int CertificadoPlantillaId { get; set; }
-    public string TipoSeccion { get; set; } = string.Empty;
-    public string? Titulo { get; set; }
+    public int CertificadoSeccionId { get; set; }
+    public string SeccionCodigo { get; set; } = string.Empty;
+    public string SeccionDescripcion { get; set; } = string.Empty;
+    public string TipoContenido { get; set; } = string.Empty;
+    public bool PuedeEliminarse { get; set; }
+    public bool PermiteReordenar { get; set; }
+    public int Orden { get; set; }
+    public bool Visible { get; set; }
     public string? Contenido { get; set; }
+}
+
+public class PlantillaCertificadoResultadoDto
+{
+    public int CertificadoPlantillaResultadoId { get; set; }
+    public int CertificadoPlantillaSeccionId { get; set; }
+    public string Titulo { get; set; } = string.Empty;
     public int Orden { get; set; }
     public bool Visible { get; set; }
     public string ModoSeleccion { get; set; } = "MANUAL";
@@ -62,10 +77,11 @@ public class PlantillaCertificadoSeccionDto
     public int? TipoCaractId { get; set; }
     public string? TipoCaractDescripcion { get; set; }
 }
+
 public class PlantillaCertificadoCaracteristicaDto
 {
-    public int CertificadoPlantillaCaracteristicaId { get; set; }
-    public int CertificadoPlantillaSeccionId { get; set; }
+    public int CertificadoPlantillaResultadoCaracteristicaId { get; set; }
+    public int CertificadoPlantillaResultadoId { get; set; }
     public int VersionFtCaracteristicaId { get; set; }
     public int CaracteristicaId { get; set; }
     public string Determinacion { get; set; } = string.Empty;
@@ -85,16 +101,25 @@ public class PlantillaCertificadoCaracteristicaDto
     public bool ObligatorioCertificado { get; set; }
     public int Orden { get; set; }
 }
+
 public class GuardarDisenoPlantillaCertificadoRequest
 {
     public List<GuardarPlantillaSeccionRequest> Secciones { get; set; } = new();
     public string Usuario { get; set; } = string.Empty;
 }
+
 public class GuardarPlantillaSeccionRequest
 {
-    public string TipoSeccion { get; set; } = string.Empty;
-    public string? Titulo { get; set; }
+    public int CertificadoSeccionId { get; set; }
+    public int Orden { get; set; }
+    public bool Visible { get; set; } = true;
     public string? Contenido { get; set; }
+    public List<GuardarPlantillaResultadoRequest> Resultados { get; set; } = new();
+}
+
+public class GuardarPlantillaResultadoRequest
+{
+    public string Titulo { get; set; } = string.Empty;
     public int Orden { get; set; }
     public bool Visible { get; set; } = true;
     public string ModoSeleccion { get; set; } = "MANUAL";
@@ -102,6 +127,7 @@ public class GuardarPlantillaSeccionRequest
     public int? TipoCaractId { get; set; }
     public List<GuardarPlantillaCaracteristicaRequest> Caracteristicas { get; set; } = new();
 }
+
 public class GuardarPlantillaCaracteristicaRequest
 {
     public int VersionFtCaracteristicaId { get; set; }
