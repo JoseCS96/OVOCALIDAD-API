@@ -1,3 +1,14 @@
+/*
+ OVOCALIDAD 2.0 - Eliminación física controlada de Ficha Técnica BORRADOR.
+
+ Regla:
+ - Solo elimina físicamente versiones FT en BORRADOR (EstVerId = 2).
+ - No permite eliminar si existen certificados emitidos.
+ - Elimina primero dependencias de certificado, secciones y características.
+ - Si el documento FT queda sin versiones, elimina también DOCUMENTO.
+ - Permite limpiar registros que quedaron con Estado = 0 por la versión anterior
+   del procedimiento.
+*/
 CREATE OR ALTER PROCEDURE dbo.SP_ELIMINAR_FICHA_TECNICA_BORRADOR
 (
     @VersionId INT,
@@ -9,8 +20,9 @@ BEGIN
     SET XACT_ABORT ON;
 
     DECLARE
-        @DocumentoId INT,
-        @VersionReemplazaAId INT;
+          @DocumentoId INT
+        , @VersionReemplazaAId INT
+        , @EstVerId INT;
 
     BEGIN TRY
         SET @Usuario = NULLIF(LTRIM(RTRIM(@Usuario)), '');
@@ -23,9 +35,15 @@ BEGIN
             RETURN;
         END;
 
+        /*
+          Importante: no filtramos por Estado.
+          Esto permite limpiar físicamente una FT que haya sido
+          desactivada por la versión anterior del SP.
+        */
         SELECT
-            @DocumentoId = V.DocumentoId,
-            @VersionReemplazaAId = V.VersionReemplazaAId
+              @DocumentoId = V.DocumentoId
+            , @VersionReemplazaAId = V.VersionReemplazaAId
+            , @EstVerId = V.EstVerId
         FROM dbo.VERSION V
         INNER JOIN dbo.DOCUMENTO D
             ON D.DocumentoId = V.DocumentoId
@@ -34,41 +52,21 @@ BEGIN
 
         IF @DocumentoId IS NULL
         BEGIN
-            SELECT -1 AS CodigoResultado,
-                   'La versión de ficha técnica no existe.' AS Mensaje,
-                   @VersionId AS VersionId;
-            RETURN;
-        END;
-
-        IF EXISTS
-        (
-            SELECT 1
-            FROM dbo.VERSION
-            WHERE VersionId = @VersionId
-              AND Estado = 0
-        )
-        BEGIN
             SELECT 0 AS CodigoResultado,
-                   'La ficha técnica ya se encontraba eliminada.' AS Mensaje,
+                   'La ficha técnica ya no existe en la base de datos.' AS Mensaje,
                    @VersionId AS VersionId;
             RETURN;
         END;
 
-        IF EXISTS
-        (
-            SELECT 1
-            FROM dbo.DOCUMENTO
-            WHERE DocumentoId = @DocumentoId
-              AND Estado = 0
-        )
+        IF @EstVerId <> 2
         BEGIN
             SELECT -1 AS CodigoResultado,
-                   'El documento de la ficha técnica se encuentra inactivo.' AS Mensaje,
+                   'Solo se puede eliminar físicamente una Ficha Técnica en estado BORRADOR.' AS Mensaje,
                    @VersionId AS VersionId;
             RETURN;
         END;
 
-        /* Una FT utilizada en certificados emitidos ya es evidencia histórica. */
+        /* Una FT utilizada en certificados es evidencia histórica. */
         IF EXISTS
         (
             SELECT 1
@@ -84,98 +82,124 @@ BEGIN
 
         BEGIN TRANSACTION;
 
-        /* Si una versión posterior reemplaza a la versión eliminada,
-           la enlazamos con el reemplazo anterior para no dejar referencias
-           activas apuntando a una versión inactiva. */
+        /*
+          Si alguna versión posterior apuntara a esta como reemplazada,
+          la enlazamos con el reemplazo anterior antes de borrar.
+        */
         UPDATE dbo.VERSION
         SET
-            VersionReemplazaAId = @VersionReemplazaAId,
-            AudUsuarioModificacion = @Usuario,
-            AudFechaActualizacion = SYSDATETIME()
-        WHERE VersionReemplazaAId = @VersionId
-          AND Estado = 1;
+              VersionReemplazaAId = @VersionReemplazaAId
+            , AudUsuarioModificacion = @Usuario
+            , AudFechaActualizacion = SYSDATETIME()
+        WHERE VersionReemplazaAId = @VersionId;
 
-        /* Desactivar diseño de certificado asociado a esta FT. */
-        UPDATE CPC
-        SET
-            CPC.Estado = 0,
-            CPC.AudUsuarioModificacion = @Usuario,
-            CPC.AudFechaActualizacion = SYSDATETIME()
+        /* =====================================================
+           1. DISEÑO DE CERTIFICADO
+           ===================================================== */
+
+        DELETE CPC
         FROM dbo.CERTIFICADOPLANTILLACARACTERISTICA CPC
         INNER JOIN dbo.CERTIFICADOPLANTILLASECCION CPS
-            ON CPS.CertificadoPlantillaSeccionId = CPC.CertificadoPlantillaSeccionId
+            ON CPS.CertificadoPlantillaSeccionId =
+               CPC.CertificadoPlantillaSeccionId
         INNER JOIN dbo.CERTIFICADOPLANTILLA CP
-            ON CP.CertificadoPlantillaId = CPS.CertificadoPlantillaId
-        WHERE CP.VersionFtId = @VersionId
-          AND CPC.Estado = 1;
+            ON CP.CertificadoPlantillaId =
+               CPS.CertificadoPlantillaId
+        WHERE CP.VersionFtId = @VersionId;
 
-        UPDATE CPS
-        SET
-            CPS.Estado = 0,
-            CPS.AudUsuarioModificacion = @Usuario,
-            CPS.AudFechaActualizacion = SYSDATETIME()
+        DELETE CPS
         FROM dbo.CERTIFICADOPLANTILLASECCION CPS
         INNER JOIN dbo.CERTIFICADOPLANTILLA CP
-            ON CP.CertificadoPlantillaId = CPS.CertificadoPlantillaId
-        WHERE CP.VersionFtId = @VersionId
-          AND CPS.Estado = 1;
+            ON CP.CertificadoPlantillaId =
+               CPS.CertificadoPlantillaId
+        WHERE CP.VersionFtId = @VersionId;
 
-        UPDATE dbo.CERTIFICADOPLANTILLA
-        SET
-            Estado = 0,
-            AudUsuarioModificacion = @Usuario,
-            AudFechaActualizacion = SYSDATETIME()
-        WHERE VersionFtId = @VersionId
-          AND Estado = 1;
+        DELETE FROM dbo.CERTIFICADOPLANTILLA
+        WHERE VersionFtId = @VersionId;
 
-        UPDATE dbo.VERSIONFTCARACTERISTICA
-        SET
-            Estado = 0,
-            AudUsuarioModificacion = @Usuario,
-            AudFechaActualizacion = SYSDATETIME()
-        WHERE VersionId = @VersionId
-          AND Estado = 1;
 
-        UPDATE dbo.VERSION
-        SET
-            Estado = 0,
-            AudUsuarioModificacion = @Usuario,
-            AudFechaActualizacion = SYSDATETIME()
-        WHERE VersionId = @VersionId
-          AND Estado = 1;
+        /* =====================================================
+           2. DISEÑO PROPIO DE FT
+           ===================================================== */
+
+        IF OBJECT_ID('dbo.VERSIONFTSECCION', 'U') IS NOT NULL
+        BEGIN
+            DELETE FROM dbo.VERSIONFTSECCION
+            WHERE VersionId = @VersionId;
+        END;
+
+
+        /* =====================================================
+           3. ESTRUCTURA LEGACY DE SECCIONES FT
+              Se conserva para limpiar datos creados antes del
+              diseñador propio VERSIONFTSECCION.
+           ===================================================== */
+
+        IF OBJECT_ID('dbo.VERSIONSECCIONCONTENIDO', 'U') IS NOT NULL
+           AND OBJECT_ID('dbo.VERSIONSECCION', 'U') IS NOT NULL
+        BEGIN
+            DELETE VSC
+            FROM dbo.VERSIONSECCIONCONTENIDO VSC
+            INNER JOIN dbo.VERSIONSECCION VS
+                ON VS.VersSeccId = VSC.VersSeccId
+            WHERE VS.VersionId = @VersionId;
+        END;
+
+        IF OBJECT_ID('dbo.VERSIONSECCION', 'U') IS NOT NULL
+        BEGIN
+            DELETE FROM dbo.VERSIONSECCION
+            WHERE VersionId = @VersionId;
+        END;
+
+
+        /* =====================================================
+           4. CARACTERÍSTICAS PROPIAS DE FT
+           ===================================================== */
+
+        DELETE FROM dbo.VERSIONFTCARACTERISTICA
+        WHERE VersionId = @VersionId;
+
+
+        /* =====================================================
+           5. VERSION FT
+           ===================================================== */
+
+        DELETE FROM dbo.VERSION
+        WHERE VersionId = @VersionId;
+
+
+        /* =====================================================
+           6. DOCUMENTO FT
+              Solo se elimina cuando ya no tiene ninguna versión.
+           ===================================================== */
 
         IF NOT EXISTS
         (
             SELECT 1
             FROM dbo.VERSION
             WHERE DocumentoId = @DocumentoId
-              AND Estado = 1
         )
         BEGIN
-            UPDATE dbo.DOCUMENTO
-            SET
-                Estado = 0,
-                AudUsuarioModificacion = @Usuario,
-                AudFechaActualizacion = SYSDATETIME()
-            WHERE DocumentoId = @DocumentoId
-              AND Estado = 1;
+            DELETE FROM dbo.DOCUMENTO
+            WHERE DocumentoId = @DocumentoId;
         END;
 
         COMMIT TRANSACTION;
 
         SELECT
-            0 AS CodigoResultado,
-            'Ficha técnica eliminada correctamente.' AS Mensaje,
-            @VersionId AS VersionId;
+              0 AS CodigoResultado
+            , 'Ficha técnica eliminada físicamente de la base de datos.' AS Mensaje
+            , @VersionId AS VersionId;
+
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
 
         SELECT
-            -1 AS CodigoResultado,
-            ERROR_MESSAGE() AS Mensaje,
-            @VersionId AS VersionId;
+              -1 AS CodigoResultado
+            , ERROR_MESSAGE() AS Mensaje
+            , @VersionId AS VersionId;
     END CATCH;
 END;
 GO
