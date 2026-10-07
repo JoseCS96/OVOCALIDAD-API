@@ -267,43 +267,30 @@ BEGIN
 
         SET @VersionId = CONVERT(INT, SCOPE_IDENTITY());
 
+        /* =====================================================
+           INICIALIZAR CARACTERÍSTICAS PROPIAS DE FT
+           Se copian desde la ET manteniendo trazabilidad exacta
+           VersCaractOrigenId + fase + orden técnico.
+           ===================================================== */
         IF @VersionEtOrigenId IS NOT NULL
         BEGIN
-            INSERT INTO dbo.VERSIONFTCARACTERISTICA
-            (
-                VersionId, CaracteristicaId, TipoCriterioId,
-                ValorCuantitativoInicial, ValorCuantitativoFinal,
-                ValorCuantitativoIgual, ValorCualitativo,
-                UnidadDeMedida, ImprimeCertificado,
-                ObligatorioCertificado, OrdenCertificado,
-                Estado, AudUsuarioCreacion, AudFechaCreacion
-            )
-            SELECT
-                @VersionId,
-                VC.CaracteristicaId,
-                VC.TipoCriterioId,
-                VC.ValorCuantitativoInicial,
-                VC.ValorCuantitativoFinal,
-                VC.ValorCuantitativoIgual,
-                VC.ValorCualitativo,
-                COALESCE(VC.UnidadDeMedida, C.CaracteristicaUnidadDeMedida),
-                0, 0, NULL, 1, @Usuario, SYSDATETIME()
-            FROM dbo.VERSIONCARACTERISTICA VC
-            INNER JOIN dbo.CARACTERISTICA C
-                ON C.CaracteristicaId = VC.CaracteristicaId
-            WHERE VC.VersionId = @VersionEtOrigenId
-              AND VC.Estado = 1;
+            EXEC dbo.SP_INICIALIZAR_CARACTERISTICAS_FT
+                 @VersionFtId = @VersionId,
+                 @Usuario = @Usuario;
         END;
 
 
-
         /* =====================================================
-           INICIALIZAR DISEÑO PROPIO DE FICHA TÉCNICA
-           La FT no reutiliza la estructura de secciones de la ET.
+           INICIALIZAR SECCIONES PROPIAS DE FT
+           Se toma una COPIA de la estructura activa de la ET origen.
+           A partir de aquí la FT queda independiente.
            ===================================================== */
-        EXEC dbo.SP_INICIALIZAR_SECCIONES_FT
-             @VersionId = @VersionId,
-             @Usuario = @Usuario;
+        IF @VersionEtOrigenId IS NOT NULL
+        BEGIN
+            EXEC dbo.SP_INICIALIZAR_SECCIONES_FT
+                 @VersionId = @VersionId,
+                 @Usuario = @Usuario;
+        END;
 
         COMMIT TRANSACTION;
 
