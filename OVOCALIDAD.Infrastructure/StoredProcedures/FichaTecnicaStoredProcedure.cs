@@ -126,4 +126,17 @@ public class FichaTecnicaStoredProcedure
             items.Add(reader.MapTo<ConfiguracionCertificadoFtDto>());
         return items;
     }
+    public async Task<EliminarFichaTecnicaResponse> EliminarBorradorAsync(int versionId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_FICHA_TECNICA_BORRADOR, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<EliminarFichaTecnicaResponse>()
+            : new EliminarFichaTecnicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado.", VersionId = versionId };
+    }
 }
