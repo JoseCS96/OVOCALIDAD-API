@@ -84,6 +84,20 @@ public class FichaTecnicaController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<ConfiguracionCertificadoFtDto>>> ObtenerConfiguracionCertificado(int versionId) =>
         Ok(await _service.ObtenerConfiguracionCertificadoAsync(versionId));
 
+    [HttpPost("{versionId:int}/cambiar-estado")]
+    public async Task<ActionResult<CambiarEstadoFtResponse>> CambiarEstado(
+        int versionId,
+        [FromBody] CambiarEstadoFtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.CambiarEstadoAsync(versionId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("{versionId:int}/historial-estados")]
+    public async Task<ActionResult<IReadOnlyList<HistorialEstadoFtDto>>> HistorialEstados(int versionId) =>
+        Ok(await _service.ListarHistorialEstadoAsync(versionId));
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
