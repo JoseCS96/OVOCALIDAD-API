@@ -36,6 +36,7 @@ public class TipoCriterioEtCatalogoDto
 {
     public int TipoCriterioId { get; set; }
     public string TipoCriterio { get; set; } = string.Empty;
+    public string TipoCriterioDescripcionUsuario { get; set; } = string.Empty;
 }
 
 public class FaseEtCatalogoDto
