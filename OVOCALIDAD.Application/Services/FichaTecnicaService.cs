@@ -35,4 +35,7 @@ public class FichaTecnicaService : IFichaTecnicaService
 
     public Task<IReadOnlyList<ConfiguracionCertificadoFtDto>> ObtenerConfiguracionCertificadoAsync(int versionId) =>
         _repository.ObtenerConfiguracionCertificadoAsync(versionId);
+
+    public Task<EliminarFichaTecnicaResponse> EliminarBorradorAsync(int versionId, string usuario) =>
+        _repository.EliminarBorradorAsync(versionId, usuario);
 }
