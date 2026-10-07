@@ -10,4 +10,6 @@ public class CertificadoService : ICertificadoService
     public Task<PlantillaCertificadoDto?> ObtenerPlantillaAsync(int id) => _repository.ObtenerPlantillaAsync(id);
     public Task<PlantillaCertificadoOperacionResponse> GuardarDisenoAsync(int id, GuardarDisenoPlantillaCertificadoRequest r) => _repository.GuardarDisenoAsync(id,r);
     public Task<PlantillaCertificadoOperacionResponse> EliminarPlantillaAsync(int id,string u) => _repository.EliminarPlantillaAsync(id,u);
+    public Task<CertificadoEmpresaDto?> ObtenerEmpresaAsync() => _repository.ObtenerEmpresaAsync();
+    public Task<GuardarCertificadoEmpresaResponse> GuardarEmpresaAsync(GuardarCertificadoEmpresaRequest r) => _repository.GuardarEmpresaAsync(r);
 }
