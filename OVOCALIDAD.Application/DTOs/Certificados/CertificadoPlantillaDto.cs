@@ -51,6 +51,13 @@ public class PlantillaCertificadoSeccionDto
     public string? Titulo { get; set; }
     public int Orden { get; set; }
     public bool Visible { get; set; }
+    public string ModoSeleccion { get; set; } = "MANUAL";
+    public int? VersionFaseId { get; set; }
+    public int? FaseId { get; set; }
+    public string? FaseCodigo { get; set; }
+    public string? FaseDescripcion { get; set; }
+    public int? TipoCaractId { get; set; }
+    public string? TipoCaractDescripcion { get; set; }
 }
 public class PlantillaCertificadoCaracteristicaDto
 {
@@ -59,7 +66,12 @@ public class PlantillaCertificadoCaracteristicaDto
     public int VersionFtCaracteristicaId { get; set; }
     public int CaracteristicaId { get; set; }
     public string Determinacion { get; set; } = string.Empty;
+    public int? TipoCaractId { get; set; }
     public string? TipoCaractDescripcion { get; set; }
+    public int? FaseId { get; set; }
+    public int? VersionFaseId { get; set; }
+    public string? FaseCodigo { get; set; }
+    public string? FaseDescripcion { get; set; }
     public int TipoCriterioId { get; set; }
     public decimal? ValorCuantitativoInicial { get; set; }
     public decimal? ValorCuantitativoFinal { get; set; }
@@ -81,6 +93,9 @@ public class GuardarPlantillaSeccionRequest
     public string? Titulo { get; set; }
     public int Orden { get; set; }
     public bool Visible { get; set; } = true;
+    public string ModoSeleccion { get; set; } = "MANUAL";
+    public int? VersionFaseId { get; set; }
+    public int? TipoCaractId { get; set; }
     public List<GuardarPlantillaCaracteristicaRequest> Caracteristicas { get; set; } = new();
 }
 public class GuardarPlantillaCaracteristicaRequest
