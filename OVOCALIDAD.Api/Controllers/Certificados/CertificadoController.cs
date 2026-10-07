@@ -42,6 +42,21 @@ public class CertificadoController : ControllerBase
     public async Task<ActionResult<PlantillaCertificadoOperacionResponse>> Eliminar(int id)
         => Ok(await _service.EliminarPlantillaAsync(id, UsuarioSesion()));
 
+    [HttpGet("empresa")]
+    public async Task<ActionResult<CertificadoEmpresaDto>> ObtenerEmpresa()
+    {
+        var item = await _service.ObtenerEmpresaAsync();
+        return item is null ? NotFound() : Ok(item);
+    }
+
+    [HttpPut("empresa")]
+    [Authorize(Policy = "JefeCalidad")]
+    public async Task<ActionResult<GuardarCertificadoEmpresaResponse>> GuardarEmpresa([FromBody] GuardarCertificadoEmpresaRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _service.GuardarEmpresaAsync(request));
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
