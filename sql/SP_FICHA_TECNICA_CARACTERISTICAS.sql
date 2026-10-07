@@ -111,7 +111,7 @@ BEGIN
            VFC.ObligatorioCertificado, VFC.OrdenCertificado, VFC.Estado
     FROM dbo.VERSIONFTCARACTERISTICA VFC
     INNER JOIN dbo.CARACTERISTICA C ON C.CaracteristicaId = VFC.CaracteristicaId
-    LEFT JOIN dbo.TIPOCARACTERISTICA TC ON TC.TipoCaractId = C.TipoCaractId
+    LEFT JOIN dbo.TIPO_CARACTERISTICA TC ON TC.TipoCaractId = C.TipoCaractId
     LEFT JOIN dbo.METODOENSAYO ME ON ME.MetEnsayoId = C.MetEnsayoId
     WHERE VFC.VersionId = @VersionId AND VFC.Estado = 1
     ORDER BY TC.TipoCaractDescripcion,
@@ -157,7 +157,7 @@ BEGIN
            VFC.OrdenCertificado
     FROM dbo.VERSIONFTCARACTERISTICA VFC
     INNER JOIN dbo.CARACTERISTICA C ON C.CaracteristicaId = VFC.CaracteristicaId
-    LEFT JOIN dbo.TIPOCARACTERISTICA TC ON TC.TipoCaractId = C.TipoCaractId
+    LEFT JOIN dbo.TIPO_CARACTERISTICA TC ON TC.TipoCaractId = C.TipoCaractId
     LEFT JOIN dbo.METODOENSAYO ME ON ME.MetEnsayoId = C.MetEnsayoId
     WHERE VFC.VersionId = @VersionId
       AND VFC.Estado = 1
