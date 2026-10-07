@@ -12,6 +12,9 @@ public class FichaTecnicaService : IFichaTecnicaService
         _repository = repository;
     }
 
+    public Task<IReadOnlyList<FichaTecnicaCertificadoDto>> ListarParaCertificadoAsync(string? busqueda) =>
+        _repository.ListarParaCertificadoAsync(busqueda);
+
     public Task<CrearFichaTecnicaResponse> CrearAsync(CrearFichaTecnicaRequest request) =>
         _repository.CrearAsync(request);
 
