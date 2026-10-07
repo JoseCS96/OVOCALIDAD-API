@@ -17,6 +17,17 @@ public class FichaTecnicaController : ControllerBase
         _service = service;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IReadOnlyList<FichaTecnicaGestionDto>>> Listar([FromQuery] string? busqueda, [FromQuery] int? estVerId) =>
+        Ok(await _service.ListarGestionAsync(busqueda, estVerId));
+
+    [HttpGet("{versionId:int}")]
+    public async Task<ActionResult<FichaTecnicaGestionDto>> Obtener(int versionId)
+    {
+        var item = await _service.ObtenerAsync(versionId);
+        return item is null ? NotFound() : Ok(item);
+    }
+
     [HttpGet("para-certificado")]
     public async Task<ActionResult<IReadOnlyList<FichaTecnicaCertificadoDto>>> ListarParaCertificado([FromQuery] string? busqueda) =>
         Ok(await _service.ListarParaCertificadoAsync(busqueda));
