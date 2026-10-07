@@ -30,14 +30,40 @@ BEGIN
         INNER JOIN dbo.DOCUMENTO D
             ON D.DocumentoId = V.DocumentoId
         WHERE V.VersionId = @VersionId
-          AND V.Estado = 1
-          AND D.Estado = 1
           AND D.TipoDocumentoId = 3;
 
         IF @DocumentoId IS NULL
         BEGIN
             SELECT -1 AS CodigoResultado,
-                   'La versión de ficha técnica no existe o se encuentra inactiva.' AS Mensaje,
+                   'La versión de ficha técnica no existe.' AS Mensaje,
+                   @VersionId AS VersionId;
+            RETURN;
+        END;
+
+        IF EXISTS
+        (
+            SELECT 1
+            FROM dbo.VERSION
+            WHERE VersionId = @VersionId
+              AND Estado = 0
+        )
+        BEGIN
+            SELECT 0 AS CodigoResultado,
+                   'La ficha técnica ya se encontraba eliminada.' AS Mensaje,
+                   @VersionId AS VersionId;
+            RETURN;
+        END;
+
+        IF EXISTS
+        (
+            SELECT 1
+            FROM dbo.DOCUMENTO
+            WHERE DocumentoId = @DocumentoId
+              AND Estado = 0
+        )
+        BEGIN
+            SELECT -1 AS CodigoResultado,
+                   'El documento de la ficha técnica se encuentra inactivo.' AS Mensaje,
                    @VersionId AS VersionId;
             RETURN;
         END;
