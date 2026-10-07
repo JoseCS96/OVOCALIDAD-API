@@ -274,9 +274,37 @@ BEGIN
            ===================================================== */
         IF @VersionEtOrigenId IS NOT NULL
         BEGIN
+            DECLARE @ResultadoCaracteristicas TABLE
+            (
+                CodigoResultado INT,
+                Mensaje VARCHAR(4000),
+                VersionFtId INT,
+                VersionEtOrigenId INT,
+                CantidadInsertada INT,
+                CantidadTotal INT
+            );
+
+            INSERT INTO @ResultadoCaracteristicas
             EXEC dbo.SP_INICIALIZAR_CARACTERISTICAS_FT
                  @VersionFtId = @VersionId,
                  @Usuario = @Usuario;
+
+            IF EXISTS
+            (
+                SELECT 1
+                FROM @ResultadoCaracteristicas
+                WHERE CodigoResultado <> 0
+            )
+            BEGIN
+                DECLARE @MensajeCaracteristicas VARCHAR(4000);
+
+                SELECT TOP (1)
+                    @MensajeCaracteristicas = Mensaje
+                FROM @ResultadoCaracteristicas
+                WHERE CodigoResultado <> 0;
+
+                THROW 50010, @MensajeCaracteristicas, 1;
+            END;
         END;
 
 
@@ -287,9 +315,36 @@ BEGIN
            ===================================================== */
         IF @VersionEtOrigenId IS NOT NULL
         BEGIN
+            DECLARE @ResultadoSecciones TABLE
+            (
+                CodigoResultado INT,
+                Mensaje VARCHAR(4000),
+                VersionId INT,
+                VersionEtOrigenId INT,
+                CantidadSecciones INT
+            );
+
+            INSERT INTO @ResultadoSecciones
             EXEC dbo.SP_INICIALIZAR_SECCIONES_FT
                  @VersionId = @VersionId,
                  @Usuario = @Usuario;
+
+            IF EXISTS
+            (
+                SELECT 1
+                FROM @ResultadoSecciones
+                WHERE CodigoResultado <> 0
+            )
+            BEGIN
+                DECLARE @MensajeSecciones VARCHAR(4000);
+
+                SELECT TOP (1)
+                    @MensajeSecciones = Mensaje
+                FROM @ResultadoSecciones
+                WHERE CodigoResultado <> 0;
+
+                THROW 50011, @MensajeSecciones, 1;
+            END;
         END;
 
         COMMIT TRANSACTION;
