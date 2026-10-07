@@ -73,3 +73,48 @@ public class EliminarFichaTecnicaResponse
     public string Mensaje { get; set; } = string.Empty;
     public int VersionId { get; set; }
 }
+
+public class SeccionFtDto
+{
+    public int VersSeccId { get; set; }
+    public int VersionId { get; set; }
+    public int SeccionId { get; set; }
+    public string SeccionDescripcion { get; set; } = string.Empty;
+    public int? IdTipoSeccion { get; set; }
+    public string? TipoSeccionDescripcion { get; set; }
+    public int? Orden { get; set; }
+    public bool PuedeEliminarse { get; set; }
+    public bool PermiteReordenar { get; set; }
+    public string? Contenido { get; set; }
+}
+public class GuardarContenidoSeccionFtRequest
+{
+    public string? Contenido { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+public class SeccionFtOperacionResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersSeccId { get; set; }
+    public int? VersionId { get; set; }
+    public int? SeccionId { get; set; }
+    public int? Orden { get; set; }
+    public int? VersionSeccionContenidoId { get; set; }
+}
+public class AgregarSeccionFtRequest
+{
+    public int SeccionId { get; set; }
+    public int? Orden { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+public class ReordenarSeccionFtItemRequest
+{
+    public int VersSeccId { get; set; }
+    public int Orden { get; set; }
+}
+public class ReordenarSeccionesFtRequest
+{
+    public List<ReordenarSeccionFtItemRequest> Secciones { get; set; } = new();
+    public string Usuario { get; set; } = string.Empty;
+}
