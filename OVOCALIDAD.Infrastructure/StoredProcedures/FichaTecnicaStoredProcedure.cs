@@ -139,4 +139,40 @@ public class FichaTecnicaStoredProcedure
             ? reader.MapTo<EliminarFichaTecnicaResponse>()
             : new EliminarFichaTecnicaResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado.", VersionId = versionId };
     }
+    public async Task<IReadOnlyList<SeccionFtDto>> ListarSeccionesAsync(int versionId)
+    {
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_LISTAR_SECCIONES_FT, new List<SqlParameter>{ new("@VersionId", versionId) });
+        var items = new List<SeccionFtDto>();
+        while (await reader.ReadAsync()) items.Add(reader.MapTo<SeccionFtDto>());
+        return items;
+    }
+
+    public async Task<SeccionFtOperacionResponse> GuardarContenidoSeccionAsync(int versionId, int versSeccId, GuardarContenidoSeccionFtRequest request)
+    {
+        var p = new List<SqlParameter>{ new("@VersionId",versionId), new("@VersSeccId",versSeccId), new("@Contenido",(object?)request.Contenido??DBNull.Value), new("@Usuario",request.Usuario)};
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_CONTENIDO_SECCION_FT,p);
+        return await reader.ReadAsync()?reader.MapTo<SeccionFtOperacionResponse>():new SeccionFtOperacionResponse{CodigoResultado=-1,Mensaje="El procedimiento no devolvió resultado."};
+    }
+
+    public async Task<SeccionFtOperacionResponse> AgregarSeccionAsync(int versionId, AgregarSeccionFtRequest request)
+    {
+        var p = new List<SqlParameter>{ new("@VersionId",versionId), new("@SeccionId",request.SeccionId), new("@Orden",(object?)request.Orden??DBNull.Value), new("@Usuario",request.Usuario)};
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_AGREGAR_SECCION_FT,p);
+        return await reader.ReadAsync()?reader.MapTo<SeccionFtOperacionResponse>():new SeccionFtOperacionResponse{CodigoResultado=-1,Mensaje="El procedimiento no devolvió resultado."};
+    }
+
+    public async Task<SeccionFtOperacionResponse> QuitarSeccionAsync(int versionId, int versSeccId, string usuario)
+    {
+        var p = new List<SqlParameter>{ new("@VersionId",versionId), new("@VersSeccId",versSeccId), new("@Usuario",usuario)};
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_QUITAR_SECCION_FT,p);
+        return await reader.ReadAsync()?reader.MapTo<SeccionFtOperacionResponse>():new SeccionFtOperacionResponse{CodigoResultado=-1,Mensaje="El procedimiento no devolvió resultado."};
+    }
+
+    public async Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(request.Secciones);
+        var p = new List<SqlParameter>{ new("@VersionId",versionId), new("@SeccionesJson",json), new("@Usuario",request.Usuario)};
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_REORDENAR_SECCIONES_FT,p);
+        return await reader.ReadAsync()?reader.MapTo<SeccionFtOperacionResponse>():new SeccionFtOperacionResponse{CodigoResultado=-1,Mensaje="El procedimiento no devolvió resultado."};
+    }
 }
