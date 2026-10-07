@@ -51,6 +51,7 @@ public class PlantillaCertificadoSeccionDto
     public int CertificadoPlantillaId { get; set; }
     public string TipoSeccion { get; set; } = string.Empty;
     public string? Titulo { get; set; }
+    public string? Contenido { get; set; }
     public int Orden { get; set; }
     public bool Visible { get; set; }
     public string ModoSeleccion { get; set; } = "MANUAL";
@@ -93,6 +94,7 @@ public class GuardarPlantillaSeccionRequest
 {
     public string TipoSeccion { get; set; } = string.Empty;
     public string? Titulo { get; set; }
+    public string? Contenido { get; set; }
     public int Orden { get; set; }
     public bool Visible { get; set; } = true;
     public string ModoSeleccion { get; set; } = "MANUAL";
