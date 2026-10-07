@@ -298,64 +298,12 @@ BEGIN
 
 
         /* =====================================================
-           COPIAR ESTRUCTURA DE SECCIONES DE LA ET
-           La FT nace con la misma estructura como punto de partida,
-           pero queda independiente para edición posterior.
+           INICIALIZAR DISEÑO PROPIO DE FICHA TÉCNICA
+           La FT no reutiliza la estructura de secciones de la ET.
            ===================================================== */
-        IF @VersionEtOrigenId IS NOT NULL
-        BEGIN
-            INSERT INTO dbo.VERSIONSECCION
-            (
-                VersionId,
-                SeccionId,
-                Orden,
-                Estado,
-                AudUsuarioCreacion,
-                AudFechaCreacion
-            )
-            SELECT
-                @VersionId,
-                VS.SeccionId,
-                VS.Orden,
-                1,
-                @Usuario,
-                SYSDATETIME()
-            FROM dbo.VERSIONSECCION VS
-            WHERE VS.VersionId = @VersionEtOrigenId
-              AND VS.Estado = 1
-              AND NOT EXISTS
-              (
-                  SELECT 1
-                  FROM dbo.VERSIONSECCION X
-                  WHERE X.VersionId = @VersionId
-                    AND X.SeccionId = VS.SeccionId
-              );
-
-            INSERT INTO dbo.VERSIONSECCIONCONTENIDO
-            (
-                VersSeccId,
-                Contenido,
-                Estado,
-                AudUsuarioCreacion,
-                AudFechaCreacion
-            )
-            SELECT
-                VSFT.VersSeccId,
-                VSC.Contenido,
-                1,
-                @Usuario,
-                SYSDATETIME()
-            FROM dbo.VERSIONSECCION VSET
-            INNER JOIN dbo.VERSIONSECCIONCONTENIDO VSC
-                ON VSC.VersSeccId = VSET.VersSeccId
-               AND VSC.Estado = 1
-            INNER JOIN dbo.VERSIONSECCION VSFT
-                ON VSFT.VersionId = @VersionId
-               AND VSFT.SeccionId = VSET.SeccionId
-               AND VSFT.Estado = 1
-            WHERE VSET.VersionId = @VersionEtOrigenId
-              AND VSET.Estado = 1;
-        END;
+        EXEC dbo.SP_INICIALIZAR_SECCIONES_FT
+             @VersionId = @VersionId,
+             @Usuario = @Usuario;
 
         COMMIT TRANSACTION;
 
