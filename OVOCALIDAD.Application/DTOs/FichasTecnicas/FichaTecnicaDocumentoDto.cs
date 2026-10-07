@@ -123,3 +123,40 @@ public class ReordenarSeccionesFtRequest
     public List<ReordenarSeccionFtItemRequest> Secciones { get; set; } = new();
     public string Usuario { get; set; } = string.Empty;
 }
+
+
+public class CambiarEstadoFtRequest
+{
+    public string Accion { get; set; } = string.Empty;
+    public string? Comentario { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class CambiarEstadoFtResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int? VersionId { get; set; }
+    public int? EstVerOrigenId { get; set; }
+    public string? EstadoOrigen { get; set; }
+    public int? EstVerDestinoId { get; set; }
+    public string? EstadoDestino { get; set; }
+    public string? Accion { get; set; }
+    public string? Comentario { get; set; }
+    public int? VersionVigenteAnteriorId { get; set; }
+    public DateTime? FechaVigencia { get; set; }
+}
+
+public class HistorialEstadoFtDto
+{
+    public int VersionHistorialEstadoId { get; set; }
+    public int VersionId { get; set; }
+    public int? EstVerOrigenId { get; set; }
+    public string? EstadoOrigen { get; set; }
+    public int EstVerDestinoId { get; set; }
+    public string EstadoDestino { get; set; } = string.Empty;
+    public string Accion { get; set; } = string.Empty;
+    public string? Comentario { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; }
+}
