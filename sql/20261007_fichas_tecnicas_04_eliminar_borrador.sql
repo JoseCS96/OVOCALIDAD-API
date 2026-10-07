@@ -1,13 +1,11 @@
 /*
- OVOCALIDAD 2.0 - Eliminación física controlada de Ficha Técnica BORRADOR.
+ OVOCALIDAD 2.0 - Eliminación física controlada de Ficha Técnica.
 
- Regla:
- - Solo elimina físicamente versiones FT en BORRADOR (EstVerId = 2).
+ TEMPORAL PARA LIMPIEZA DE DATA DE PRUEBA:
+ - Permite eliminar FT en cualquier estado documental.
  - No permite eliminar si existen certificados emitidos.
- - Elimina primero dependencias de certificado, secciones y características.
+ - Elimina trazabilidad, diseño, secciones y características.
  - Si el documento FT queda sin versiones, elimina también DOCUMENTO.
- - Permite limpiar registros que quedaron con Estado = 0 por la versión anterior
-   del procedimiento.
 */
 CREATE OR ALTER PROCEDURE dbo.SP_ELIMINAR_FICHA_TECNICA_BORRADOR
 (
@@ -54,14 +52,6 @@ BEGIN
         BEGIN
             SELECT 0 AS CodigoResultado,
                    'La ficha técnica ya no existe en la base de datos.' AS Mensaje,
-                   @VersionId AS VersionId;
-            RETURN;
-        END;
-
-        IF @EstVerId <> 2
-        BEGIN
-            SELECT -1 AS CodigoResultado,
-                   'Solo se puede eliminar físicamente una Ficha Técnica en estado BORRADOR.' AS Mensaje,
                    @VersionId AS VersionId;
             RETURN;
         END;
@@ -161,7 +151,15 @@ BEGIN
 
 
         /* =====================================================
-           5. VERSION FT
+           5. TRAZABILIDAD DE ESTADOS
+           ===================================================== */
+
+        DELETE FROM dbo.VERSIONHISTORIALESTADO
+        WHERE VersionId = @VersionId;
+
+
+        /* =====================================================
+           6. VERSION FT
            ===================================================== */
 
         DELETE FROM dbo.VERSION
@@ -169,7 +167,7 @@ BEGIN
 
 
         /* =====================================================
-           6. DOCUMENTO FT
+           7. DOCUMENTO FT
               Solo se elimina cuando ya no tiene ninguna versión.
            ===================================================== */
 
