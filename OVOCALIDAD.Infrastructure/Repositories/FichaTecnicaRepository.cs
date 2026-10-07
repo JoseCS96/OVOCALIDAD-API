@@ -45,4 +45,6 @@ public class FichaTecnicaRepository : IFichaTecnicaRepository
     public Task<SeccionFtOperacionResponse> AgregarSeccionAsync(int versionId, AgregarSeccionFtRequest request) => _storedProcedure.AgregarSeccionAsync(versionId, request);
     public Task<SeccionFtOperacionResponse> QuitarSeccionAsync(int versionId, int versSeccId, string usuario) => _storedProcedure.QuitarSeccionAsync(versionId, versSeccId, usuario);
     public Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request) => _storedProcedure.ReordenarSeccionesAsync(versionId, request);
+    public Task<CambiarEstadoFtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoFtRequest request) => _storedProcedure.CambiarEstadoAsync(versionId, request);
+    public Task<IReadOnlyList<HistorialEstadoFtDto>> ListarHistorialEstadoAsync(int versionId) => _storedProcedure.ListarHistorialEstadoAsync(versionId);
 }
