@@ -19,6 +19,9 @@ public class LoteRepository : ILoteRepository
     public Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId) =>
         _storedProcedure.ObtenerDetalleAsync(loteId);
 
+    public Task<TrazabilidadLoteDto?> ObtenerTrazabilidadAsync(int loteId) =>
+        _storedProcedure.ObtenerTrazabilidadAsync(loteId);
+
     public Task<CatalogosLoteDto> ObtenerCatalogosAsync() =>
         _storedProcedure.ObtenerCatalogosAsync();
 
