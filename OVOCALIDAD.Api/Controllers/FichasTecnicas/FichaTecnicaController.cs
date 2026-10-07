@@ -61,6 +61,10 @@ public class FichaTecnicaController : ControllerBase
         return Ok(await _service.EliminarCaracteristicaAsync(versionFtCaracteristicaId, UsuarioSesion()));
     }
 
+    [HttpDelete("{versionId:int}")]
+    public async Task<ActionResult<EliminarFichaTecnicaResponse>> EliminarBorrador(int versionId) =>
+        Ok(await _service.EliminarBorradorAsync(versionId, UsuarioSesion()));
+
     [HttpGet("{versionId:int}/configuracion-certificado")]
     public async Task<ActionResult<IReadOnlyList<ConfiguracionCertificadoFtDto>>> ObtenerConfiguracionCertificado(int versionId) =>
         Ok(await _service.ObtenerConfiguracionCertificadoAsync(versionId));
