@@ -28,6 +28,7 @@ BEGIN
     INNER JOIN dbo.ESTADOVERSION EV ON EV.EstVerId = V.EstVerId
     LEFT JOIN dbo.VERSIONFTCARACTERISTICA VFC ON VFC.VersionId = V.VersionId
     WHERE D.Estado = 1
+      AND V.Estado = 1
       AND D.TipoDocumentoId = 3
       AND (@EstVerId IS NULL OR V.EstVerId = @EstVerId)
       AND (@Busqueda IS NULL
@@ -64,6 +65,7 @@ BEGIN
     INNER JOIN dbo.DOCUMENTO D ON D.DocumentoId = V.DocumentoId
     INNER JOIN dbo.ESTADOVERSION EV ON EV.EstVerId = V.EstVerId
     WHERE V.VersionId = @VersionId
+      AND V.Estado = 1
       AND D.TipoDocumentoId = 3
       AND D.Estado = 1;
 END;
