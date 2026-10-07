@@ -17,6 +17,10 @@ public class FichaTecnicaController : ControllerBase
         _service = service;
     }
 
+    [HttpGet("para-certificado")]
+    public async Task<ActionResult<IReadOnlyList<FichaTecnicaCertificadoDto>>> ListarParaCertificado([FromQuery] string? busqueda) =>
+        Ok(await _service.ListarParaCertificadoAsync(busqueda));
+
     [HttpPost]
     public async Task<ActionResult<CrearFichaTecnicaResponse>> Crear([FromBody] CrearFichaTecnicaRequest request)
     {
