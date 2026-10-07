@@ -71,11 +71,11 @@ public class FichaTecnicaController : ControllerBase
     [HttpPost("{versionId:int}/secciones")]
     public async Task<ActionResult<SeccionFtOperacionResponse>> AgregarSeccion(int versionId,[FromBody] AgregarSeccionFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.AgregarSeccionAsync(versionId,request));}
 
-    [HttpPut("{versionId:int}/secciones/{versSeccId:int}/contenido")]
-    public async Task<ActionResult<SeccionFtOperacionResponse>> GuardarContenidoSeccion(int versionId,int versSeccId,[FromBody] GuardarContenidoSeccionFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.GuardarContenidoSeccionAsync(versionId,versSeccId,request));}
+    [HttpPut("{versionId:int}/secciones/{versionFtSeccionId:int}/contenido")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> GuardarContenidoSeccion(int versionId,int versionFtSeccionId,[FromBody] GuardarContenidoSeccionFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.GuardarContenidoSeccionAsync(versionId,versionFtSeccionId,request));}
 
-    [HttpDelete("{versionId:int}/secciones/{versSeccId:int}")]
-    public async Task<ActionResult<SeccionFtOperacionResponse>> QuitarSeccion(int versionId,int versSeccId) => Ok(await _service.QuitarSeccionAsync(versionId,versSeccId,UsuarioSesion()));
+    [HttpDelete("{versionId:int}/secciones/{versionFtSeccionId:int}")]
+    public async Task<ActionResult<SeccionFtOperacionResponse>> QuitarSeccion(int versionId,int versionFtSeccionId) => Ok(await _service.QuitarSeccionAsync(versionId,versionFtSeccionId,UsuarioSesion()));
 
     [HttpPut("{versionId:int}/secciones/orden")]
     public async Task<ActionResult<SeccionFtOperacionResponse>> ReordenarSecciones(int versionId,[FromBody] ReordenarSeccionesFtRequest request){request.Usuario=UsuarioSesion();return Ok(await _service.ReordenarSeccionesAsync(versionId,request));}
