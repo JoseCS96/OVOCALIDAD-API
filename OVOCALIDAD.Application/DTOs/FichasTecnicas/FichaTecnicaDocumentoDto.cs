@@ -10,6 +10,7 @@ public class CrearFichaTecnicaRequest
     public int? VersionReemplazaAId { get; set; }
     public int? VersionNroPaginas { get; set; }
     public string? VersionDescripcion { get; set; }
+    public int? VersionEtOrigenId { get; set; }
     public string Usuario { get; set; } = string.Empty;
 }
 
@@ -31,6 +32,7 @@ public class CrearFichaTecnicaResponse
     public int? VersionReemplazaAId { get; set; }
     public int? VersionNroPaginas { get; set; }
     public string? VersionDescripcion { get; set; }
+    public int? VersionEtOrigenId { get; set; }
 }
 
 public class FichaTecnicaCertificadoDto
