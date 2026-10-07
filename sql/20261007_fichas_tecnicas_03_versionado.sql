@@ -274,7 +274,7 @@ BEGIN
                 @VersionId, VC.CaracteristicaId, VC.TipoCriterioId,
                 VC.ValorCuantitativoInicial, VC.ValorCuantitativoFinal,
                 VC.ValorCuantitativoIgual, VC.ValorCualitativo,
-                COALESCE(UM.UnidadMedidaDescripcion, C.CaracteristicaUnidadDeMedida),
+                COALESCE(VC.UnidadDeMedida, C.CaracteristicaUnidadDeMedida),
                 0, 0, NULL, 1, @Usuario, SYSDATETIME()
             FROM dbo.VERSIONCARACTERISTICA VC
             INNER JOIN dbo.CARACTERISTICA C ON C.CaracteristicaId = VC.CaracteristicaId
