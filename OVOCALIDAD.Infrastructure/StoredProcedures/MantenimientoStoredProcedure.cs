@@ -480,4 +480,24 @@ public class MantenimientoStoredProcedure
             ? reader.MapTo<OperacionFirmaResponsableResponse>()
             : new OperacionFirmaResponsableResponse { CodigoResultado=-1, Mensaje="El procedimiento no devolvió resultado.", UsuarioDni=usuarioDni };
     }
+    public async Task<VinculoResponsableUsuarioDto?> ObtenerVinculoResponsableUsuarioAsync(string usuarioDni)
+    {
+        var parametros = new List<SqlParameter> { new("@UsuarioDni", usuarioDni) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_VINCULO_RESPONSABLE_USUARIO, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<VinculoResponsableUsuarioDto>() : null;
+    }
+
+    public async Task<VincularResponsableUsuarioResponse> VincularResponsableUsuarioAsync(string usuarioDni, VincularResponsableUsuarioRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@NombreUsuario", request.NombreUsuario),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_VINCULAR_RESPONSABLE_USUARIO_ACCESO, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<VincularResponsableUsuarioResponse>()
+            : new VincularResponsableUsuarioResponse { CodigoResultado=-1, Mensaje="El procedimiento no devolvió resultado.", UsuarioDni=usuarioDni };
+    }
 }
