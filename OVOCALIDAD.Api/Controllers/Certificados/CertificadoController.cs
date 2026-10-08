@@ -57,6 +57,38 @@ public class CertificadoController : ControllerBase
         return Ok(await _service.GuardarEmpresaAsync(request));
     }
 
+    [HttpGet("previsualizar")]
+    public async Task<ActionResult<CertificadoVistaDto>> Previsualizar(
+        [FromQuery] int loteId,
+        [FromQuery] int certificadoPlantillaId)
+    {
+        var item = await _service.PrevisualizarAsync(loteId, certificadoPlantillaId);
+        return item is null ? NotFound() : Ok(item);
+    }
+
+    [HttpPost("emitir")]
+    public async Task<ActionResult<EmitirCertificadoResponse>> Emitir([FromBody] EmitirCertificadoRequest request)
+    {
+        var usuario = UsuarioSesion();
+
+        var accesos = HttpContext.RequestServices
+            .GetRequiredService<ISeguridadService>();
+
+        var permisos = await accesos.ObtenerAccesosUsuarioAsync(usuario);
+        if (permisos?.Permisos.Any(x =>
+            string.Equals(x, "CERTIFICADO.EMITIR", StringComparison.OrdinalIgnoreCase)) != true)
+            return Forbid();
+
+        return Ok(await _service.EmitirAsync(request, usuario));
+    }
+
+    [HttpGet("emitidos/{certificadoId:int}")]
+    public async Task<ActionResult<CertificadoVistaDto>> ObtenerEmitido(int certificadoId)
+    {
+        var item = await _service.ObtenerEmitidoAsync(certificadoId);
+        return item is null ? NotFound() : Ok(item);
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
