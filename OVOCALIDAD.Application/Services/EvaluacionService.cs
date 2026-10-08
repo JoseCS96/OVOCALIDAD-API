@@ -56,4 +56,6 @@ public class EvaluacionService : IEvaluacionService
 
     public Task<List<ConsolidacionEvaluacionResultadoDto>> ConsolidarAsync(IReadOnlyCollection<int> evaluacionIds, string usuario, string? observacion) =>
         _repository.ConsolidarAsync(evaluacionIds, usuario, observacion);
+    public Task<EliminarEvaluacionPruebaResponse> EliminarPruebaAsync(int evaluacionId, string usuario) =>
+        _repository.EliminarPruebaAsync(evaluacionId, usuario);
 }
