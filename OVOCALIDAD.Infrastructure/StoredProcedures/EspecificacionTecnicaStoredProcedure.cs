@@ -760,6 +760,30 @@ public class EspecificacionTecnicaStoredProcedure
         }
 
         if (response.CodigoResultado == 0 &&
+            string.Equals(request.Accion, "RETORNAR_BORRADOR", StringComparison.OrdinalIgnoreCase))
+        {
+            var parametrosAnularFirmas = new List<SqlParameter>
+            {
+                new("@TipoDocumento", "ET"),
+                new("@EntidadId", versionId),
+                new("@Usuario", request.Usuario)
+            };
+
+            using var anularFirmasReader = await _executor.ExecuteReaderAsync(
+                SPNames.SP_ANULAR_SOLICITUDES_FIRMA_DOCUMENTO,
+                parametrosAnularFirmas);
+
+            if (await anularFirmasReader.ReadAsync())
+            {
+                var codigoAnulacion = anularFirmasReader.GetInt32(
+                    anularFirmasReader.GetOrdinal("CodigoResultado"));
+
+                if (codigoAnulacion != 0)
+                    throw new InvalidOperationException("No se pudo invalidar la ronda de firmas de la ET.");
+            }
+        }
+
+        if (response.CodigoResultado == 0 &&
             string.Equals(request.Accion, "OBSERVAR", StringComparison.OrdinalIgnoreCase))
         {
             var parametrosNotificacion = new List<SqlParameter>
