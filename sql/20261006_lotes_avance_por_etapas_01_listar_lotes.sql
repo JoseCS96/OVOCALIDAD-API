@@ -40,6 +40,19 @@ BEGIN
         , L.EstadoLoteId
         , EL.Codigo AS EstadoLoteCodigo
         , EL.Descripcion AS EstadoLoteDescripcion
+        , CASE
+              WHEN CE.CertificadoId IS NOT NULL THEN 'CERTIFICADO_EMITIDO'
+              WHEN EL.Codigo = 'LIBERADO' THEN 'LISTO_PARA_CERTIFICADO'
+              ELSE 'NO_DISPONIBLE'
+          END AS EstadoCertificacionCodigo
+        , CASE
+              WHEN CE.CertificadoId IS NOT NULL THEN 'Certificado emitido'
+              WHEN EL.Codigo = 'LIBERADO' THEN 'Listo para certificado'
+              ELSE 'No disponible'
+          END AS EstadoCertificacionDescripcion
+        , CE.CertificadoId
+        , CE.NumeroCertificado
+        , CE.FechaEmision AS FechaEmisionCertificado
         , UE.EvaluacionId
         , UE.EvaluacionPadreId
         , UE.TipoEvaluacionId
@@ -81,6 +94,17 @@ BEGIN
     INNER JOIN dbo.NATURALEZA AS N ON N.NaturalezaId = NC.NaturalezaId
     INNER JOIN dbo.FASE AS F ON F.FaseId = NC.FaseId
     INNER JOIN dbo.LINEA_ORIGEN AS LO ON LO.LineaOrigenId = NC.LineaOrigenId
+    OUTER APPLY
+    (
+        SELECT TOP (1)
+              C.CertificadoId
+            , C.NumeroCertificado
+            , C.FechaEmision
+        FROM dbo.CERTIFICADO C
+        WHERE C.LoteId = L.LoteId
+          AND C.Estado = 'EMITIDO'
+        ORDER BY C.FechaEmision DESC, C.CertificadoId DESC
+    ) AS CE
     OUTER APPLY
     (
         SELECT TOP (1)
