@@ -323,4 +323,27 @@ public class EvaluacionStoredProcedure
         return items;
     }
 
+    public async Task<EliminarEvaluacionPruebaResponse> EliminarPruebaAsync(int evaluacionId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@EvaluacionId", evaluacionId),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_ELIMINAR_EVALUACION_PRUEBA,
+            parametros);
+
+        return await reader.ReadAsync()
+            ? reader.MapTo<EliminarEvaluacionPruebaResponse>()
+            : new EliminarEvaluacionPruebaResponse
+            {
+                CodigoResultado = -1,
+                Mensaje = "El procedimiento no devolvió resultado.",
+                EvaluacionId = evaluacionId,
+                Usuario = usuario
+            };
+    }
+
 }
