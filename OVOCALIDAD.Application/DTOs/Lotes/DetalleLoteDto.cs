@@ -32,6 +32,12 @@ public class LoteDetalleCabeceraDto
     public int EstadoLoteId { get; set; }
     public string EstadoLoteCodigo { get; set; } = string.Empty;
     public string EstadoLoteDescripcion { get; set; } = string.Empty;
+
+    public string EstadoCertificacionCodigo { get; set; } = "NO_DISPONIBLE";
+    public string EstadoCertificacionDescripcion { get; set; } = "No disponible";
+    public int? CertificadoId { get; set; }
+    public string? NumeroCertificado { get; set; }
+    public DateTime? FechaEmisionCertificado { get; set; }
     public int TotalEvaluaciones { get; set; }
     public int EvaluacionesTerminadas { get; set; }
     public int TotalParametrosEvaluacion { get; set; }
