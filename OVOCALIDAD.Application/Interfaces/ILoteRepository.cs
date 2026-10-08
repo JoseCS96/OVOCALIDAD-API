@@ -10,4 +10,5 @@ public interface ILoteRepository
     Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda);
     Task<DetalleLoteDto?> ObtenerDetalleAsync(int loteId);
     Task<TrazabilidadLoteDto?> ObtenerTrazabilidadAsync(int loteId);
+    Task<EliminarLotePruebaResponse> EliminarPruebaAsync(int loteId, string usuario);
 }
