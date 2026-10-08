@@ -168,4 +168,15 @@ public class CertificadoStoredProcedure
         return dto;
     }
 
+    public async Task<PlantillaCertificadoListaDto?> ObtenerPlantillaPredeterminadaAsync(int loteId)
+    {
+        var p = new List<SqlParameter> { new("@LoteId", loteId) };
+        using var r = await _executor.ExecuteReaderAsync(
+            SPNames.SP_OBTENER_PLANTILLA_PREDETERMINADA_CERTIFICADO,
+            p);
+
+        return await r.ReadAsync()
+            ? r.MapTo<PlantillaCertificadoListaDto>()
+            : null;
+    }
 }
