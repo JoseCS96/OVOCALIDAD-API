@@ -23,4 +23,6 @@ public class CertificadoRepository : ICertificadoRepository
         => _sp.ObtenerEmitidoAsync(certificadoId);
     public Task<PlantillaCertificadoListaDto?> ObtenerPlantillaPredeterminadaAsync(int loteId)
         => _sp.ObtenerPlantillaPredeterminadaAsync(loteId);
+    public Task<PlantillaCertificadoOperacionResponse> EstablecerPlantillaPredeterminadaAsync(int certificadoPlantillaId, string usuario)
+        => _sp.EstablecerPlantillaPredeterminadaAsync(certificadoPlantillaId, usuario);
 }
