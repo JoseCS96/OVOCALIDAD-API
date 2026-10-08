@@ -202,3 +202,27 @@ public class OperacionFirmaResponsableResponse
     public string Mensaje { get; set; } = string.Empty;
     public string? UsuarioDni { get; set; }
 }
+
+
+public class VinculoResponsableUsuarioDto
+{
+    public string UsuarioDni { get; set; } = string.Empty;
+    public int? SegUsuarioId { get; set; }
+    public string? NombreUsuario { get; set; }
+    public string? NombresApellidos { get; set; }
+}
+
+public class VincularResponsableUsuarioRequest
+{
+    public string NombreUsuario { get; set; } = string.Empty;
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class VincularResponsableUsuarioResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public string? UsuarioDni { get; set; }
+    public int? SegUsuarioId { get; set; }
+    public string? NombreUsuario { get; set; }
+}
