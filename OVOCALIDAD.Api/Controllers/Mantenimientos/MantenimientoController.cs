@@ -230,6 +230,46 @@ public class MantenimientoController : ControllerBase
     public async Task<ActionResult<OperacionResponsableResponse>> EliminarResponsable(string usuarioDni) =>
         Ok(await _storedProcedure.EliminarResponsableAsync(usuarioDni, UsuarioSesion()));
 
+    [HttpGet("responsables/{usuarioDni}/firma")]
+    public async Task<ActionResult<FirmaResponsableDto>> ObtenerFirmaResponsable(string usuarioDni)
+    {
+        var firma = await _storedProcedure.ObtenerFirmaResponsableAsync(usuarioDni);
+        return firma is null ? NotFound() : Ok(firma);
+    }
+
+    [HttpPut("responsables/{usuarioDni}/firma")]
+    [RequestSizeLimit(2_500_000)]
+    public async Task<ActionResult<OperacionFirmaResponsableResponse>> GuardarFirmaResponsable(string usuarioDni, IFormFile firma)
+    {
+        if (firma is null || firma.Length == 0)
+            return BadRequest("Selecciona una imagen de firma.");
+
+        var permitidos = new[] { "image/png", "image/jpeg", "image/webp" };
+        if (!permitidos.Contains(firma.ContentType, StringComparer.OrdinalIgnoreCase))
+            return BadRequest("La firma debe ser una imagen PNG, JPG/JPEG o WEBP.");
+
+        if (firma.Length > 2_000_000)
+            return BadRequest("La imagen de firma no debe superar 2 MB.");
+
+        await using var ms = new MemoryStream();
+        await firma.CopyToAsync(ms);
+
+        var request = new GuardarFirmaResponsableRequest
+        {
+            UsuarioDni = usuarioDni,
+            FirmaImagen = ms.ToArray(),
+            FirmaMimeType = firma.ContentType,
+            FirmaNombreArchivo = Path.GetFileName(firma.FileName),
+            Usuario = UsuarioSesion()
+        };
+
+        return Ok(await _storedProcedure.GuardarFirmaResponsableAsync(request));
+    }
+
+    [HttpDelete("responsables/{usuarioDni}/firma")]
+    public async Task<ActionResult<OperacionFirmaResponsableResponse>> EliminarFirmaResponsable(string usuarioDni) =>
+        Ok(await _storedProcedure.EliminarFirmaResponsableAsync(usuarioDni, UsuarioSesion()));
+
     [HttpPost("responsables/{usuarioDni}/historial-cargos")]
     public async Task<ActionResult<GuardarCargoHistoricoResponsableResponse>> AgregarCargoHistoricoResponsable(string usuarioDni, [FromBody] GuardarCargoHistoricoResponsableRequest request)
     {
