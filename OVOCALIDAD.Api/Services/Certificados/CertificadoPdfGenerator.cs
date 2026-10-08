@@ -228,7 +228,6 @@ public static class CertificadoPdfGenerator
                     continue;
 
                 table.Cell()
-                    .Column(index % 2 + 1)
                     .PaddingVertical(2)
                     .Text(text =>
                     {
