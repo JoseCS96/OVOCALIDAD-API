@@ -786,6 +786,25 @@ public class EspecificacionTecnicaStoredProcedure
             (string.Equals(request.Accion, "PUBLICAR", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(request.Accion, "VIGENTAR", StringComparison.OrdinalIgnoreCase)))
         {
+            var parametrosFirma = new List<SqlParameter>
+            {
+                new("@VersionId", versionId),
+                new("@Usuario", request.Usuario)
+            };
+
+            using var firmaReader = await _executor.ExecuteReaderAsync(
+                SPNames.SP_GENERAR_SOLICITUDES_FIRMA_ET,
+                parametrosFirma);
+
+            if (await firmaReader.ReadAsync())
+            {
+                var codigoFirma = firmaReader.GetInt32(
+                    firmaReader.GetOrdinal("CodigoResultado"));
+
+                if (codigoFirma != 0)
+                    throw new InvalidOperationException("No se pudieron generar las solicitudes de firma de la ET.");
+            }
+
             var parametrosNotificacion = new List<SqlParameter>
             {
                 new("@VersionId", versionId),
