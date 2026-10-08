@@ -58,6 +58,10 @@ public class CertificadoController : ControllerBase
         return Ok(await _service.GuardarEmpresaAsync(request));
     }
 
+    [HttpPut("plantillas/{id:int}/predeterminada")]
+    public async Task<ActionResult<PlantillaCertificadoOperacionResponse>> EstablecerPredeterminada(int id)
+        => Ok(await _service.EstablecerPlantillaPredeterminadaAsync(id, UsuarioSesion()));
+
     [HttpGet("plantillas/predeterminada/lote/{loteId:int}")]
     public async Task<ActionResult<PlantillaCertificadoListaDto>> ObtenerPlantillaPredeterminada(int loteId)
     {
