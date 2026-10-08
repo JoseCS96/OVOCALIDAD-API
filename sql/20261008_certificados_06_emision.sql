@@ -606,7 +606,6 @@ BEGIN
         WHERE CPS.CertificadoPlantillaId = @CertificadoPlantillaId
           AND CPS.Estado = 1
           AND CPS.Visible = 1
-          AND CS.Codigo <> 'RESULTADOS'
           AND L.LoteId = @LoteId;
 
         /* Snapshot de resultados */
@@ -792,7 +791,7 @@ BEGIN
         , MAX(D.Contenido) AS Contenido
     FROM dbo.CERTIFICADODETALLE D
     WHERE D.CertificadoId = @CertificadoId
-      AND D.TipoSeccion <> 'RESULTADOS'
+      AND (D.TipoSeccion <> 'RESULTADOS' OR D.CaracteristicaId IS NULL)
     GROUP BY D.TipoSeccion,D.OrdenSeccion
     ORDER BY D.OrdenSeccion;
 
