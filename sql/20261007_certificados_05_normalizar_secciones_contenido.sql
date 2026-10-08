@@ -661,7 +661,68 @@ END;
 GO
 
 /* ============================================================
-   8. GUARDAR DISEÑO NORMALIZADO
+   8. LISTAR PLANTILLAS USANDO EL MODELO NORMALIZADO
+   ============================================================ */
+CREATE OR ALTER PROCEDURE dbo.SP_LISTAR_PLANTILLAS_CERTIFICADO
+(
+    @VersionFtId INT=NULL,
+    @ProductoCodigo VARCHAR(50)=NULL
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+          CP.CertificadoPlantillaId
+        , CP.VersionFtId
+        , CP.Nombre
+        , CP.Descripcion
+        , D.DocumentoId
+        , D.DocumentoCodigo
+        , D.DocumentoDescripcionDocumento
+        , D.ProductoCodigo
+        , V.VersionNumero
+        , V.EstVerId
+        , CP.AudUsuarioCreacion
+        , CP.AudFechaCreacion
+        , COUNT(DISTINCT CASE WHEN CPS.Estado=1 THEN CPS.CertificadoPlantillaSeccionId END) CantidadSecciones
+        , COUNT(DISTINCT CASE WHEN RC.Estado=1 THEN RC.CertificadoPlantillaResultadoCaracteristicaId END) CantidadCaracteristicas
+    FROM dbo.CERTIFICADOPLANTILLA CP
+    INNER JOIN dbo.VERSION V
+        ON V.VersionId=CP.VersionFtId
+    INNER JOIN dbo.DOCUMENTO D
+        ON D.DocumentoId=V.DocumentoId
+    LEFT JOIN dbo.CERTIFICADOPLANTILLASECCION CPS
+        ON CPS.CertificadoPlantillaId=CP.CertificadoPlantillaId
+       AND CPS.Estado=1
+    LEFT JOIN dbo.CERTIFICADOPLANTILLARESULTADO R
+        ON R.CertificadoPlantillaSeccionId=CPS.CertificadoPlantillaSeccionId
+       AND R.Estado=1
+    LEFT JOIN dbo.CERTIFICADOPLANTILLARESULTADOCARACTERISTICA RC
+        ON RC.CertificadoPlantillaResultadoId=R.CertificadoPlantillaResultadoId
+       AND RC.Estado=1
+    WHERE CP.Estado=1
+      AND (@VersionFtId IS NULL OR CP.VersionFtId=@VersionFtId)
+      AND (@ProductoCodigo IS NULL OR D.ProductoCodigo=@ProductoCodigo)
+    GROUP BY
+          CP.CertificadoPlantillaId
+        , CP.VersionFtId
+        , CP.Nombre
+        , CP.Descripcion
+        , D.DocumentoId
+        , D.DocumentoCodigo
+        , D.DocumentoDescripcionDocumento
+        , D.ProductoCodigo
+        , V.VersionNumero
+        , V.EstVerId
+        , CP.AudUsuarioCreacion
+        , CP.AudFechaCreacion
+    ORDER BY D.ProductoCodigo,CP.Nombre;
+END;
+GO
+
+/* ============================================================
+   9. GUARDAR DISEÑO NORMALIZADO
    ============================================================ */
 CREATE OR ALTER PROCEDURE dbo.SP_GUARDAR_DISENO_PLANTILLA_CERTIFICADO
 (
