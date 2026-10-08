@@ -445,4 +445,39 @@ public class MantenimientoStoredProcedure
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_EDITAR_HISTORIAL_CARGO_RESPONSABLE, parametros);
         return await reader.ReadAsync() ? reader.MapTo<GuardarCargoHistoricoResponsableResponse>() : new GuardarCargoHistoricoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
+    public async Task<OperacionFirmaResponsableResponse> GuardarFirmaResponsableAsync(GuardarFirmaResponsableRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", request.UsuarioDni),
+            new("@FirmaImagen", request.FirmaImagen),
+            new("@FirmaMimeType", request.FirmaMimeType),
+            new("@FirmaNombreArchivo", (object?)request.FirmaNombreArchivo ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_FIRMA_RESPONSABLE, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionFirmaResponsableResponse>()
+            : new OperacionFirmaResponsableResponse { CodigoResultado=-1, Mensaje="El procedimiento no devolvió resultado.", UsuarioDni=request.UsuarioDni };
+    }
+
+    public async Task<FirmaResponsableDto?> ObtenerFirmaResponsableAsync(string usuarioDni)
+    {
+        var parametros = new List<SqlParameter> { new("@UsuarioDni", usuarioDni) };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_FIRMA_RESPONSABLE, parametros);
+        return await reader.ReadAsync() ? reader.MapTo<FirmaResponsableDto>() : null;
+    }
+
+    public async Task<OperacionFirmaResponsableResponse> EliminarFirmaResponsableAsync(string usuarioDni, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@Usuario", usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_FIRMA_RESPONSABLE, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionFirmaResponsableResponse>()
+            : new OperacionFirmaResponsableResponse { CodigoResultado=-1, Mensaje="El procedimiento no devolvió resultado.", UsuarioDni=usuarioDni };
+    }
 }
