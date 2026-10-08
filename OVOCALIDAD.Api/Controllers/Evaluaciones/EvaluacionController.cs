@@ -248,4 +248,15 @@ public class EvaluacionController : ControllerBase
         return accesos?.Permisos.Any(x =>
             string.Equals(x, permiso, StringComparison.OrdinalIgnoreCase)) == true;
     }
+
+    [HttpDelete("{evaluacionId:int}/pruebas")]
+    [Authorize(Policy = "JefeCalidad")]
+    public async Task<ActionResult<EliminarEvaluacionPruebaResponse>> EliminarPrueba(int evaluacionId)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        return Ok(await _service.EliminarPruebaAsync(evaluacionId, usuario));
+    }
+
 }
