@@ -786,9 +786,15 @@ public class EspecificacionTecnicaStoredProcedure
             (string.Equals(request.Accion, "PUBLICAR", StringComparison.OrdinalIgnoreCase) ||
              string.Equals(request.Accion, "VIGENTAR", StringComparison.OrdinalIgnoreCase)))
         {
+            var detalleFirma = await ObtenerDetalleAsync(versionId);
+            var responsablesFirmaJson = JsonSerializer.Serialize(
+                detalleFirma?.Responsables ?? Array.Empty<ResponsableEtDto>(),
+                new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
             var parametrosFirma = new List<SqlParameter>
             {
                 new("@VersionId", versionId),
+                new("@ResponsablesJson", responsablesFirmaJson),
                 new("@Usuario", request.Usuario)
             };
 
