@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Firmas;
-using OVOCALIDAD.Application.DTOs.Mantenimientos;
 using OVOCALIDAD.Application.Interfaces;
 using OVOCALIDAD.Infrastructure.StoredProcedures;
 
@@ -12,26 +11,15 @@ namespace OVOCALIDAD.Api.Controllers.Firmas;
 [Authorize]
 public class FirmaController : ControllerBase
 {
-    private readonly MantenimientoStoredProcedure _mantenimiento;
     private readonly FirmaDocumentoStoredProcedure _firmas;
     private readonly IAuthService _authService;
 
     public FirmaController(
-        MantenimientoStoredProcedure mantenimiento,
         FirmaDocumentoStoredProcedure firmas,
         IAuthService authService)
     {
-        _mantenimiento = mantenimiento;
         _firmas = firmas;
         _authService = authService;
-    }
-
-    // Firma gráfica registrada del responsable.
-    [HttpGet("responsables/{usuarioDni}")]
-    public async Task<ActionResult<FirmaResponsableDto>> ObtenerFirmaResponsable(string usuarioDni)
-    {
-        var firma = await _mantenimiento.ObtenerFirmaResponsableAsync(usuarioDni);
-        return firma is null ? NotFound() : Ok(firma);
     }
 
     // Solicitudes del usuario autenticado.
