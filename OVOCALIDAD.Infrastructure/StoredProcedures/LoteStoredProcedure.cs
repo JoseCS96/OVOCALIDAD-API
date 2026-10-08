@@ -183,4 +183,27 @@ public class LoteStoredProcedure
         };
     }
 
+    public async Task<EliminarLotePruebaResponse> EliminarPruebaAsync(int loteId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@LoteId", loteId),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_ELIMINAR_LOTE_PRUEBA,
+            parametros);
+
+        return await reader.ReadAsync()
+            ? reader.MapTo<EliminarLotePruebaResponse>()
+            : new EliminarLotePruebaResponse
+            {
+                CodigoResultado = -1,
+                Mensaje = "El procedimiento no devolvió resultado.",
+                LoteId = loteId,
+                Usuario = usuario
+            };
+    }
+
 }
