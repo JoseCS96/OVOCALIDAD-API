@@ -41,6 +41,13 @@ BEGIN
         FROM EvaluacionesCTE
         OPTION(MAXRECURSION 100);
 
+        DELETE ESRL
+        FROM dbo.EVALUACION_SOLICITUD_REAPERTURA_LECTURA ESRL
+        INNER JOIN dbo.EVALUACION_SOLICITUD_REAPERTURA ESR
+            ON ESR.SolicitudReaperturaId=ESRL.SolicitudReaperturaId
+        INNER JOIN @EvaluacionesEliminar X
+            ON X.EvaluacionId=ESR.EvaluacionId;
+
         DELETE ESR
         FROM dbo.EVALUACION_SOLICITUD_REAPERTURA ESR
         INNER JOIN @EvaluacionesEliminar X ON X.EvaluacionId=ESR.EvaluacionId;
