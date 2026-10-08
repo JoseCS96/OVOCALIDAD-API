@@ -43,6 +43,9 @@ public static class CertificadoPdfGenerator
                 });
 
                 page.Footer()
+                    .DefaultTextStyle(x => x
+                        .FontSize(8)
+                        .FontColor(Colors.Grey.Darken1))
                     .AlignCenter()
                     .Text(text =>
                     {
@@ -50,9 +53,7 @@ public static class CertificadoPdfGenerator
                         text.CurrentPageNumber();
                         text.Span(" / ");
                         text.TotalPages();
-                    })
-                    .FontSize(8)
-                    .FontColor(Colors.Grey.Darken1);
+                    });
             });
         }).GeneratePdf();
     }
