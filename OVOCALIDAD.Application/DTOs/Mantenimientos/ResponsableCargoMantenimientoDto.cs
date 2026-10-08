@@ -174,3 +174,31 @@ public class GuardarCargoHistoricoResponsableResponse
     public string? UsuarioDni { get; set; }
     public int? CargoId { get; set; }
 }
+
+
+public class FirmaResponsableDto
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public string UsuarioDni { get; set; } = string.Empty;
+    public string? FirmaMimeType { get; set; }
+    public string? FirmaNombreArchivo { get; set; }
+    public byte[]? FirmaImagen { get; set; }
+    public DateTime? FechaActualizacion { get; set; }
+}
+
+public class GuardarFirmaResponsableRequest
+{
+    public string UsuarioDni { get; set; } = string.Empty;
+    public byte[] FirmaImagen { get; set; } = [];
+    public string FirmaMimeType { get; set; } = string.Empty;
+    public string? FirmaNombreArchivo { get; set; }
+    public string Usuario { get; set; } = string.Empty;
+}
+
+public class OperacionFirmaResponsableResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public string? UsuarioDni { get; set; }
+}
