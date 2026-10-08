@@ -1,4 +1,6 @@
+using System.Text.Json;
 using Microsoft.Data.SqlClient;
+using OVOCALIDAD.Application.DTOs.EspecificacionesTecnicas;
 using OVOCALIDAD.Application.DTOs.Firmas;
 using OVOCALIDAD.Infrastructure.Mappers;
 using SPNames = OVOCALIDAD.Shared.Constants.StoredProcedures;
@@ -89,5 +91,33 @@ public class FirmaDocumentoStoredProcedure
         return await reader.ReadAsync()
             ? reader.MapTo<FirmaDocumentoAplicadaDto>()
             : null;
+    }
+    public async Task<GenerarSolicitudesFirmaResponse> GenerarSolicitudesEtAsync(
+        int versionId,
+        IReadOnlyList<ResponsableEtDto> responsables,
+        string usuario)
+    {
+        var json = JsonSerializer.Serialize(
+            responsables,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@ResponsablesJson", json),
+            new("@Usuario", usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_GENERAR_SOLICITUDES_FIRMA_ET,
+            parametros);
+
+        return await reader.ReadAsync()
+            ? reader.MapTo<GenerarSolicitudesFirmaResponse>()
+            : new GenerarSolicitudesFirmaResponse
+            {
+                CodigoResultado = -1,
+                Mensaje = "El procedimiento no devolvió resultado."
+            };
     }
 }
