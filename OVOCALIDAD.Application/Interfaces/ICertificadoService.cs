@@ -13,4 +13,5 @@ public interface ICertificadoService
     Task<EmitirCertificadoResponse> EmitirAsync(EmitirCertificadoRequest request, string usuario);
     Task<CertificadoVistaDto?> ObtenerEmitidoAsync(int certificadoId);
     Task<PlantillaCertificadoListaDto?> ObtenerPlantillaPredeterminadaAsync(int loteId);
+    Task<PlantillaCertificadoOperacionResponse> EstablecerPlantillaPredeterminadaAsync(int certificadoPlantillaId, string usuario);
 }
