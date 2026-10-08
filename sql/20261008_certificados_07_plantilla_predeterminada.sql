@@ -344,3 +344,155 @@ BEGIN
     ORDER BY R.Orden,RC.Orden;
 END;
 GO
+
+
+/* Primera plantilla de una FT = predeterminada automáticamente.
+   Las siguientes quedan no predeterminadas hasta que el mantenedor cambie la selección. */
+CREATE OR ALTER PROCEDURE dbo.SP_CREAR_PLANTILLA_CERTIFICADO
+(
+      @VersionFtId INT
+    , @Nombre VARCHAR(200)
+    , @Descripcion VARCHAR(1000)=NULL
+    , @Usuario VARCHAR(100)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    SET @Nombre=NULLIF(LTRIM(RTRIM(@Nombre)),'');
+    SET @Descripcion=NULLIF(LTRIM(RTRIM(@Descripcion)),'');
+    SET @Usuario=NULLIF(LTRIM(RTRIM(@Usuario)),'');
+
+    IF @Nombre IS NULL
+        THROW 50001,'Debe indicar el nombre de la plantilla.',1;
+
+    IF @Usuario IS NULL
+        THROW 50002,'El usuario es obligatorio.',1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.VERSION V
+        INNER JOIN dbo.DOCUMENTO D ON D.DocumentoId=V.DocumentoId
+        WHERE V.VersionId=@VersionFtId
+          AND V.Estado=1
+          AND D.Estado=1
+          AND D.TipoDocumentoId=3
+    )
+        THROW 50003,'La versión indicada no corresponde a una Ficha Técnica activa.',1;
+
+    IF NOT EXISTS
+    (
+        SELECT 1
+        FROM dbo.VERSIONFTCARACTERISTICA
+        WHERE VersionId=@VersionFtId
+          AND Estado=1
+          AND ImprimeCertificado=1
+    )
+        THROW 50004,'La Ficha Técnica no tiene parámetros habilitados para certificado.',1;
+
+    IF EXISTS
+    (
+        SELECT 1
+        FROM dbo.CERTIFICADOPLANTILLA
+        WHERE VersionFtId=@VersionFtId
+          AND Nombre=@Nombre
+          AND Estado=1
+    )
+        THROW 50005,'Ya existe una plantilla activa con ese nombre para la Ficha Técnica.',1;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @EsPredeterminada BIT =
+            CASE
+                WHEN EXISTS
+                (
+                    SELECT 1
+                    FROM dbo.CERTIFICADOPLANTILLA
+                    WHERE VersionFtId=@VersionFtId
+                      AND Estado=1
+                      AND EsPredeterminada=1
+                )
+                THEN 0
+                ELSE 1
+            END;
+
+        INSERT INTO dbo.CERTIFICADOPLANTILLA
+        (
+            VersionFtId,Nombre,Descripcion,EsPredeterminada,Estado,
+            AudUsuarioCreacion,AudFechaCreacion
+        )
+        VALUES
+        (
+            @VersionFtId,@Nombre,@Descripcion,@EsPredeterminada,1,
+            @Usuario,SYSDATETIME()
+        );
+
+        DECLARE @CertificadoPlantillaId INT=CONVERT(INT,SCOPE_IDENTITY());
+
+        INSERT INTO dbo.CERTIFICADOPLANTILLASECCION
+        (
+            CertificadoPlantillaId,CertificadoSeccionId,
+            TipoSeccion,Titulo,Contenido,Orden,Visible,
+            ModoSeleccion,VersionFaseId,TipoCaractId,
+            Estado,AudUsuarioCreacion,AudFechaCreacion
+        )
+        SELECT
+            @CertificadoPlantillaId,
+            CS.CertificadoSeccionId,
+            CS.Codigo,
+            CS.Descripcion,
+            NULL,
+            CS.OrdenBase,
+            1,
+            'MANUAL',
+            NULL,
+            NULL,
+            1,
+            @Usuario,
+            SYSDATETIME()
+        FROM dbo.CERTIFICADOSECCION CS
+        WHERE CS.Estado=1
+          AND CS.EsBase=1
+        ORDER BY CS.OrdenBase;
+
+        DECLARE @SeccionEncabezadoId INT;
+
+        SELECT @SeccionEncabezadoId=CPS.CertificadoPlantillaSeccionId
+        FROM dbo.CERTIFICADOPLANTILLASECCION CPS
+        INNER JOIN dbo.CERTIFICADOSECCION CS
+            ON CS.CertificadoSeccionId=CPS.CertificadoSeccionId
+        WHERE CPS.CertificadoPlantillaId=@CertificadoPlantillaId
+          AND CPS.Estado=1
+          AND CS.Codigo='ENCABEZADO';
+
+        INSERT INTO dbo.CERTIFICADOPLANTILLASECCIONCONTENIDO
+        (
+            CertificadoPlantillaSeccionId,Contenido,Estado,
+            AudUsuarioCreacion,AudFechaCreacion
+        )
+        VALUES
+        (
+            @SeccionEncabezadoId,
+            '{"titulo":"ASEGURAMIENTO DE LA CALIDAD","subtitulo":"CERTIFICADO DE ANÁLISIS"}',
+            1,@Usuario,SYSDATETIME()
+        );
+
+        COMMIT TRANSACTION;
+
+        SELECT
+              0 CodigoResultado
+            , CASE WHEN @EsPredeterminada=1
+                   THEN 'Plantilla creada y establecida como predeterminada.'
+                   ELSE 'Plantilla de certificado creada correctamente.'
+              END Mensaje
+            , @CertificadoPlantillaId CertificadoPlantillaId;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT>0 ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
