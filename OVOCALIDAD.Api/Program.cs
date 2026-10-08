@@ -102,6 +102,7 @@ builder.Services.AddScoped<FichaTecnicaStoredProcedure>();
 builder.Services.AddScoped<CertificadoStoredProcedure>();
 
 builder.Services.AddScoped<MantenimientoStoredProcedure>();
+builder.Services.AddScoped<FirmaDocumentoStoredProcedure>();
 
 builder.Services.AddScoped<SeguridadStoredProcedure>();
 builder.Services.AddScoped<AuthStoredProcedure>();
