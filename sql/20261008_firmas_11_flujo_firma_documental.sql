@@ -84,6 +84,8 @@ BEGIN
         , DocumentoCodigo           VARCHAR(100) NOT NULL
         , DocumentoDescripcion      VARCHAR(500) NOT NULL
         , VersionNumero             DECIMAL(10,2) NULL
+        , CicloFirma                INT NOT NULL
+            CONSTRAINT DF_DOC_FIRMA_SOL_Ciclo DEFAULT(1)
 
         , TipoResponsabilidad       VARCHAR(50) NOT NULL
         , UsuarioDni                VARCHAR(20) NOT NULL
@@ -120,8 +122,6 @@ BEGIN
         , CONSTRAINT CK_DOCUMENTO_FIRMA_SOLICITUD_Estado
             CHECK (EstadoSolicitud IN ('PENDIENTE','FIRMADO','SIN_USUARIO','ANULADO'))
 
-        , CONSTRAINT UQ_DOCUMENTO_FIRMA_SOLICITUD
-            UNIQUE (TipoDocumento, EntidadId, UsuarioDni, TipoResponsabilidad)
     );
 
     CREATE INDEX IX_DOCUMENTO_FIRMA_SOLICITUD_Destino
@@ -130,6 +130,47 @@ BEGIN
               NombreUsuarioDestino
             , EstadoSolicitud
             , FechaSolicitud DESC
+        );
+END;
+GO
+
+IF COL_LENGTH('dbo.DOCUMENTO_FIRMA_SOLICITUD','CicloFirma') IS NULL
+BEGIN
+    ALTER TABLE dbo.DOCUMENTO_FIRMA_SOLICITUD
+    ADD CicloFirma INT NOT NULL
+        CONSTRAINT DF_DOC_FIRMA_SOL_Ciclo DEFAULT(1);
+END;
+GO
+
+IF EXISTS
+(
+    SELECT 1
+    FROM sys.key_constraints
+    WHERE [name] = 'UQ_DOCUMENTO_FIRMA_SOLICITUD'
+      AND parent_object_id = OBJECT_ID('dbo.DOCUMENTO_FIRMA_SOLICITUD')
+)
+BEGIN
+    ALTER TABLE dbo.DOCUMENTO_FIRMA_SOLICITUD
+    DROP CONSTRAINT UQ_DOCUMENTO_FIRMA_SOLICITUD;
+END;
+GO
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes
+    WHERE [name] = 'UX_DOCUMENTO_FIRMA_SOLICITUD_Ciclo'
+      AND object_id = OBJECT_ID('dbo.DOCUMENTO_FIRMA_SOLICITUD')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_DOCUMENTO_FIRMA_SOLICITUD_Ciclo
+        ON dbo.DOCUMENTO_FIRMA_SOLICITUD
+        (
+              TipoDocumento
+            , EntidadId
+            , CicloFirma
+            , UsuarioDni
+            , TipoResponsabilidad
         );
 END;
 GO
@@ -269,12 +310,38 @@ BEGIN
         HAVING COUNT(DISTINCT SU.SegUsuarioId) = 1;
     END;
 
+    DECLARE @CicloFirma INT;
+
+    IF EXISTS
+    (
+        SELECT 1
+        FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
+        WHERE TipoDocumento = 'ET'
+          AND EntidadId = @VersionId
+          AND EstadoSolicitud <> 'ANULADO'
+    )
+    BEGIN
+        SELECT @CicloFirma = MAX(CicloFirma)
+        FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
+        WHERE TipoDocumento = 'ET'
+          AND EntidadId = @VersionId
+          AND EstadoSolicitud <> 'ANULADO';
+    END
+    ELSE
+    BEGIN
+        SELECT @CicloFirma = ISNULL(MAX(CicloFirma), 0) + 1
+        FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
+        WHERE TipoDocumento = 'ET'
+          AND EntidadId = @VersionId;
+    END;
+
     DECLARE @Antes INT =
     (
         SELECT COUNT(*)
         FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
         WHERE TipoDocumento = 'ET'
           AND EntidadId = @VersionId
+          AND CicloFirma = @CicloFirma
     );
 
     INSERT INTO dbo.DOCUMENTO_FIRMA_SOLICITUD
@@ -284,6 +351,7 @@ BEGIN
         , DocumentoCodigo
         , DocumentoDescripcion
         , VersionNumero
+        , CicloFirma
         , TipoResponsabilidad
         , UsuarioDni
         , ResponsableNombre
@@ -303,6 +371,7 @@ BEGIN
         , @DocumentoCodigo
         , @DocumentoDescripcion
         , @VersionNumero
+        , @CicloFirma
         , UPPER(LTRIM(RTRIM(R.TipoResponsabilidad)))
         , R.UsuarioDni
         , R.UsuarioNombresApellidos
@@ -328,6 +397,7 @@ BEGIN
         FROM dbo.DOCUMENTO_FIRMA_SOLICITUD DFS
         WHERE DFS.TipoDocumento = 'ET'
           AND DFS.EntidadId = @VersionId
+          AND DFS.CicloFirma = @CicloFirma
           AND DFS.UsuarioDni = R.UsuarioDni
           AND DFS.TipoResponsabilidad = UPPER(LTRIM(RTRIM(R.TipoResponsabilidad)))
     );
@@ -339,6 +409,7 @@ BEGIN
               FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
               WHERE TipoDocumento = 'ET'
                 AND EntidadId = @VersionId
+                AND CicloFirma = @CicloFirma
           )
         , @SinUsuario INT =
           (
@@ -346,6 +417,7 @@ BEGIN
               FROM dbo.DOCUMENTO_FIRMA_SOLICITUD
               WHERE TipoDocumento = 'ET'
                 AND EntidadId = @VersionId
+                AND CicloFirma = @CicloFirma
                 AND EstadoSolicitud = 'SIN_USUARIO'
           );
 
@@ -678,7 +750,39 @@ GO
 
 
 /* ============================================================
-   8. OBTENER VÍNCULO RESPONSABLE <-> USUARIO DE ACCESO
+   8. ANULAR RONDA DE FIRMAS POR RETORNO A BORRADOR
+   ============================================================ */
+
+CREATE OR ALTER PROCEDURE dbo.SP_ANULAR_SOLICITUDES_FIRMA_DOCUMENTO
+(
+      @TipoDocumento VARCHAR(20)
+    , @EntidadId     INT
+    , @Usuario       VARCHAR(100)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    UPDATE dbo.DOCUMENTO_FIRMA_SOLICITUD
+    SET
+          EstadoSolicitud = 'ANULADO'
+        , AudUsuarioModificacion = @Usuario
+        , AudFechaActualizacion = SYSDATETIME()
+    WHERE TipoDocumento = UPPER(@TipoDocumento)
+      AND EntidadId = @EntidadId
+      AND EstadoSolicitud IN ('PENDIENTE','FIRMADO','SIN_USUARIO');
+
+    SELECT
+          0 CodigoResultado
+        , 'Ronda de firmas anulada correctamente.' Mensaje
+        , @@ROWCOUNT CantidadActualizada;
+END;
+GO
+
+
+/* ============================================================
+   9. OBTENER VÍNCULO RESPONSABLE <-> USUARIO DE ACCESO
    ============================================================ */
 
 CREATE OR ALTER PROCEDURE dbo.SP_OBTENER_VINCULO_RESPONSABLE_USUARIO
@@ -704,7 +808,7 @@ GO
 
 
 /* ============================================================
-   9. VINCULAR RESPONSABLE <-> USUARIO DE ACCESO
+   10. VINCULAR RESPONSABLE <-> USUARIO DE ACCESO
    ============================================================ */
 
 CREATE OR ALTER PROCEDURE dbo.SP_VINCULAR_RESPONSABLE_USUARIO_ACCESO
