@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OVOCALIDAD.Application.DTOs.Certificados;
 using OVOCALIDAD.Application.Interfaces;
+using OVOCALIDAD.Api.Services.Certificados;
 
 namespace OVOCALIDAD.Api.Controllers.Certificados;
 
@@ -94,6 +95,26 @@ public class CertificadoController : ControllerBase
     {
         var item = await _service.ObtenerEmitidoAsync(certificadoId);
         return item is null ? NotFound() : Ok(item);
+    }
+
+    [HttpGet("emitidos/{certificadoId:int}/pdf")]
+    public async Task<IActionResult> DescargarPdf(int certificadoId)
+    {
+        var item = await _service.ObtenerEmitidoAsync(certificadoId);
+        if (item is null)
+            return NotFound();
+
+        var pdf = CertificadoPdfGenerator.Generate(item);
+
+        var numero = string.IsNullOrWhiteSpace(item.Cabecera.NumeroCertificado)
+            ? $"certificado-{certificadoId}"
+            : item.Cabecera.NumeroCertificado;
+
+        var fileName = $"{numero}-{item.Cabecera.CodigoLote}.pdf"
+            .Replace("/", "-")
+            .Replace("\\", "-");
+
+        return File(pdf, "application/pdf", fileName);
     }
 
     private string UsuarioSesion()
