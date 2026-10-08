@@ -270,6 +270,24 @@ public class MantenimientoController : ControllerBase
     public async Task<ActionResult<OperacionFirmaResponsableResponse>> EliminarFirmaResponsable(string usuarioDni) =>
         Ok(await _storedProcedure.EliminarFirmaResponsableAsync(usuarioDni, UsuarioSesion()));
 
+    [HttpGet("responsables/{usuarioDni}/usuario-acceso")]
+    public async Task<ActionResult<VinculoResponsableUsuarioDto>> ObtenerVinculoResponsableUsuario(string usuarioDni)
+    {
+        var vinculo = await _storedProcedure.ObtenerVinculoResponsableUsuarioAsync(usuarioDni);
+        return vinculo is null
+            ? Ok(new VinculoResponsableUsuarioDto { UsuarioDni = usuarioDni })
+            : Ok(vinculo);
+    }
+
+    [HttpPut("responsables/{usuarioDni}/usuario-acceso")]
+    public async Task<ActionResult<VincularResponsableUsuarioResponse>> VincularResponsableUsuario(
+        string usuarioDni,
+        [FromBody] VincularResponsableUsuarioRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        return Ok(await _storedProcedure.VincularResponsableUsuarioAsync(usuarioDni, request));
+    }
+
     [HttpPost("responsables/{usuarioDni}/historial-cargos")]
     public async Task<ActionResult<GuardarCargoHistoricoResponsableResponse>> AgregarCargoHistoricoResponsable(string usuarioDni, [FromBody] GuardarCargoHistoricoResponsableRequest request)
     {
