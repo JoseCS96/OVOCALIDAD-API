@@ -19,6 +19,7 @@ public class PlantillaCertificadoListaDto
     public int VersionFtId { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string? Descripcion { get; set; }
+    public bool EsPredeterminada { get; set; }
     public int DocumentoId { get; set; }
     public string DocumentoCodigo { get; set; } = string.Empty;
     public string DocumentoDescripcionDocumento { get; set; } = string.Empty;
@@ -36,6 +37,7 @@ public class PlantillaCertificadoDto
     public int VersionFtId { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string? Descripcion { get; set; }
+    public bool EsPredeterminada { get; set; }
     public string DocumentoCodigo { get; set; } = string.Empty;
     public string DocumentoDescripcionDocumento { get; set; } = string.Empty;
     public string? ProductoCodigo { get; set; }
