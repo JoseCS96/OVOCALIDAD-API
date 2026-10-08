@@ -72,4 +72,15 @@ public class LoteController : ControllerBase
 
         return Ok(response);
     }
+    [HttpDelete("{loteId:int}/pruebas")]
+    [Authorize(Policy = "JefeCalidad")]
+    [ProducesResponseType(typeof(EliminarLotePruebaResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<EliminarLotePruebaResponse>> EliminarPrueba(int loteId)
+    {
+        var usuario = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuario)) return Unauthorized();
+
+        return Ok(await _loteService.EliminarPruebaAsync(loteId, usuario));
+    }
+
 }
