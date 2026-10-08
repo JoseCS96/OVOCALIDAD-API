@@ -651,3 +651,162 @@ BEGIN
     ORDER BY DFS.FechaFirma DESC;
 END;
 GO
+
+
+/* ============================================================
+   8. OBTENER VÍNCULO RESPONSABLE <-> USUARIO DE ACCESO
+   ============================================================ */
+
+CREATE OR ALTER PROCEDURE dbo.SP_OBTENER_VINCULO_RESPONSABLE_USUARIO
+(
+    @UsuarioDni VARCHAR(20)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT TOP(1)
+          RA.UsuarioDni
+        , RA.SegUsuarioId
+        , RA.NombreUsuario
+        , SU.NombresApellidos
+    FROM dbo.RESPONSABLE_USUARIO_ACCESO RA
+    LEFT JOIN dbo.SEG_USUARIO SU
+        ON SU.SegUsuarioId = RA.SegUsuarioId
+    WHERE RA.UsuarioDni = @UsuarioDni
+      AND RA.Estado = 1;
+END;
+GO
+
+
+/* ============================================================
+   9. VINCULAR RESPONSABLE <-> USUARIO DE ACCESO
+   ============================================================ */
+
+CREATE OR ALTER PROCEDURE dbo.SP_VINCULAR_RESPONSABLE_USUARIO_ACCESO
+(
+      @UsuarioDni    VARCHAR(20)
+    , @NombreUsuario VARCHAR(100)
+    , @Usuario       VARCHAR(100)
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    SET @UsuarioDni = NULLIF(LTRIM(RTRIM(@UsuarioDni)), '');
+    SET @NombreUsuario = NULLIF(LTRIM(RTRIM(@NombreUsuario)), '');
+    SET @Usuario = NULLIF(LTRIM(RTRIM(@Usuario)), '');
+
+    IF @UsuarioDni IS NULL OR @NombreUsuario IS NULL OR @Usuario IS NULL
+    BEGIN
+        SELECT
+              -1 CodigoResultado
+            , 'Responsable, usuario de acceso y usuario de auditoría son obligatorios.' Mensaje
+            , @UsuarioDni UsuarioDni
+            , CAST(NULL AS INT) SegUsuarioId
+            , @NombreUsuario NombreUsuario;
+        RETURN;
+    END;
+
+    DECLARE @SegUsuarioId INT;
+
+    SELECT TOP(1)
+        @SegUsuarioId = SegUsuarioId
+    FROM dbo.SEG_USUARIO
+    WHERE NombreUsuario = @NombreUsuario;
+
+    IF @SegUsuarioId IS NULL
+    BEGIN
+        SELECT
+              -2 CodigoResultado
+            , 'El usuario de acceso indicado no existe.' Mensaje
+            , @UsuarioDni UsuarioDni
+            , CAST(NULL AS INT) SegUsuarioId
+            , @NombreUsuario NombreUsuario;
+        RETURN;
+    END;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        /* Una cuenta de acceso no puede quedar vinculada
+           simultáneamente a responsables distintos. */
+        UPDATE dbo.RESPONSABLE_USUARIO_ACCESO
+        SET
+              Estado = 0
+            , AudUsuarioModificacion = @Usuario
+            , AudFechaActualizacion = SYSDATETIME()
+        WHERE NombreUsuario = @NombreUsuario
+          AND UsuarioDni <> @UsuarioDni
+          AND Estado = 1;
+
+        IF EXISTS
+        (
+            SELECT 1
+            FROM dbo.RESPONSABLE_USUARIO_ACCESO
+            WHERE UsuarioDni = @UsuarioDni
+        )
+        BEGIN
+            UPDATE dbo.RESPONSABLE_USUARIO_ACCESO
+            SET
+                  SegUsuarioId = @SegUsuarioId
+                , NombreUsuario = @NombreUsuario
+                , Estado = 1
+                , AudUsuarioModificacion = @Usuario
+                , AudFechaActualizacion = SYSDATETIME()
+            WHERE UsuarioDni = @UsuarioDni;
+        END
+        ELSE
+        BEGIN
+            INSERT INTO dbo.RESPONSABLE_USUARIO_ACCESO
+            (
+                  UsuarioDni
+                , SegUsuarioId
+                , NombreUsuario
+                , Estado
+                , AudUsuarioCreacion
+                , AudFechaCreacion
+            )
+            VALUES
+            (
+                  @UsuarioDni
+                , @SegUsuarioId
+                , @NombreUsuario
+                , 1
+                , @Usuario
+                , SYSDATETIME()
+            );
+        END;
+
+        /* Actualizar solicitudes que todavía estaban sin usuario. */
+        UPDATE dbo.DOCUMENTO_FIRMA_SOLICITUD
+        SET
+              SegUsuarioId = @SegUsuarioId
+            , NombreUsuarioDestino = @NombreUsuario
+            , EstadoSolicitud =
+                CASE
+                    WHEN EstadoSolicitud = 'SIN_USUARIO' THEN 'PENDIENTE'
+                    ELSE EstadoSolicitud
+                END
+            , AudUsuarioModificacion = @Usuario
+            , AudFechaActualizacion = SYSDATETIME()
+        WHERE UsuarioDni = @UsuarioDni
+          AND EstadoSolicitud IN ('SIN_USUARIO','PENDIENTE');
+
+        COMMIT TRANSACTION;
+
+        SELECT
+              0 CodigoResultado
+            , 'Usuario de acceso vinculado correctamente.' Mensaje
+            , @UsuarioDni UsuarioDni
+            , @SegUsuarioId SegUsuarioId
+            , @NombreUsuario NombreUsuario;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+END;
+GO
