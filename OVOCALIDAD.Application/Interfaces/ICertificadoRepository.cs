@@ -12,4 +12,5 @@ public interface ICertificadoRepository
     Task<CertificadoVistaDto?> PrevisualizarAsync(int loteId, int certificadoPlantillaId);
     Task<EmitirCertificadoResponse> EmitirAsync(EmitirCertificadoRequest request, string usuario);
     Task<CertificadoVistaDto?> ObtenerEmitidoAsync(int certificadoId);
+    Task<PlantillaCertificadoListaDto?> ObtenerPlantillaPredeterminadaAsync(int loteId);
 }
