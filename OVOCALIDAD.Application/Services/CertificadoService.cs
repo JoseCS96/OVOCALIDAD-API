@@ -12,4 +12,12 @@ public class CertificadoService : ICertificadoService
     public Task<PlantillaCertificadoOperacionResponse> EliminarPlantillaAsync(int id,string u) => _repository.EliminarPlantillaAsync(id,u);
     public Task<CertificadoEmpresaDto?> ObtenerEmpresaAsync() => _repository.ObtenerEmpresaAsync();
     public Task<GuardarCertificadoEmpresaResponse> GuardarEmpresaAsync(GuardarCertificadoEmpresaRequest r) => _repository.GuardarEmpresaAsync(r);
+    public Task<CertificadoVistaDto?> PrevisualizarAsync(int loteId, int certificadoPlantillaId)
+        => _repository.PrevisualizarAsync(loteId, certificadoPlantillaId);
+
+    public Task<EmitirCertificadoResponse> EmitirAsync(EmitirCertificadoRequest request, string usuario)
+        => _repository.EmitirAsync(request, usuario);
+
+    public Task<CertificadoVistaDto?> ObtenerEmitidoAsync(int certificadoId)
+        => _repository.ObtenerEmitidoAsync(certificadoId);
 }
