@@ -102,4 +102,70 @@ public class CertificadoStoredProcedure
             : new() { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
 
+    public async Task<CertificadoVistaDto?> PrevisualizarAsync(int loteId, int certificadoPlantillaId)
+    {
+        var p = new List<SqlParameter>
+        {
+            new("@LoteId", loteId),
+            new("@CertificadoPlantillaId", certificadoPlantillaId)
+        };
+        using var r = await _executor.ExecuteReaderAsync(SPNames.SP_PREVISUALIZAR_CERTIFICADO, p);
+        if (!await r.ReadAsync()) return null;
+
+        var dto = new CertificadoVistaDto
+        {
+            Cabecera = r.MapTo<CertificadoCabeceraDto>()
+        };
+
+        if (await r.NextResultAsync())
+            while (await r.ReadAsync())
+                dto.Secciones.Add(r.MapTo<CertificadoSeccionVistaDto>());
+
+        if (await r.NextResultAsync())
+            while (await r.ReadAsync())
+                dto.Resultados.Add(r.MapTo<CertificadoResultadoVistaDto>());
+
+        return dto;
+    }
+
+    public async Task<EmitirCertificadoResponse> EmitirAsync(EmitirCertificadoRequest request, string usuario)
+    {
+        var p = new List<SqlParameter>
+        {
+            new("@LoteId", request.LoteId),
+            new("@CertificadoPlantillaId", request.CertificadoPlantillaId),
+            new("@Usuario", usuario)
+        };
+        using var r = await _executor.ExecuteReaderAsync(SPNames.SP_EMITIR_CERTIFICADO, p);
+        return await r.ReadAsync()
+            ? r.MapTo<EmitirCertificadoResponse>()
+            : new EmitirCertificadoResponse
+            {
+                CodigoResultado = -1,
+                Mensaje = "El procedimiento no devolvió resultado."
+            };
+    }
+
+    public async Task<CertificadoVistaDto?> ObtenerEmitidoAsync(int certificadoId)
+    {
+        var p = new List<SqlParameter> { new("@CertificadoId", certificadoId) };
+        using var r = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CERTIFICADO_EMITIDO, p);
+        if (!await r.ReadAsync()) return null;
+
+        var dto = new CertificadoVistaDto
+        {
+            Cabecera = r.MapTo<CertificadoCabeceraDto>()
+        };
+
+        if (await r.NextResultAsync())
+            while (await r.ReadAsync())
+                dto.Secciones.Add(r.MapTo<CertificadoSeccionVistaDto>());
+
+        if (await r.NextResultAsync())
+            while (await r.ReadAsync())
+                dto.Resultados.Add(r.MapTo<CertificadoResultadoVistaDto>());
+
+        return dto;
+    }
+
 }
