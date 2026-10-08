@@ -186,6 +186,10 @@ public class MantenimientoController : ControllerBase
         return Ok(await _storedProcedure.CambiarEstadoCargoAsync(cargoId, request));
     }
 
+    [HttpDelete("cargos/{cargoId:int}")]
+    public async Task<ActionResult<GuardarCargoResponse>> EliminarCargo(int cargoId) =>
+        Ok(await _storedProcedure.EliminarCargoAsync(cargoId, UsuarioSesion()));
+
     [HttpGet("responsables")]
     public async Task<ActionResult<IReadOnlyList<ResponsableMantenimientoDto>>> ListarResponsables([FromQuery] ResponsableMantenimientoFiltro filtro) =>
         Ok(await _storedProcedure.ListarResponsablesAsync(filtro));
@@ -221,6 +225,10 @@ public class MantenimientoController : ControllerBase
         request.Usuario = UsuarioSesion();
         return Ok(await _storedProcedure.CambiarEstadoResponsableAsync(usuarioDni, request));
     }
+
+    [HttpDelete("responsables/{usuarioDni}")]
+    public async Task<ActionResult<OperacionResponsableResponse>> EliminarResponsable(string usuarioDni) =>
+        Ok(await _storedProcedure.EliminarResponsableAsync(usuarioDni, UsuarioSesion()));
 
     [HttpPost("responsables/{usuarioDni}/historial-cargos")]
     public async Task<ActionResult<GuardarCargoHistoricoResponsableResponse>> AgregarCargoHistoricoResponsable(string usuarioDni, [FromBody] GuardarCargoHistoricoResponsableRequest request)
