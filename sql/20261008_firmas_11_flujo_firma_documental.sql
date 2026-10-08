@@ -38,10 +38,34 @@ BEGIN
 
         , CONSTRAINT PK_RESPONSABLE_USUARIO_ACCESO
             PRIMARY KEY (UsuarioDni)
-
-        , CONSTRAINT UQ_RESPONSABLE_USUARIO_ACCESO_NombreUsuario
-            UNIQUE (NombreUsuario)
     );
+END;
+GO
+
+IF EXISTS
+(
+    SELECT 1
+    FROM sys.key_constraints
+    WHERE [name] = 'UQ_RESPONSABLE_USUARIO_ACCESO_NombreUsuario'
+      AND parent_object_id = OBJECT_ID('dbo.RESPONSABLE_USUARIO_ACCESO')
+)
+BEGIN
+    ALTER TABLE dbo.RESPONSABLE_USUARIO_ACCESO
+    DROP CONSTRAINT UQ_RESPONSABLE_USUARIO_ACCESO_NombreUsuario;
+END;
+GO
+
+IF NOT EXISTS
+(
+    SELECT 1
+    FROM sys.indexes
+    WHERE [name] = 'UX_RESPONSABLE_USUARIO_ACCESO_NombreUsuario_Activo'
+      AND object_id = OBJECT_ID('dbo.RESPONSABLE_USUARIO_ACCESO')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_RESPONSABLE_USUARIO_ACCESO_NombreUsuario_Activo
+        ON dbo.RESPONSABLE_USUARIO_ACCESO (NombreUsuario)
+        WHERE Estado = 1;
 END;
 GO
 
