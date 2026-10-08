@@ -57,6 +57,13 @@ public class CertificadoController : ControllerBase
         return Ok(await _service.GuardarEmpresaAsync(request));
     }
 
+    [HttpGet("plantillas/predeterminada/lote/{loteId:int}")]
+    public async Task<ActionResult<PlantillaCertificadoListaDto>> ObtenerPlantillaPredeterminada(int loteId)
+    {
+        var item = await _service.ObtenerPlantillaPredeterminadaAsync(loteId);
+        return item is null ? NotFound() : Ok(item);
+    }
+
     [HttpGet("previsualizar")]
     public async Task<ActionResult<CertificadoVistaDto>> Previsualizar(
         [FromQuery] int loteId,
