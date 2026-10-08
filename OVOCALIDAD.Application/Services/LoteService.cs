@@ -26,4 +26,6 @@ public class LoteService : ILoteService
 
     public Task<IReadOnlyList<ProductoGenesisDto>> BuscarProductosGenesisAsync(string? busqueda) =>
         _loteRepository.BuscarProductosGenesisAsync(busqueda);
+    public Task<EliminarLotePruebaResponse> EliminarPruebaAsync(int loteId, string usuario) =>
+        _loteRepository.EliminarPruebaAsync(loteId, usuario);
 }
