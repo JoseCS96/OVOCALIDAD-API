@@ -45,3 +45,12 @@ public class FirmaDocumentoAplicadaDto
     public byte[]? FirmaImagen { get; set; }
     public DateTime FechaFirma { get; set; }
 }
+
+
+public class GenerarSolicitudesFirmaResponse
+{
+    public int CodigoResultado { get; set; }
+    public string Mensaje { get; set; } = string.Empty;
+    public int CantidadGenerada { get; set; }
+    public int CantidadSinUsuario { get; set; }
+}
