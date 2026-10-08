@@ -117,8 +117,9 @@ GO
 
 CREATE OR ALTER PROCEDURE dbo.SP_GENERAR_SOLICITUDES_FIRMA_ET
 (
-      @VersionId INT
-    , @Usuario   VARCHAR(100)
+      @VersionId        INT
+    , @ResponsablesJson NVARCHAR(MAX)
+    , @Usuario          VARCHAR(100)
 )
 AS
 BEGIN
@@ -149,11 +150,11 @@ BEGIN
         RETURN;
     END;
 
-    IF OBJECT_ID('dbo.SP_OBTENER_RESPONSABLES_ET','P') IS NULL
+    IF ISJSON(@ResponsablesJson) <> 1
     BEGIN
         SELECT
               -2 CodigoResultado
-            , 'No existe SP_OBTENER_RESPONSABLES_ET.' Mensaje
+            , 'La lista de responsables de la ET no es válida.' Mensaje
             , 0 CantidadGenerada
             , 0 CantidadSinUsuario;
         RETURN;
@@ -168,32 +169,51 @@ BEGIN
         , UsuarioCargoHistorialId INT NULL
         , CargoId                 INT NULL
         , CargoDescripcion        VARCHAR(200) NULL
-        , CargoActual             BIT NULL
     );
 
-    BEGIN TRY
-        INSERT INTO #Responsables
-        EXEC dbo.SP_OBTENER_RESPONSABLES_ET
-             @VersionId = @VersionId;
-    END TRY
-    BEGIN CATCH
+    INSERT INTO #Responsables
+    (
+          TipoResponsabilidad
+        , IdRelacion
+        , UsuarioDni
+        , UsuarioNombresApellidos
+        , UsuarioCargoHistorialId
+        , CargoId
+        , CargoDescripcion
+    )
+    SELECT
+          J.TipoResponsabilidad
+        , J.IdRelacion
+        , J.UsuarioDni
+        , J.UsuarioNombresApellidos
+        , J.UsuarioCargoHistorialId
+        , J.CargoId
+        , J.CargoDescripcion
+    FROM OPENJSON(@ResponsablesJson)
+    WITH
+    (
+          TipoResponsabilidad     VARCHAR(100) '$.tipoResponsabilidad'
+        , IdRelacion              INT          '$.idRelacion'
+        , UsuarioDni              VARCHAR(20)  '$.usuarioDni'
+        , UsuarioNombresApellidos VARCHAR(200) '$.usuarioNombresApellidos'
+        , UsuarioCargoHistorialId INT          '$.usuarioCargoHistorialId'
+        , CargoId                 INT          '$.cargoId'
+        , CargoDescripcion        VARCHAR(200) '$.cargoDescripcion'
+    ) J
+    WHERE NULLIF(LTRIM(RTRIM(J.UsuarioDni)), '') IS NOT NULL;
+
+    IF NOT EXISTS (SELECT 1 FROM #Responsables)
+    BEGIN
         SELECT
-              -3 CodigoResultado
-            , CONCAT('No se pudieron obtener responsables de la ET: ', ERROR_MESSAGE()) Mensaje
+              0 CodigoResultado
+            , 'La ET no tiene responsables asignados; no se generaron solicitudes de firma.' Mensaje
             , 0 CantidadGenerada
             , 0 CantidadSinUsuario;
         RETURN;
-    END CATCH;
+    END;
 
-    DELETE FROM #Responsables
-    WHERE NULLIF(LTRIM(RTRIM(UsuarioDni)), '') IS NULL;
-
-    /* ---------------------------------------------------------
-       Vinculación automática solo cuando existe una coincidencia
-       única y exacta por nombres/apellidos.
-       Luego podrá administrarse explícitamente desde Seguridad.
-       --------------------------------------------------------- */
-
+    /* Vinculación automática únicamente si nombres/apellidos
+       coinciden de manera única con una cuenta de acceso. */
     IF OBJECT_ID('dbo.SEG_USUARIO','U') IS NOT NULL
     BEGIN
         INSERT INTO dbo.RESPONSABLE_USUARIO_ACCESO
