@@ -179,4 +179,25 @@ public class CertificadoStoredProcedure
             ? r.MapTo<PlantillaCertificadoListaDto>()
             : null;
     }
+    public async Task<PlantillaCertificadoOperacionResponse> EstablecerPlantillaPredeterminadaAsync(int certificadoPlantillaId, string usuario)
+    {
+        var p = new List<SqlParameter>
+        {
+            new("@CertificadoPlantillaId", certificadoPlantillaId),
+            new("@Usuario", usuario)
+        };
+
+        using var r = await _executor.ExecuteReaderAsync(
+            SPNames.SP_ESTABLECER_PLANTILLA_PREDETERMINADA_CERTIFICADO,
+            p);
+
+        return await r.ReadAsync()
+            ? r.MapTo<PlantillaCertificadoOperacionResponse>()
+            : new()
+            {
+                CodigoResultado = -1,
+                Mensaje = "El procedimiento no devolvió resultado.",
+                CertificadoPlantillaId = certificadoPlantillaId
+            };
+    }
 }
