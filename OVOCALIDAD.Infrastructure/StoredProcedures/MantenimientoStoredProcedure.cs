@@ -311,6 +311,19 @@ public class MantenimientoStoredProcedure
         return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoCargoResponse>() : new CambiarEstadoCargoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
 
+    public async Task<GuardarCargoResponse> EliminarCargoAsync(int cargoId, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@CargoId", cargoId),
+            new("@Usuario", usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_CARGO, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<GuardarCargoResponse>()
+            : new GuardarCargoResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado.", CargoId = cargoId };
+    }
+
     public async Task<IReadOnlyList<CargoActivoDto>> ObtenerCargosActivosAsync()
     {
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_OBTENER_CARGOS_ACTIVOS, new List<SqlParameter>());
@@ -390,6 +403,19 @@ public class MantenimientoStoredProcedure
         };
         using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_CAMBIAR_ESTADO_RESPONSABLE, parametros);
         return await reader.ReadAsync() ? reader.MapTo<CambiarEstadoResponsableResponse>() : new CambiarEstadoResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<OperacionResponsableResponse> EliminarResponsableAsync(string usuarioDni, string usuario)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@UsuarioDni", usuarioDni),
+            new("@Usuario", usuario)
+        };
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_ELIMINAR_RESPONSABLE, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionResponsableResponse>()
+            : new OperacionResponsableResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado.", UsuarioDni = usuarioDni };
     }
 
     public async Task<GuardarCargoHistoricoResponsableResponse> AgregarCargoHistoricoResponsableAsync(string usuarioDni, GuardarCargoHistoricoResponsableRequest request)
