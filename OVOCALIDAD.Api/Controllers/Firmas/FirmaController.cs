@@ -13,13 +13,37 @@ public class FirmaController : ControllerBase
 {
     private readonly FirmaDocumentoStoredProcedure _firmas;
     private readonly IAuthService _authService;
+    private readonly IEspecificacionTecnicaService _etService;
 
     public FirmaController(
         FirmaDocumentoStoredProcedure firmas,
-        IAuthService authService)
+        IAuthService authService,
+        IEspecificacionTecnicaService etService)
     {
         _firmas = firmas;
         _authService = authService;
+        _etService = etService;
+    }
+
+    [HttpPost("et/{versionId:int}/generar")]
+    [Authorize(Policy = "JefeCalidad")]
+    public async Task<ActionResult<GenerarSolicitudesFirmaResponse>> GenerarSolicitudesEt(int versionId)
+    {
+        var detalle = await _etService.ObtenerDetalleAsync(versionId);
+        if (detalle is null) return NotFound();
+
+        var estado = detalle.InformacionGeneral.EstadoVersion?.Trim().ToUpperInvariant();
+        if (estado is not ("PUBLICADA" or "VIGENTE"))
+            return BadRequest(new { mensaje = "Solo se generan solicitudes de firma para ET publicadas o vigentes." });
+
+        var resultado = await _firmas.GenerarSolicitudesEtAsync(
+            versionId,
+            detalle.Responsables,
+            UsuarioSesion());
+
+        return resultado.CodigoResultado == 0
+            ? Ok(resultado)
+            : BadRequest(resultado);
     }
 
     // Solicitudes del usuario autenticado.
