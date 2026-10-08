@@ -20,4 +20,5 @@ public interface IEvaluacionService
     Task<List<EvaluacionPendienteCalculoDto>> ListarPendientesCalculoAsync();
     Task<PrecalculoEvaluacionesResponse> PrecalcularAsync(IReadOnlyCollection<int> evaluacionIds);
     Task<List<ConsolidacionEvaluacionResultadoDto>> ConsolidarAsync(IReadOnlyCollection<int> evaluacionIds, string usuario, string? observacion);
+    Task<EliminarEvaluacionPruebaResponse> EliminarPruebaAsync(int evaluacionId, string usuario);
 }
