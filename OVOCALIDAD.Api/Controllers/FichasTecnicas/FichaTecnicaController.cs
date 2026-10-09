@@ -98,6 +98,49 @@ public class FichaTecnicaController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<HistorialEstadoFtDto>>> HistorialEstados(int versionId) =>
         Ok(await _service.ListarHistorialEstadoAsync(versionId));
 
+    [HttpGet("{versionId:int}/declaraciones")]
+    public async Task<ActionResult<IReadOnlyList<DeclaracionFtDto>>> ListarDeclaraciones(int versionId) =>
+        Ok(await _service.ListarDeclaracionesAsync(versionId));
+
+    [HttpPut("{versionId:int}/declaraciones")]
+    public async Task<ActionResult<OperacionComplementoFtResponse>> GuardarDeclaraciones(
+        int versionId,
+        [FromBody] GuardarDeclaracionesFtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.GuardarDeclaracionesAsync(versionId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("{versionId:int}/alergenos")]
+    public async Task<ActionResult<IReadOnlyList<AlergenoFtDto>>> ListarAlergenos(int versionId) =>
+        Ok(await _service.ListarAlergenosAsync(versionId));
+
+    [HttpPut("{versionId:int}/alergenos")]
+    public async Task<ActionResult<OperacionComplementoFtResponse>> GuardarAlergenos(
+        int versionId,
+        [FromBody] GuardarAlergenosFtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.GuardarAlergenosAsync(versionId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("{versionId:int}/grupos-caracteristicas")]
+    public async Task<ActionResult<IReadOnlyList<GrupoCaracteristicaFtDto>>> ListarGruposCaracteristica(int versionId) =>
+        Ok(await _service.ListarGruposCaracteristicaAsync(versionId));
+
+    [HttpPut("{versionId:int}/grupos-caracteristicas/{tipoCaractId:int}")]
+    public async Task<ActionResult<OperacionComplementoFtResponse>> GuardarGrupoCaracteristica(
+        int versionId,
+        int tipoCaractId,
+        [FromBody] GuardarGrupoCaracteristicaFtRequest request)
+    {
+        request.Usuario = UsuarioSesion();
+        var result = await _service.GuardarGrupoCaracteristicaAsync(versionId, tipoCaractId, request);
+        return result.CodigoResultado == 0 ? Ok(result) : BadRequest(result);
+    }
+
     private string UsuarioSesion()
     {
         var usuario = User.Identity?.Name;
