@@ -17,6 +17,35 @@ public class SeguridadController : ControllerBase
         _service = service;
     }
 
+    [Authorize(Policy = "JefeCalidad")]
+    [HttpPost("usuarios")]
+    [ProducesResponseType(typeof(CrearUsuarioAccesoResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<CrearUsuarioAccesoResponse>> CrearUsuarioAcceso([FromBody] CrearUsuarioAccesoRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.NombreUsuario))
+            return BadRequest(new { mensaje = "El nombre de usuario es obligatorio." });
+
+        if (string.IsNullOrWhiteSpace(request.NombresApellidos))
+            return BadRequest(new { mensaje = "Los nombres y apellidos son obligatorios." });
+
+        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 8)
+            return BadRequest(new { mensaje = "La contraseña debe tener al menos 8 caracteres." });
+
+        if (request.PerfilId <= 0)
+            return BadRequest(new { mensaje = "El perfil es obligatorio." });
+
+        var usuarioAuditoria = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuarioAuditoria))
+            return Unauthorized();
+
+        var response = await _service.CrearUsuarioAccesoAsync(request, usuarioAuditoria);
+
+        return response.CodigoResultado == 0
+            ? Ok(response)
+            : BadRequest(response);
+    }
+
     [AllowAnonymous]
     [HttpGet("usuarios/{nombreUsuario}/accesos")]
     [ProducesResponseType(typeof(AccesosUsuarioDto), StatusCodes.Status200OK)]
