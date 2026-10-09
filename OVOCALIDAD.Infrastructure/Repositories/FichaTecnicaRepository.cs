@@ -47,4 +47,22 @@ public class FichaTecnicaRepository : IFichaTecnicaRepository
     public Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request) => _storedProcedure.ReordenarSeccionesAsync(versionId, request);
     public Task<CambiarEstadoFtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoFtRequest request) => _storedProcedure.CambiarEstadoAsync(versionId, request);
     public Task<IReadOnlyList<HistorialEstadoFtDto>> ListarHistorialEstadoAsync(int versionId) => _storedProcedure.ListarHistorialEstadoAsync(versionId);
+
+    public Task<IReadOnlyList<DeclaracionFtDto>> ListarDeclaracionesAsync(int versionId) =>
+        _storedProcedure.ListarDeclaracionesAsync(versionId);
+
+    public Task<OperacionComplementoFtResponse> GuardarDeclaracionesAsync(int versionId, GuardarDeclaracionesFtRequest request) =>
+        _storedProcedure.GuardarDeclaracionesAsync(versionId, request);
+
+    public Task<IReadOnlyList<AlergenoFtDto>> ListarAlergenosAsync(int versionId) =>
+        _storedProcedure.ListarAlergenosAsync(versionId);
+
+    public Task<OperacionComplementoFtResponse> GuardarAlergenosAsync(int versionId, GuardarAlergenosFtRequest request) =>
+        _storedProcedure.GuardarAlergenosAsync(versionId, request);
+
+    public Task<IReadOnlyList<GrupoCaracteristicaFtDto>> ListarGruposCaracteristicaAsync(int versionId) =>
+        _storedProcedure.ListarGruposCaracteristicaAsync(versionId);
+
+    public Task<OperacionComplementoFtResponse> GuardarGrupoCaracteristicaAsync(int versionId, int tipoCaractId, GuardarGrupoCaracteristicaFtRequest request) =>
+        _storedProcedure.GuardarGrupoCaracteristicaAsync(versionId, tipoCaractId, request);
 }
