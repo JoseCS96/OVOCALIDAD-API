@@ -15,6 +15,9 @@ public class SeguridadRepository : ISeguridadRepository
 
     public Task<AccesosUsuarioDto?> ObtenerAccesosUsuarioAsync(string nombreUsuario) =>
         _storedProcedure.ObtenerAccesosUsuarioAsync(nombreUsuario);
+
+    public Task<CrearUsuarioAccesoResponse> CrearUsuarioAccesoAsync(CrearUsuarioAccesoDbRequest request) =>
+        _storedProcedure.CrearUsuarioAccesoAsync(request);
     public Task<IReadOnlyList<NotificacionDto>> ObtenerNotificacionesAsync(string nombreUsuario) =>
         _storedProcedure.ObtenerNotificacionesAsync(nombreUsuario);
 
