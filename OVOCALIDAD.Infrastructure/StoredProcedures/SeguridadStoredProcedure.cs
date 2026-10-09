@@ -14,6 +14,31 @@ public class SeguridadStoredProcedure
         _executor = executor;
     }
 
+    public async Task<CrearUsuarioAccesoResponse> CrearUsuarioAccesoAsync(CrearUsuarioAccesoDbRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@NombreUsuario", request.NombreUsuario),
+            new("@NombresApellidos", request.NombresApellidos),
+            new("@Correo", (object?)request.Correo ?? DBNull.Value),
+            new("@PasswordHash", request.PasswordHash),
+            new("@PerfilId", request.PerfilId),
+            new("@Usuario", request.UsuarioAuditoria)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_CREAR_USUARIO_ACCESO,
+            parametros);
+
+        return await reader.ReadAsync()
+            ? reader.MapTo<CrearUsuarioAccesoResponse>()
+            : new CrearUsuarioAccesoResponse
+            {
+                CodigoResultado = -99,
+                Mensaje = "El procedimiento no devolvió resultado."
+            };
+    }
+
     public async Task<AccesosUsuarioDto?> ObtenerAccesosUsuarioAsync(string nombreUsuario)
     {
         var parametros = new List<SqlParameter>
