@@ -20,4 +20,10 @@ public interface IFichaTecnicaRepository
     Task<SeccionFtOperacionResponse> ReordenarSeccionesAsync(int versionId, ReordenarSeccionesFtRequest request);
     Task<CambiarEstadoFtResponse> CambiarEstadoAsync(int versionId, CambiarEstadoFtRequest request);
     Task<IReadOnlyList<HistorialEstadoFtDto>> ListarHistorialEstadoAsync(int versionId);
+    Task<IReadOnlyList<DeclaracionFtDto>> ListarDeclaracionesAsync(int versionId);
+    Task<OperacionComplementoFtResponse> GuardarDeclaracionesAsync(int versionId, GuardarDeclaracionesFtRequest request);
+    Task<IReadOnlyList<AlergenoFtDto>> ListarAlergenosAsync(int versionId);
+    Task<OperacionComplementoFtResponse> GuardarAlergenosAsync(int versionId, GuardarAlergenosFtRequest request);
+    Task<IReadOnlyList<GrupoCaracteristicaFtDto>> ListarGruposCaracteristicaAsync(int versionId);
+    Task<OperacionComplementoFtResponse> GuardarGrupoCaracteristicaAsync(int versionId, int tipoCaractId, GuardarGrupoCaracteristicaFtRequest request);
 }
