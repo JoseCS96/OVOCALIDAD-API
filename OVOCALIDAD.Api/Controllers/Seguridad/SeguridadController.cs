@@ -18,6 +18,36 @@ public class SeguridadController : ControllerBase
     }
 
     [Authorize(Policy = "JefeCalidad")]
+    [HttpGet("usuarios")]
+    public async Task<ActionResult<IReadOnlyList<UsuarioAccesoMantenimientoDto>>> ListarUsuariosAcceso(
+        [FromQuery] string? busqueda = null,
+        [FromQuery] bool? estado = null) =>
+        Ok(await _service.ListarUsuariosAccesoAsync(busqueda, estado));
+
+    [Authorize(Policy = "JefeCalidad")]
+    [HttpGet("perfiles")]
+    public async Task<ActionResult<IReadOnlyList<PerfilAccesoMantenimientoDto>>> ListarPerfilesAcceso() =>
+        Ok(await _service.ListarPerfilesAccesoAsync());
+
+    [Authorize(Policy = "JefeCalidad")]
+    [HttpPatch("usuarios/{segUsuarioId:int}/estado")]
+    public async Task<ActionResult<CambiarEstadoUsuarioAccesoResponse>> CambiarEstadoUsuarioAcceso(
+        int segUsuarioId,
+        [FromBody] CambiarEstadoUsuarioAccesoRequest request)
+    {
+        var usuarioAuditoria = User.Identity?.Name;
+        if (string.IsNullOrWhiteSpace(usuarioAuditoria))
+            return Unauthorized();
+
+        var response = await _service.CambiarEstadoUsuarioAccesoAsync(
+            segUsuarioId,
+            request.Estado,
+            usuarioAuditoria);
+
+        return response.CodigoResultado == 0 ? Ok(response) : BadRequest(response);
+    }
+
+    [Authorize(Policy = "JefeCalidad")]
     [HttpPost("usuarios")]
     [ProducesResponseType(typeof(CrearUsuarioAccesoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
