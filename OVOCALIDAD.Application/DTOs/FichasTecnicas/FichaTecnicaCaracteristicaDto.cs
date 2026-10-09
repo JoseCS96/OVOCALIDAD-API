@@ -69,6 +69,7 @@ public class GuardarCaracteristicaFtRequest
     public decimal? ValorCuantitativoInicial { get; set; }
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
+    public decimal? ValorTolerancia { get; set; }
     public string? ValorCualitativo { get; set; }
     public string? UnidadDeMedida { get; set; }
     public bool ImprimeCertificado { get; set; }
