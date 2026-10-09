@@ -32,6 +32,15 @@ public class SeguridadService : ISeguridadService
         return _repository.CrearUsuarioAccesoAsync(dbRequest);
     }
 
+    public Task<IReadOnlyList<UsuarioAccesoMantenimientoDto>> ListarUsuariosAccesoAsync(string? busqueda, bool? estado) =>
+        _repository.ListarUsuariosAccesoAsync(busqueda, estado);
+
+    public Task<IReadOnlyList<PerfilAccesoMantenimientoDto>> ListarPerfilesAccesoAsync() =>
+        _repository.ListarPerfilesAccesoAsync();
+
+    public Task<CambiarEstadoUsuarioAccesoResponse> CambiarEstadoUsuarioAccesoAsync(int segUsuarioId, bool estado, string usuarioAuditoria) =>
+        _repository.CambiarEstadoUsuarioAccesoAsync(segUsuarioId, estado, usuarioAuditoria);
+
     public Task<IReadOnlyList<NotificacionDto>> ObtenerNotificacionesAsync(string nombreUsuario) =>
         _repository.ObtenerNotificacionesAsync(nombreUsuario);
 
