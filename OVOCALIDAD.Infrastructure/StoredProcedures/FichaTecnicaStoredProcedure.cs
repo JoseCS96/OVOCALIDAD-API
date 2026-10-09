@@ -80,21 +80,16 @@ public class FichaTecnicaStoredProcedure
 
     public async Task<GuardarCaracteristicaFtResponse> GuardarCaracteristicaAsync(int versionId, GuardarCaracteristicaFtRequest request)
     {
-        if (request.VersionFtCaracteristicaId is null or <= 0)
-            return new GuardarCaracteristicaFtResponse
-            {
-                CodigoResultado = -1,
-                Mensaje = "La característica FT debe existir antes de ser editada."
-            };
-
         var parametros = new List<SqlParameter>
         {
             new("@VersionFtId", versionId),
-            new("@VersionFtCaracteristicaId", request.VersionFtCaracteristicaId.Value),
+            new("@VersionFtCaracteristicaId", (object?)request.VersionFtCaracteristicaId ?? DBNull.Value),
+            new("@CaracteristicaId", request.CaracteristicaId),
             new("@TipoCriterioId", request.TipoCriterioId),
             new("@ValorCuantitativoInicial", (object?)request.ValorCuantitativoInicial ?? DBNull.Value),
             new("@ValorCuantitativoFinal", (object?)request.ValorCuantitativoFinal ?? DBNull.Value),
             new("@ValorCuantitativoIgual", (object?)request.ValorCuantitativoIgual ?? DBNull.Value),
+            new("@ValorTolerancia", (object?)request.ValorTolerancia ?? DBNull.Value),
             new("@ValorCualitativo", (object?)request.ValorCualitativo ?? DBNull.Value),
             new("@UnidadDeMedida", (object?)request.UnidadDeMedida ?? DBNull.Value),
             new("@ImprimeCertificado", request.ImprimeCertificado),
@@ -226,5 +221,101 @@ public class FichaTecnicaStoredProcedure
         while (await reader.ReadAsync())
             items.Add(reader.MapTo<HistorialEstadoFtDto>());
         return items;
+    }
+
+    public async Task<IReadOnlyList<DeclaracionFtDto>> ListarDeclaracionesAsync(int versionId)
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_DECLARACIONES_FT,
+            new List<SqlParameter> { new("@VersionId", versionId) });
+
+        var items = new List<DeclaracionFtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<DeclaracionFtDto>());
+        return items;
+    }
+
+    public async Task<OperacionComplementoFtResponse> GuardarDeclaracionesAsync(int versionId, GuardarDeclaracionesFtRequest request)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            request.Declaraciones,
+            new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@DeclaracionesJson", json),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_DECLARACIONES_FT, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionComplementoFtResponse>()
+            : new OperacionComplementoFtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<AlergenoFtDto>> ListarAlergenosAsync(int versionId)
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_ALERGENOS_FT,
+            new List<SqlParameter> { new("@VersionId", versionId) });
+
+        var items = new List<AlergenoFtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<AlergenoFtDto>());
+        return items;
+    }
+
+    public async Task<OperacionComplementoFtResponse> GuardarAlergenosAsync(int versionId, GuardarAlergenosFtRequest request)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(
+            request.Alergenos,
+            new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase });
+
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@AlergenosJson", json),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_ALERGENOS_FT, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionComplementoFtResponse>()
+            : new OperacionComplementoFtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
+    }
+
+    public async Task<IReadOnlyList<GrupoCaracteristicaFtDto>> ListarGruposCaracteristicaAsync(int versionId)
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_GRUPOS_CARACTERISTICA_FT,
+            new List<SqlParameter> { new("@VersionId", versionId) });
+
+        var items = new List<GrupoCaracteristicaFtDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<GrupoCaracteristicaFtDto>());
+        return items;
+    }
+
+    public async Task<OperacionComplementoFtResponse> GuardarGrupoCaracteristicaAsync(
+        int versionId,
+        int tipoCaractId,
+        GuardarGrupoCaracteristicaFtRequest request)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@VersionId", versionId),
+            new("@TipoCaractId", tipoCaractId),
+            new("@Titulo", (object?)request.Titulo ?? DBNull.Value),
+            new("@Referencia", (object?)request.Referencia ?? DBNull.Value),
+            new("@Nota", (object?)request.Nota ?? DBNull.Value),
+            new("@Orden", (object?)request.Orden ?? DBNull.Value),
+            new("@Usuario", request.Usuario)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(SPNames.SP_GUARDAR_GRUPO_CARACTERISTICA_FT, parametros);
+        return await reader.ReadAsync()
+            ? reader.MapTo<OperacionComplementoFtResponse>()
+            : new OperacionComplementoFtResponse { CodigoResultado = -1, Mensaje = "El procedimiento no devolvió resultado." };
     }
 }
