@@ -18,6 +18,15 @@ public class SeguridadRepository : ISeguridadRepository
 
     public Task<CrearUsuarioAccesoResponse> CrearUsuarioAccesoAsync(CrearUsuarioAccesoDbRequest request) =>
         _storedProcedure.CrearUsuarioAccesoAsync(request);
+
+    public Task<IReadOnlyList<UsuarioAccesoMantenimientoDto>> ListarUsuariosAccesoAsync(string? busqueda, bool? estado) =>
+        _storedProcedure.ListarUsuariosAccesoAsync(busqueda, estado);
+
+    public Task<IReadOnlyList<PerfilAccesoMantenimientoDto>> ListarPerfilesAccesoAsync() =>
+        _storedProcedure.ListarPerfilesAccesoAsync();
+
+    public Task<CambiarEstadoUsuarioAccesoResponse> CambiarEstadoUsuarioAccesoAsync(int segUsuarioId, bool estado, string usuarioAuditoria) =>
+        _storedProcedure.CambiarEstadoUsuarioAccesoAsync(segUsuarioId, estado, usuarioAuditoria);
     public Task<IReadOnlyList<NotificacionDto>> ObtenerNotificacionesAsync(string nombreUsuario) =>
         _storedProcedure.ObtenerNotificacionesAsync(nombreUsuario);
 
