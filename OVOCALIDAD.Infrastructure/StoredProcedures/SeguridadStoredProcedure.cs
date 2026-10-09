@@ -39,6 +39,66 @@ public class SeguridadStoredProcedure
             };
     }
 
+
+    public async Task<IReadOnlyList<UsuarioAccesoMantenimientoDto>> ListarUsuariosAccesoAsync(string? busqueda, bool? estado)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@Busqueda", (object?)busqueda ?? DBNull.Value),
+            new("@Estado", (object?)estado ?? DBNull.Value)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_USUARIOS_ACCESO,
+            parametros);
+
+        var items = new List<UsuarioAccesoMantenimientoDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<UsuarioAccesoMantenimientoDto>());
+
+        return items;
+    }
+
+    public async Task<IReadOnlyList<PerfilAccesoMantenimientoDto>> ListarPerfilesAccesoAsync()
+    {
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_LISTAR_PERFILES_ACCESO,
+            new List<SqlParameter>());
+
+        var items = new List<PerfilAccesoMantenimientoDto>();
+        while (await reader.ReadAsync())
+            items.Add(reader.MapTo<PerfilAccesoMantenimientoDto>());
+
+        return items;
+    }
+
+    public async Task<CambiarEstadoUsuarioAccesoResponse> CambiarEstadoUsuarioAccesoAsync(
+        int segUsuarioId,
+        bool estado,
+        string usuarioAuditoria)
+    {
+        var parametros = new List<SqlParameter>
+        {
+            new("@SegUsuarioId", segUsuarioId),
+            new("@Estado", estado),
+            new("@Usuario", usuarioAuditoria)
+        };
+
+        using var reader = await _executor.ExecuteReaderAsync(
+            SPNames.SP_CAMBIAR_ESTADO_USUARIO_ACCESO,
+            parametros);
+
+        return await reader.ReadAsync()
+            ? reader.MapTo<CambiarEstadoUsuarioAccesoResponse>()
+            : new CambiarEstadoUsuarioAccesoResponse
+            {
+                CodigoResultado = -99,
+                Mensaje = "El procedimiento no devolvió resultado.",
+                SegUsuarioId = segUsuarioId,
+                Estado = estado
+            };
+    }
+
     public async Task<AccesosUsuarioDto?> ObtenerAccesosUsuarioAsync(string nombreUsuario)
     {
         var parametros = new List<SqlParameter>
