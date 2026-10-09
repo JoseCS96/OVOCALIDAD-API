@@ -28,3 +28,9 @@ public class CambiarEstadoUsuarioAccesoResponse
     public int SegUsuarioId { get; set; }
     public bool Estado { get; set; }
 }
+
+
+public class CambiarEstadoUsuarioAccesoRequest
+{
+    public bool Estado { get; set; }
+}
