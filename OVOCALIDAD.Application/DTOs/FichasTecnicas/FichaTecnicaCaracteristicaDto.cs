@@ -22,12 +22,14 @@ public class FichaTecnicaCaracteristicaDto
     public decimal? ValorCuantitativoInicial { get; set; }
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
+    public decimal? ValorTolerancia { get; set; }
     public string? ValorCualitativo { get; set; }
     public string? UnidadDeMedida { get; set; }
     public int? MetEnsayoId { get; set; }
     public string? MetEnsayoDescripcion { get; set; }
     public string? MetodoEnsayoDescripcion { get => MetEnsayoDescripcion; set => MetEnsayoDescripcion = value; }
     public string? CriterioMostrar { get; set; }
+    public bool EsPropiaFt { get; set; }
     public bool ImprimeCertificado { get; set; }
     public bool ObligatorioCertificado { get; set; }
     public int? OrdenCertificado { get; set; }
@@ -50,6 +52,7 @@ public class ConfiguracionCertificadoFtDto
     public decimal? ValorCuantitativoInicial { get; set; }
     public decimal? ValorCuantitativoFinal { get; set; }
     public decimal? ValorCuantitativoIgual { get; set; }
+    public decimal? ValorTolerancia { get; set; }
     public string? ValorCualitativo { get; set; }
     public string? UnidadDeMedida { get; set; }
     public int? MetEnsayoId { get; set; }
