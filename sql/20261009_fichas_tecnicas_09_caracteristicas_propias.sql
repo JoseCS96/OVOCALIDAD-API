@@ -126,54 +126,89 @@ BEGIN
             WHERE VersionId=@VersionFtId
               AND Estado=1;
 
-            INSERT INTO dbo.VERSIONFTCARACTERISTICA
-            (
-                  VersionId
-                , CaracteristicaId
-                , TipoCriterioId
-                , ValorCuantitativoInicial
-                , ValorCuantitativoFinal
-                , ValorCuantitativoIgual
-                , ValorTolerancia
-                , ValorCualitativo
-                , UnidadDeMedida
-                , ImprimeCertificado
-                , ObligatorioCertificado
-                , OrdenCertificado
-                , VersCaractOrigenId
-                , OrdenTecnico
-                , FaseId
-                , VersionFaseId
-                , EsPropiaFt
-                , Estado
-                , AudUsuarioCreacion
-                , AudFechaCreacion
-            )
-            VALUES
-            (
-                  @VersionFtId
-                , @CaracteristicaId
-                , @TipoCriterioId
-                , @ValorCuantitativoInicial
-                , @ValorCuantitativoFinal
-                , @ValorCuantitativoIgual
-                , @ValorTolerancia
-                , @ValorCualitativo
-                , @UnidadDeMedida
-                , @ImprimeCertificado
-                , @ObligatorioCertificado
-                , @OrdenCertificado
-                , NULL
-                , @OrdenTecnico
-                , NULL
-                , NULL
-                , 1
-                , 1
-                , @Usuario
-                , SYSDATETIME()
-            );
+            SELECT TOP (1)
+                @VersionFtCaracteristicaId=VersionFtCaracteristicaId
+            FROM dbo.VERSIONFTCARACTERISTICA
+            WHERE VersionId=@VersionFtId
+              AND CaracteristicaId=@CaracteristicaId
+              AND Estado=0
+            ORDER BY VersionFtCaracteristicaId DESC;
 
-            SET @VersionFtCaracteristicaId=CONVERT(INT,SCOPE_IDENTITY());
+            IF @VersionFtCaracteristicaId IS NOT NULL
+            BEGIN
+                UPDATE dbo.VERSIONFTCARACTERISTICA
+                SET
+                      TipoCriterioId=@TipoCriterioId
+                    , ValorCuantitativoInicial=@ValorCuantitativoInicial
+                    , ValorCuantitativoFinal=@ValorCuantitativoFinal
+                    , ValorCuantitativoIgual=@ValorCuantitativoIgual
+                    , ValorTolerancia=@ValorTolerancia
+                    , ValorCualitativo=@ValorCualitativo
+                    , UnidadDeMedida=@UnidadDeMedida
+                    , ImprimeCertificado=@ImprimeCertificado
+                    , ObligatorioCertificado=@ObligatorioCertificado
+                    , OrdenCertificado=@OrdenCertificado
+                    , VersCaractOrigenId=NULL
+                    , OrdenTecnico=@OrdenTecnico
+                    , FaseId=NULL
+                    , VersionFaseId=NULL
+                    , EsPropiaFt=1
+                    , Estado=1
+                    , AudUsuarioModificacion=@Usuario
+                    , AudFechaActualizacion=SYSDATETIME()
+                WHERE VersionFtCaracteristicaId=@VersionFtCaracteristicaId;
+            END
+            ELSE
+            BEGIN
+                INSERT INTO dbo.VERSIONFTCARACTERISTICA
+                (
+                      VersionId
+                    , CaracteristicaId
+                    , TipoCriterioId
+                    , ValorCuantitativoInicial
+                    , ValorCuantitativoFinal
+                    , ValorCuantitativoIgual
+                    , ValorTolerancia
+                    , ValorCualitativo
+                    , UnidadDeMedida
+                    , ImprimeCertificado
+                    , ObligatorioCertificado
+                    , OrdenCertificado
+                    , VersCaractOrigenId
+                    , OrdenTecnico
+                    , FaseId
+                    , VersionFaseId
+                    , EsPropiaFt
+                    , Estado
+                    , AudUsuarioCreacion
+                    , AudFechaCreacion
+                )
+                VALUES
+                (
+                      @VersionFtId
+                    , @CaracteristicaId
+                    , @TipoCriterioId
+                    , @ValorCuantitativoInicial
+                    , @ValorCuantitativoFinal
+                    , @ValorCuantitativoIgual
+                    , @ValorTolerancia
+                    , @ValorCualitativo
+                    , @UnidadDeMedida
+                    , @ImprimeCertificado
+                    , @ObligatorioCertificado
+                    , @OrdenCertificado
+                    , NULL
+                    , @OrdenTecnico
+                    , NULL
+                    , NULL
+                    , 1
+                    , 1
+                    , @Usuario
+                    , SYSDATETIME()
+                );
+
+                SET @VersionFtCaracteristicaId=CONVERT(INT,SCOPE_IDENTITY());
+            END;
         END
         ELSE
         BEGIN
